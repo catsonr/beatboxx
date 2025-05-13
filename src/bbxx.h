@@ -8,6 +8,8 @@
 #include "FPSCounter.h"
 #include "InputState.h"
 
+#include "KeyDisplay.h"
+
 class BBXX
 {
 private:
@@ -18,6 +20,7 @@ private:
 
     FPSCounter fpscounter;
     InputState inputstate;
+    KeyDisplay keydisplay;
 
 public:
     /* PUBLIC MEMBERS */

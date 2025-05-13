@@ -35,6 +35,7 @@ SDL_AppResult BBXX::init()
     if (SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE))
     {
         SDL_Log("[BBXX::init] failed to enable vsync: %s", SDL_GetError());
+
         return SDL_APP_FAILURE;
     }
     printf("[BBXX::init] enabled vsync\n");
@@ -44,6 +45,13 @@ SDL_AppResult BBXX::init()
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
     
+    if( !keydisplay.init(renderer, &inputstate, 200, 10) )
+    {
+        SDL_Log("[BBXX::init] failed to initialize key display!\n");
+
+        return SDL_APP_FAILURE;
+    }
+
     fpscounter.start();
     
     return SDL_APP_CONTINUE;
@@ -65,12 +73,16 @@ void BBXX::draw()
 
     fpscounter.iterate();
     fpscounter.draw(renderer);
+    
+    keydisplay.draw();
 
     SDL_RenderPresent(renderer);
 }
 
 /*
     handles all events (user input)
+    returns SDL_APP_SUCCESS of user clicks exit button
+    returns SDL_APP_CONTINUE otherwise
 */
 SDL_AppResult BBXX::handle_event(SDL_Event *event)
 {
