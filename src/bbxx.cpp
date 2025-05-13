@@ -1,5 +1,10 @@
 #include "bbxx.h"
 
+/*
+    does all necessary SDL initialization
+    returns SDL_APP_CONTINUE if successful
+    returns SDL_APP_FAILURE if errors 
+*/
 SDL_AppResult BBXX::init()
 {
     SDL_WindowFlags windowflags =
@@ -9,13 +14,23 @@ SDL_AppResult BBXX::init()
         SDL_WINDOW_INPUT_FOCUS |
         SDL_WINDOW_MOUSE_FOCUS;
 
-    if (!SDL_CreateWindowAndRenderer("beatboxx!", WINDOW_WIDTH, WINDOW_HEIGHT, windowflags, &window, &renderer))
+    if ( !SDL_CreateWindowAndRenderer(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags, &window, &renderer ))
     {
         SDL_Log("[BBXX::init] failed to create window and/or renderer: %s", SDL_GetError());
 
         return SDL_APP_FAILURE;
     }
     printf("[BBXX::init] created SDL window and renderer\n");
+    
+    SDL_InitFlags initflags = 
+        SDL_INIT_AUDIO |
+        SDL_INIT_GAMEPAD;
+    if( !SDL_InitSubSystem(initflags) )
+    {
+        SDL_Log("[BBXX::init] failed to load subsystem(s): %s", SDL_GetError());
+
+        return SDL_APP_FAILURE;
+    }
     
     if (SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE))
     {
@@ -24,11 +39,25 @@ SDL_AppResult BBXX::init()
     }
     printf("[BBXX::init] enabled vsync\n");
     
-    fpscounter.init();
+    // sets metadata about beatboxx. competely optional to have
+    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
+    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
+    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
+    
+    fpscounter.start();
     
     return SDL_APP_CONTINUE;
 }
 
+/* does all the calculations in preparation for drawing next frame */
+void BBXX::iterate()
+{
+
+}
+
+/*
+    does all drawing for beatboxx
+*/
 void BBXX::draw()
 {
     SDL_SetRenderDrawColor(renderer, 211, 255, 233, 255);
@@ -38,4 +67,21 @@ void BBXX::draw()
     fpscounter.draw(renderer);
 
     SDL_RenderPresent(renderer);
+}
+
+/*
+    handles all events (user input)
+*/
+SDL_AppResult BBXX::handle_event(SDL_Event *event)
+{
+    if(event->type == SDL_EVENT_QUIT)
+    {
+        return SDL_APP_SUCCESS;
+    }
+    else
+    {
+        inputstate.handle_event(event);
+    }
+
+    return SDL_APP_CONTINUE;
 }
