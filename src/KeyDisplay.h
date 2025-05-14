@@ -29,6 +29,7 @@ struct KeyDisplay
     int texture_width {0};
     int texture_height {0};
     int x {0}, y {0};
+    const float opacity = 0.2;
     
     static const int rowCount = 6;
 
@@ -69,17 +70,19 @@ struct KeyDisplay
     };
     
     // size in pixels of a single key
-    // should be highly composite number, or at least divisible in halves and thirds
-    int keysize = 12;
+    int keysize;
     // space inbetween keys (and border)
     static const int padding = 2;
 
     /* PUBLIC FUNCTIONS */
-    bool init(SDL_Renderer *renderer, InputState *inputstate, int xpos, int ypos)
+    int height(int size) const { return padding + rowCount * (size + padding); }
+
+    bool init(SDL_Renderer *renderer, InputState *inputstate, int xpos, int ypos, int keysize)
     {
+        (*this).keysize = keysize;
         (*this).renderer = renderer;
         (*this).inputstate = inputstate;
-        texture_height = padding + rowCount * (keysize + padding);
+        texture_height = height(keysize);
         texture_width = padding + 16 * (keysize + padding);
         x = xpos;
         y = ypos;
@@ -95,6 +98,7 @@ struct KeyDisplay
         return true;
     }
 
+    // TODO: make width be fixed and progressively fill with keys, to ensure things are same width
     void draw()
     {
         if (!texture)
@@ -108,7 +112,7 @@ struct KeyDisplay
         SDL_RenderClear(renderer);
 
         // draw background over entire texture
-        SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128);
+        SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255*(opacity / 2));
         SDL_FRect bg_rect = {0, 0, (float)texture_width, (float)texture_height};
         SDL_RenderFillRect(renderer, &bg_rect);
 
@@ -124,9 +128,9 @@ struct KeyDisplay
                 keyrect.w = keysize * row_widths[row][i];
                 
                 if(inputstate->key_down(sc))
-                    SDL_SetRenderDrawColor(renderer, 10, 255, 20, 180);
+                    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255*(opacity*0.5f));
                 else
-                    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 180);
+                    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255*opacity);
                 
                 // draw current key
                 SDL_RenderFillRect(renderer, &keyrect);

@@ -45,7 +45,8 @@ SDL_AppResult BBXX::init()
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
     
-    if( !keydisplay.init(renderer, &inputstate, 200, 10) )
+    const int keydisplaysize = 20;
+    if( !keydisplay.init(renderer, &inputstate, 0, WINDOW_HEIGHT - keydisplay.height(keydisplaysize), keydisplaysize) )
     {
         SDL_Log("[BBXX::init] failed to initialize key display!\n");
 

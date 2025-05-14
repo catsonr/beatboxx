@@ -3,6 +3,8 @@
 
 #include <SDL3/SDL.h>
 
+#include <cstdio>
+
 struct FPSCounter
 {
     uint64_t then, now, freq, dt;
@@ -27,7 +29,7 @@ struct FPSCounter
     
     void draw(SDL_Renderer *renderer)
     {
-        SDL_SetRenderDrawColor(renderer, 10, 10, 60, 255);
+        SDL_SetRenderDrawColor(renderer, 10, 10, 60, 255 * 0.8f);
 
         int lineHeight = (int)SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE;
         

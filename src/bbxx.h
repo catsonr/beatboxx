@@ -14,8 +14,8 @@ class BBXX
 {
 private:
     /* PRIVATE MEMBERS */
-    int WINDOW_WIDTH { 800 };
-    int WINDOW_HEIGHT { 600 };
+    int WINDOW_WIDTH { 1280 };
+    int WINDOW_HEIGHT { 720 };
     const char *WINDOW_TITLE { "beatbox :)" };
 
     FPSCounter fpscounter;
@@ -32,7 +32,9 @@ public:
     void iterate();
     void draw();
     SDL_AppResult handle_event(SDL_Event *event);
+    
+    int get_windowWidth() const { return WINDOW_WIDTH; }
+    int get_windowHeight() const { return WINDOW_HEIGHT; }
 }; // BBXX
-
 
 #endif
