@@ -7,6 +7,8 @@
 */
 SDL_AppResult BBXX::init()
 {
+    printf("path: %s\n\n\n", SDL_GetPrefPath(NULL, "beatboxx"));
+
     SDL_WindowFlags windowflags =
         SDL_WINDOW_HIGH_PIXEL_DENSITY |
         SDL_WINDOW_ALWAYS_ON_TOP |
@@ -27,7 +29,7 @@ SDL_AppResult BBXX::init()
         SDL_INIT_GAMEPAD;
     if( !SDL_InitSubSystem(initflags) )
     {
-        SDL_Log("[BBXX::init] failed to load subsystem(s): %s", SDL_GetError());
+        SDL_Log("[BBXX::init] failed to initialize subsystem(s): %s", SDL_GetError());
 
         return SDL_APP_FAILURE;
     }
@@ -44,7 +46,7 @@ SDL_AppResult BBXX::init()
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
-    
+
     const int keydisplaysize = 20;
     if( !keydisplay.init(renderer, &inputstate, 0, WINDOW_HEIGHT - keydisplay.height(keydisplaysize), keydisplaysize) )
     {
@@ -52,6 +54,15 @@ SDL_AppResult BBXX::init()
 
         return SDL_APP_FAILURE;
     }
+    
+    /*
+    if( !audiostate.init() )
+    {
+        SDL_Log("[BBXX::init] failed to initialize audio state!\n");
+
+        return SDL_APP_FAILURE;
+    }
+    */
 
     fpscounter.start();
     
@@ -69,12 +80,12 @@ void BBXX::iterate()
 */
 void BBXX::draw()
 {
+    fpscounter.iterate();
+
     SDL_SetRenderDrawColor(renderer, 211, 255, 233, 255);
     SDL_RenderClear(renderer);
 
-    fpscounter.iterate();
     fpscounter.draw(renderer);
-    
     keydisplay.draw();
 
     SDL_RenderPresent(renderer);

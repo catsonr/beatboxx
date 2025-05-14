@@ -115,7 +115,6 @@ struct KeyDisplay
         SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255*(opacity / 2));
         SDL_FRect bg_rect = {0, 0, (float)texture_width, (float)texture_height};
         SDL_RenderFillRect(renderer, &bg_rect);
-
         
         SDL_FRect keyrect = {0, 0, (float)keysize, (float)keysize};
         for(int row = 0; row < rowCount; row++)
@@ -135,7 +134,7 @@ struct KeyDisplay
                 // draw current key
                 SDL_RenderFillRect(renderer, &keyrect);
 
-                keyrect.x += keyrect.w + padding;
+                keyrect.x += keyrect.w + padding * row_widths[row][i];
             }
         }
 

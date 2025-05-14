@@ -5,9 +5,10 @@
 
 #include <SDL3/SDL.h>
 
-#include "FPSCounter.h"
 #include "InputState.h"
+#include "AudioState.h"
 
+#include "FPSCounter.h"
 #include "KeyDisplay.h"
 
 class BBXX
@@ -18,8 +19,12 @@ private:
     int WINDOW_HEIGHT { 720 };
     const char *WINDOW_TITLE { "beatbox :)" };
 
-    FPSCounter fpscounter;
+    // state managing classes
     InputState inputstate;
+    AudioState audiostate;
+    
+    // drawables classes
+    FPSCounter fpscounter;
     KeyDisplay keydisplay;
 
 public:
@@ -37,4 +42,4 @@ public:
     int get_windowHeight() const { return WINDOW_HEIGHT; }
 }; // BBXX
 
-#endif
+#endif // BBXX_H

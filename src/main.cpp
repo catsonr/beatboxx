@@ -3,7 +3,6 @@
 #include <SDL3/SDL_main.h>
 
 #include "bbxx.h"
-
 BBXX bx;
 
 /* This function runs once at startup. */
