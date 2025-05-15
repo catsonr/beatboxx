@@ -11,6 +11,8 @@
 #include "FPSCounter.h"
 #include "KeyDisplay.h"
 
+#include "SongSelect.h"
+
 class BBXX
 {
 private:
@@ -26,6 +28,9 @@ private:
     // drawables classes
     FPSCounter fpscounter;
     KeyDisplay keydisplay;
+    
+    // beatboxx specific classes
+    SongSelect songselect;
 
 public:
     /* PUBLIC MEMBERS */

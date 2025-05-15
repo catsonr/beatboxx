@@ -7,6 +7,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "Util.h"
 #include "InputState.h"
 
 constexpr SDL_Scancode keymap[6][16] {
@@ -18,19 +19,11 @@ constexpr SDL_Scancode keymap[6][16] {
     { SDL_SCANCODE_LCTRL, SDL_SCANCODE_LGUI, SDL_SCANCODE_LALT, SDL_SCANCODE_SPACE, SDL_SCANCODE_RALT, SDL_SCANCODE_UNKNOWN /*fn*/, SDL_SCANCODE_RCTRL, SDL_SCANCODE_LEFT, SDL_SCANCODE_DOWN, SDL_SCANCODE_RIGHT }
 };
 
-struct KeyDisplay
+struct KeyDisplay : Util
 {
     /* PUBLIC MEMBERS */
-    SDL_Texture *texture {nullptr};
-    SDL_Renderer *renderer {nullptr};
-
     InputState *inputstate;
 
-    int texture_width {0};
-    int texture_height {0};
-    int x {0}, y {0};
-    const float opacity = 0.2;
-    
     static const int rowCount = 6;
 
     // top key row (escape, function keys, print screen, pause break, delete)
@@ -79,42 +72,24 @@ struct KeyDisplay
 
     bool init(SDL_Renderer *renderer, InputState *inputstate, int xpos, int ypos, int keysize)
     {
-        (*this).keysize = keysize;
         (*this).renderer = renderer;
+        (*this).keysize = keysize;
         (*this).inputstate = inputstate;
-        texture_height = height(keysize);
-        texture_width = padding + 16 * (keysize + padding);
-        x = xpos;
-        y = ypos;
 
-        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, texture_width, texture_height);
-        if (!texture)
-        {
-            SDL_Log("[KeyDisplay] failed to create texture! %s\n", SDL_GetError());
-
-            return false;
-        }
-
-        return true;
+        u_x = xpos;
+        u_y = ypos;
+        u_height = height(keysize);
+        u_width = padding + 16 * (keysize + padding);
+        u_opacity = 0.2;
+        
+        return util_init();
     }
 
     // TODO: make width be fixed and progressively fill with keys, to ensure things are same width
     void draw()
     {
-        if (!texture)
-            return;
-
-        SDL_SetRenderTarget(renderer, texture);
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-        // clear texture
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
-
-        // draw background over entire texture
-        SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255*(opacity / 2));
-        SDL_FRect bg_rect = {0, 0, (float)texture_width, (float)texture_height};
-        SDL_RenderFillRect(renderer, &bg_rect);
+        util_texture_clear();
+        util_texture_drawBackground();
         
         SDL_FRect keyrect = {0, 0, (float)keysize, (float)keysize};
         for(int row = 0; row < rowCount; row++)
@@ -127,9 +102,9 @@ struct KeyDisplay
                 keyrect.w = keysize * row_widths[row][i];
                 
                 if(inputstate->key_down(sc))
-                    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255*(opacity*0.5f));
+                    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255*(u_opacity*0.5f));
                 else
-                    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255*opacity);
+                    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255*u_opacity);
                 
                 // draw current key
                 SDL_RenderFillRect(renderer, &keyrect);
@@ -138,10 +113,7 @@ struct KeyDisplay
             }
         }
 
-        SDL_SetRenderTarget(renderer, nullptr);
-
-        SDL_FRect dst = {(float)x, (float)y, (float)texture_width, (float)texture_height};
-        SDL_RenderTexture(renderer, texture, nullptr, &dst);
+        util_texture_render();
     }
 }; // KeyDisplay
 

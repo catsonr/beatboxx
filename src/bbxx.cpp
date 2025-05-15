@@ -10,8 +10,9 @@ SDL_AppResult BBXX::init()
     SDL_WindowFlags windowflags =
         // TODO: support high pixel density displays
         //SDL_WINDOW_HIGH_PIXEL_DENSITY |
-        SDL_WINDOW_ALWAYS_ON_TOP |
-        SDL_WINDOW_RESIZABLE |
+        //SDL_WINDOW_ALWAYS_ON_TOP |
+        // TODO: support window resizing (!)
+        //SDL_WINDOW_RESIZABLE |
         SDL_WINDOW_INPUT_FOCUS |
         SDL_WINDOW_MOUSE_FOCUS;
 
@@ -60,6 +61,13 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
+    if( !songselect.init(renderer, &inputstate, 100, 100) )
+    {
+        SDL_Log("[BBXX::init] failed to initialize song select!\n");
+
+        return SDL_APP_FAILURE;
+    }
+
     fpscounter.start();
     
     return SDL_APP_CONTINUE;
@@ -83,6 +91,7 @@ void BBXX::draw()
 
     fpscounter.draw(renderer);
     keydisplay.draw();
+    songselect.draw();
 
     SDL_RenderPresent(renderer);
 }

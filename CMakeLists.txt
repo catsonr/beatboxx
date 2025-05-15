@@ -26,7 +26,7 @@ file(GLOB_RECURSE PROJECT_SOURCES
 add_executable(beatboxx ${PROJECT_SOURCES})
 
 target_include_directories(beatboxx PRIVATE
-  #${CMAKE_SOURCE_DIR}/src/miku
+  #${CMAKE_SOURCE_DIR}/src/BBXX
 )
 
 target_link_libraries(beatboxx
