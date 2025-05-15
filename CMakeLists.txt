@@ -8,9 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
+set(SDLTTF_VENDORED ON)
+
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
-#add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 
 if(EMSCRIPTEN)
 	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
@@ -25,12 +27,9 @@ file(GLOB_RECURSE PROJECT_SOURCES
 
 add_executable(beatboxx ${PROJECT_SOURCES})
 
-target_include_directories(beatboxx PRIVATE
-  #${CMAKE_SOURCE_DIR}/src/BBXX
-)
-
 target_link_libraries(beatboxx
   PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
+    SDL3_ttf::SDL3_ttf
 )

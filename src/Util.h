@@ -23,6 +23,11 @@ struct Util
     float u_opacity = 1.0;
     bool u_draggable = false;
     
+    virtual ~Util()
+    {
+        if(u_texture) SDL_DestroyTexture(u_texture);
+    }
+    
     /*
         renderer, u_x, u_y, u_width, u_height
         must be set before util_init() is finally called by inherited class
@@ -69,10 +74,10 @@ struct Util
             u_width,
             u_height
         );
-        
+
         return !!u_texture;
     }
-    
+
     constexpr void util_texture_clear() const
     {
         SDL_SetRenderTarget(renderer, u_texture);
