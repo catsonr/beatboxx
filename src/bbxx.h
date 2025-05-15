@@ -25,7 +25,7 @@ private:
     /* PRIVATE MEMBERS */
     int WINDOW_WIDTH { 1280 };
     int WINDOW_HEIGHT { 720 };
-    const char *WINDOW_TITLE { "beatbox :)" };
+    const char *WINDOW_TITLE { "beatboxx :)" };
 
     // state managing classes
     InputState inputstate;

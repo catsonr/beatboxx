@@ -118,6 +118,17 @@ struct AudioState
         
         return true;
     }
+    
+    void handle_event(const SDL_Event *event)
+    {
+        if( event->type == SDL_EVENT_KEY_UP && event->key.scancode == SDL_SCANCODE_SPACE)
+        {
+            if(Mix_PausedMusic())
+                Mix_ResumeMusic();
+            else
+                Mix_PauseMusic();
+        }
+    }
 
     bool init()
     {
@@ -147,6 +158,8 @@ struct AudioState
         
         return loadBGM();
     }
+
+
     
     void cleanup()
     {

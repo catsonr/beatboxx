@@ -1,3 +1,8 @@
+/*
+    TextRender provides helper functions for interfacing with SDL_ttf.h
+    TextRender can draw .ttf and .otf fonts to the screen
+*/
+
 #ifndef TEXTRENDER_H
 #define TEXTRENDER_H
 
@@ -26,7 +31,7 @@ struct TextRender
         this->renderer = renderer;
         this->window = window;
         
-        font = TTF_OpenFont("/Users/carson/Desktop/wrkspc/beatboxx/fonts/splatoon3/AsiaKCUBE-R.ttf", 20.0f);
+        font = TTF_OpenFont("/Users/carson/Desktop/wrkspc/beatboxx/fonts/Exile/Exile-Regular.ttf", 140.0f);
         if( !font ) 
         {
             printf("unable to load font!\n");
@@ -34,7 +39,7 @@ struct TextRender
         }
         
         SDL_Color fontcolor = { 255, 255, 255, SDL_ALPHA_OPAQUE };
-        text = TTF_RenderText_Blended(font, "SPLATOON3 FONT YEAH!!!!", 0, fontcolor);
+        text = TTF_RenderText_Blended(font, "beatboxx", 0, fontcolor);
         if( text )
         {
             texture = SDL_CreateTextureFromSurface(renderer, text);

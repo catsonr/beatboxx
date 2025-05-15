@@ -118,6 +118,7 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
     else
     {
         inputstate.handle_event(event);
+        audiostate.handle_event(event);
     }
 
     return SDL_APP_CONTINUE;
