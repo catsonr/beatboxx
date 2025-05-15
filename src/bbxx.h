@@ -37,6 +37,7 @@ public:
     void iterate();
     void draw();
     SDL_AppResult handle_event(SDL_Event *event);
+    void quit();
     
     int get_windowWidth() const { return WINDOW_WIDTH; }
     int get_windowHeight() const { return WINDOW_HEIGHT; }

@@ -7,10 +7,9 @@
 */
 SDL_AppResult BBXX::init()
 {
-    printf("path: %s\n\n\n", SDL_GetPrefPath(NULL, "beatboxx"));
-
     SDL_WindowFlags windowflags =
-        SDL_WINDOW_HIGH_PIXEL_DENSITY |
+        // TODO: support high pixel density displays
+        //SDL_WINDOW_HIGH_PIXEL_DENSITY |
         SDL_WINDOW_ALWAYS_ON_TOP |
         SDL_WINDOW_RESIZABLE |
         SDL_WINDOW_INPUT_FOCUS |
@@ -40,7 +39,6 @@ SDL_AppResult BBXX::init()
 
         return SDL_APP_FAILURE;
     }
-    printf("[BBXX::init] enabled vsync\n");
     
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
@@ -55,14 +53,12 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    /*
     if( !audiostate.init() )
     {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
 
         return SDL_APP_FAILURE;
     }
-    */
 
     fpscounter.start();
     
@@ -108,4 +104,9 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
     }
 
     return SDL_APP_CONTINUE;
+}
+
+void BBXX::quit()
+{
+    audiostate.cleanup();
 }

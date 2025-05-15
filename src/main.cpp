@@ -30,4 +30,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
     printf("[main] quitting beatboxx ...\n");
+
+    bx.quit();
 }

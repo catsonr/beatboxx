@@ -9,6 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
+#add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 
 if(EMSCRIPTEN)
 	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
@@ -27,4 +29,8 @@ target_include_directories(beatboxx PRIVATE
   #${CMAKE_SOURCE_DIR}/src/miku
 )
 
-target_link_libraries(beatboxx PRIVATE SDL3::SDL3)
+target_link_libraries(beatboxx
+  PRIVATE
+    SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
+)
