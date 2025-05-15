@@ -41,6 +41,13 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
+    if( !textrender.init(renderer, window) )
+    {
+        SDL_Log("[BBXX::init] failed to initialize text render! %s", SDL_GetError());
+        
+        return SDL_APP_FAILURE;
+    }
+    
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
@@ -92,6 +99,7 @@ void BBXX::draw()
     fpscounter.draw(renderer);
     keydisplay.draw();
     songselect.draw();
+    textrender.draw();
 
     SDL_RenderPresent(renderer);
 }
@@ -117,5 +125,6 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
+    textrender.cleanup();
     audiostate.cleanup();
 }

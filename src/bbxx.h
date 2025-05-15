@@ -3,14 +3,20 @@
 
 #define BBXVERSION "0.0.1"
 
+// SDL headers
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
+// BBXX state classes
 #include "InputState.h"
 #include "AudioState.h"
+#include "TextRender.h"
 
+// BBXX drawable utilities 
 #include "FPSCounter.h"
 #include "KeyDisplay.h"
 
+// beatboxx specific utilities
 #include "SongSelect.h"
 
 class BBXX
@@ -24,6 +30,7 @@ private:
     // state managing classes
     InputState inputstate;
     AudioState audiostate;
+    TextRender textrender;
     
     // drawables classes
     FPSCounter fpscounter;
