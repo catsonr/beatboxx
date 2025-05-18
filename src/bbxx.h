@@ -5,13 +5,11 @@
 
 // SDL headers
 #include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
 
 // BBXX state classes
 #include "InputState.h"
 #include "AudioState.h"
 #include "RenderState.h"
-#include "TextRender.h"
 
 // BBXX drawable utilities 
 #include "FPSCounter.h"
@@ -38,7 +36,6 @@ private:
     // drawables classes
     FPSCounter fpscounter;
     KeyDisplay keydisplay;
-    TextRender textrender;
     
     // beatboxx specific classes
     SongSelect songselect;

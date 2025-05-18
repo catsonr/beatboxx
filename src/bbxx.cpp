@@ -67,11 +67,6 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
-    if( !textrender.init(renderer, window) ) {
-        SDL_Log("[BBXX::init] failed to initialize text renderer!\n");
-        return SDL_APP_FAILURE;
-    }
-
     fpscounter.start();
     return SDL_APP_CONTINUE;
 }
@@ -92,7 +87,7 @@ void BBXX::draw()
     SDL_SetRenderDrawColor(renderer, 211, 255, 233, 255);
     SDL_RenderClear(renderer);
 
-    textrender.draw();
+    //textrender.draw();
     fpscounter.draw(renderer);
     keydisplay.draw();
     songselect.draw();
@@ -134,6 +129,5 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
-    //textrender.cleanup();
     audiostate.cleanup();
 }
