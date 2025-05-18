@@ -10,6 +10,7 @@
 // BBXX state classes
 #include "InputState.h"
 #include "AudioState.h"
+#include "RenderState.h"
 #include "TextRender.h"
 
 // BBXX drawable utilities 
@@ -24,13 +25,17 @@ class BBXX
 private:
     /* PRIVATE MEMBERS */
     int WINDOW_WIDTH { 1280 };
+    int WINDOW_WIDTH_MIN { 800 };
+    int WINDOW_HEIGHT_MIN { 600 };
     int WINDOW_HEIGHT { 720 };
     const char *WINDOW_TITLE { "beatboxx :)" };
 
     // state managing classes
     InputState inputstate;
     AudioState audiostate;
+    RenderState renderstate;
     TextRender textrender;
+    //Text t;
     
     // drawables classes
     FPSCounter fpscounter;
@@ -43,6 +48,9 @@ public:
     /* PUBLIC MEMBERS */
     SDL_Window *window { nullptr };
     SDL_Renderer *renderer { nullptr };
+    
+    // display scale
+    static float ds;
     
     /* PUBLIC METHODS */
     SDL_AppResult init();

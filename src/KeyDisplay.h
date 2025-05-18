@@ -22,8 +22,6 @@ constexpr SDL_Scancode keymap[6][16] {
 struct KeyDisplay : Util
 {
     /* PUBLIC MEMBERS */
-    InputState *inputstate;
-
     static const int rowCount = 6;
 
     // top key row (escape, function keys, print screen, pause break, delete)

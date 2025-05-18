@@ -123,10 +123,14 @@ struct AudioState
     {
         if( event->type == SDL_EVENT_KEY_UP && event->key.scancode == SDL_SCANCODE_SPACE)
         {
-            if(Mix_PausedMusic())
+            if(Mix_PausedMusic()) {
+                printf("[AudioState::handle_event] music resume!\n");
                 Mix_ResumeMusic();
-            else
+            }
+            else {
+                printf("[AudioState::handle_event] music pause!\n");
                 Mix_PauseMusic();
+            }
         }
     }
 

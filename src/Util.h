@@ -7,22 +7,25 @@
 
 #include <SDL3/SDL.h>
 
+#include "InputState.h"
+
 struct Util
 {
+    // these variables must be set before creating the utility by calling util_init()
     SDL_Renderer *renderer { nullptr };
     SDL_Texture *u_texture { nullptr };
-    
-    // values that must be set
     const static int UTIL_INT_DEFAULT { -1 };
     int u_width { UTIL_INT_DEFAULT };
     int u_height { UTIL_INT_DEFAULT };
     int u_x { UTIL_INT_DEFAULT };
     int u_y { UTIL_INT_DEFAULT };
-
+    
     // optional values, with sensible defaults 
     float u_opacity = 1.0;
     bool u_draggable = false;
-    
+
+    InputState *inputstate { nullptr };
+
     virtual ~Util()
     {
         if(u_texture) SDL_DestroyTexture(u_texture);
@@ -77,8 +80,8 @@ struct Util
 
         return !!u_texture;
     }
-
-    constexpr void util_texture_clear() const
+    
+    void util_texture_clear() const
     {
         SDL_SetRenderTarget(renderer, u_texture);
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -86,14 +89,14 @@ struct Util
         SDL_RenderClear(renderer);
     }
     
-    constexpr void util_texture_drawBackground() const
+    void util_texture_drawBackground() const
     {
         SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255 * (u_opacity / 2.0f));
         SDL_FRect bg_rect = { 0, 0, (float)u_width, (float)u_height };
         SDL_RenderFillRect(renderer, &bg_rect);
     }
 
-    constexpr void util_texture_render() const
+    void util_texture_render() const
     {
         SDL_SetRenderTarget(renderer, nullptr);
 
