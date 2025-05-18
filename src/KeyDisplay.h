@@ -8,7 +8,6 @@
 #include <SDL3/SDL.h>
 
 #include "Util.h"
-#include "InputState.h"
 
 constexpr SDL_Scancode keymap[6][16] {
     { SDL_SCANCODE_ESCAPE, SDL_SCANCODE_F1, SDL_SCANCODE_F2, SDL_SCANCODE_F3, SDL_SCANCODE_F4, SDL_SCANCODE_F5, SDL_SCANCODE_F6, SDL_SCANCODE_F7, SDL_SCANCODE_F8, SDL_SCANCODE_F9, SDL_SCANCODE_F10, SDL_SCANCODE_F11, SDL_SCANCODE_F12, SDL_SCANCODE_PRINTSCREEN, SDL_SCANCODE_PAUSE, SDL_SCANCODE_DELETE },
@@ -68,9 +67,9 @@ struct KeyDisplay : Util
     /* PUBLIC FUNCTIONS */
     int height(int size) const { return padding + rowCount * (size + padding); }
 
-    bool init(SDL_Renderer *renderer, InputState *inputstate, int xpos, int ypos, int keysize)
+    bool init(RenderState *renderstate, InputState *inputstate, int xpos, int ypos, int keysize)
     {
-        (*this).renderer = renderer;
+        (*this).renderstate = renderstate;
         (*this).keysize = keysize;
         (*this).inputstate = inputstate;
 
@@ -100,12 +99,12 @@ struct KeyDisplay : Util
                 keyrect.w = keysize * row_widths[row][i];
                 
                 if(inputstate->key_down(sc))
-                    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255*(u_opacity*0.5f));
+                    SDL_SetRenderDrawColor(renderstate->renderer, 240, 240, 240, 255*(u_opacity*0.5f));
                 else
-                    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255*u_opacity);
+                    SDL_SetRenderDrawColor(renderstate->renderer, 90, 90, 90, 255*u_opacity);
                 
                 // draw current key
-                SDL_RenderFillRect(renderer, &keyrect);
+                SDL_RenderFillRect(renderstate->renderer, &keyrect);
 
                 keyrect.x += keyrect.w + padding * row_widths[row][i];
             }

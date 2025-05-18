@@ -7,13 +7,15 @@
 
 #include <SDL3/SDL.h>
 
+#include "RenderState.h"
 #include "InputState.h"
 
 struct Util
 {
-    // these variables must be set before creating the utility by calling util_init()
-    SDL_Renderer *renderer { nullptr };
     SDL_Texture *u_texture { nullptr };
+
+    // these variables must be set before creating the utility by calling util_init()
+    RenderState *renderstate { nullptr };
     const static int UTIL_INT_DEFAULT { -1 };
     int u_width { UTIL_INT_DEFAULT };
     int u_height { UTIL_INT_DEFAULT };
@@ -38,7 +40,7 @@ struct Util
     bool util_init()
     {
         bool ready = true;
-        if(renderer == nullptr)
+        if(renderstate->renderer == nullptr)
         {
             SDL_Log("[util_init] renderer not set!");
             ready = false;
@@ -71,7 +73,7 @@ struct Util
         }
 
         u_texture = SDL_CreateTexture(
-            renderer,
+            renderstate->renderer,
             SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET,
             u_width,
@@ -83,25 +85,25 @@ struct Util
     
     void util_texture_clear() const
     {
-        SDL_SetRenderTarget(renderer, u_texture);
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
+        SDL_SetRenderTarget(renderstate->renderer, u_texture);
+        SDL_SetRenderDrawBlendMode(renderstate->renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderstate->renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderstate->renderer);
     }
     
     void util_texture_drawBackground() const
     {
-        SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255 * (u_opacity / 2.0f));
+        SDL_SetRenderDrawColor(renderstate->renderer, 128, 128, 128, 255 * (u_opacity / 2.0f));
         SDL_FRect bg_rect = { 0, 0, (float)u_width, (float)u_height };
-        SDL_RenderFillRect(renderer, &bg_rect);
+        SDL_RenderFillRect(renderstate->renderer, &bg_rect);
     }
 
     void util_texture_render() const
     {
-        SDL_SetRenderTarget(renderer, nullptr);
+        SDL_SetRenderTarget(renderstate->renderer, nullptr);
 
         SDL_FRect dst = {(float)u_x, (float)u_y, (float)u_width, (float)u_height};
-        SDL_RenderTexture(renderer, u_texture, nullptr, &dst);
+        SDL_RenderTexture(renderstate->renderer, u_texture, nullptr, &dst);
     }
     
     virtual void draw() = 0;

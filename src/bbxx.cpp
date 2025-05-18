@@ -44,6 +44,8 @@ SDL_AppResult BBXX::init()
     // sets the minimum size the window can be reisized to
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
+
+
     if( !audiostate.init() ) {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
         return SDL_APP_FAILURE;
@@ -54,13 +56,13 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
-    if( !songselect.init(renderer, &inputstate, 100, 100) ) {
+    if( !songselect.init(&renderstate, &inputstate, 100, 100) ) {
         SDL_Log("[BBXX::init] failed to initialize song select!\n");
         return SDL_APP_FAILURE;
     }
     
     const int keydisplaysize = 20;
-    if( !keydisplay.init(renderer, &inputstate, 0, WINDOW_HEIGHT - keydisplay.height(keydisplaysize), keydisplaysize) ) {
+    if( !keydisplay.init(&renderstate, &inputstate, 0, WINDOW_HEIGHT - keydisplay.height(keydisplaysize), keydisplaysize) ) {
         SDL_Log("[BBXX::init] failed to initialize key display!\n");
         return SDL_APP_FAILURE;
     }

@@ -4,15 +4,14 @@
 #include <SDL3/SDL.h>
 
 #include "Util.h"
-#include "InputState.h"
 
 struct SongSelect : Util
 {
     InputState *inputstate;
 
-    bool init(SDL_Renderer *renderer, InputState *inputstate, int xpos, int ypos)
+    bool init(RenderState *renderstate, InputState *inputstate, int xpos, int ypos)
     {
-        (*this).renderer = renderer;
+        (*this).renderstate = renderstate;
         (*this).inputstate = inputstate;
         
         u_x = xpos;

@@ -25,21 +25,20 @@ class BBXX
 private:
     /* PRIVATE MEMBERS */
     int WINDOW_WIDTH { 1280 };
+    int WINDOW_HEIGHT { 720 };
     int WINDOW_WIDTH_MIN { 800 };
     int WINDOW_HEIGHT_MIN { 600 };
-    int WINDOW_HEIGHT { 720 };
     const char *WINDOW_TITLE { "beatboxx :)" };
 
     // state managing classes
     InputState inputstate;
     AudioState audiostate;
     RenderState renderstate;
-    TextRender textrender;
-    //Text t;
     
     // drawables classes
     FPSCounter fpscounter;
     KeyDisplay keydisplay;
+    TextRender textrender;
     
     // beatboxx specific classes
     SongSelect songselect;
