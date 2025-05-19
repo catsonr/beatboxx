@@ -43,8 +43,7 @@ SDL_AppResult BBXX::init()
     
     // sets the minimum size the window can be reisized to
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
-
-
+    
 
     if( !audiostate.init() ) {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
@@ -55,6 +54,15 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize render state!\n");
         return SDL_APP_FAILURE;
     }
+    //
+    // RmlUi initialization
+    /*
+    if( !Rml::Initialise() ) {
+        printf("[BBXX::init] failed to initialize RmlUi!\n");
+        return SDL_APP_FAILURE;
+    }
+    Rml::Context* context = Rml::CreateContext("default", Rml::Vector2i(renderstate.w, renderstate.h));
+    */
 
     if( !songselect.init(&renderstate, &inputstate, 100, 100) ) {
         SDL_Log("[BBXX::init] failed to initialize song select!\n");
@@ -129,5 +137,6 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
+    //Rml::RemoveContext(rmlctx->GetName());
     audiostate.cleanup();
 }
