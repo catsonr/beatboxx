@@ -10,6 +10,8 @@ BBXX bx;
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
+    Rml::Initialise();
+
     return bx.init();
 }
 
