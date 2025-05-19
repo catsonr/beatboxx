@@ -4,6 +4,9 @@
 [submodule "vendored/SDL_mixer"]
     path = vendored/SDL_mixer
     url = https://github.com/libsdl-org/SDL_mixer
+[submodule "vendored/SDL_image"]
+	path = vendored/SDL_image
+	url = https://github.com/libsdl-org/SDL_image.git
 
 [submodule "vendored/freetype"]
 	path = vendored/freetype
