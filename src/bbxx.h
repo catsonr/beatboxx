@@ -7,8 +7,10 @@
 #include <SDL3/SDL.h>
 
 // RmlUi headers
-//#include <RmlUi/Core.h>
-//#include <RmlUi/Backends/RmlUi_Backend_SDL_GL3.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Debugger.h>
+#include "RmlUi_Platform_SDL.h"
+#include "RmlUi_Renderer_GL3.h"
 
 // BBXX state classes
 #include "InputState.h"
@@ -32,7 +34,9 @@ private:
     int WINDOW_HEIGHT_MIN { 600 };
     const char *WINDOW_TITLE { "beatboxx :)" };
     
-    //Rml::Context *rmlctx { nullptr };
+    Rml::Context *rml_ctx { nullptr };
+    SystemInterface_SDL *rml_system_interface { nullptr };
+    RenderInterface_GL3 *rml_render_interface { nullptr };
 
     // state managing classes
     InputState inputstate;

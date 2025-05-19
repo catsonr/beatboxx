@@ -29,6 +29,7 @@ file(GLOB_RECURSE PROJECT_SOURCES
 )
 add_executable(beatboxx ${PROJECT_SOURCES})
 
+# glad
 add_library(glad STATIC
   glad/src/glad.c
 )
@@ -38,6 +39,27 @@ target_include_directories(glad PUBLIC
 	glad/include/glad
 )
 
+# rmlui
+set(RMLUI_BACKEND_PATH ${RmlUi_SOURCE_DIR}/Backends)
+
+add_library(rmlui_backend_SDL_GL3 INTERFACE)
+
+target_sources(rmlui_backend_SDL_GL3 INTERFACE
+  ${RMLUI_BACKEND_PATH}/RmlUi_Platform_SDL.cpp
+  ${RMLUI_BACKEND_PATH}/RmlUi_Renderer_GL3.cpp
+)
+
+target_include_directories(rmlui_backend_SDL_GL3 INTERFACE
+  ${RMLUI_BACKEND_PATH}
+)
+
+target_compile_definitions(rmlui_backend_SDL_GL3 INTERFACE
+  RMLUI_SDL_VERSION_MAJOR=3
+  RMLUI_NUM_MSAA_SAMPLES=4
+  RMLUI_GL3_CUSTOM_LOADER=<glad/glad.h>
+)
+
+# link libraries
 target_link_libraries(beatboxx
   PRIVATE
     SDL3::SDL3
@@ -45,10 +67,7 @@ target_link_libraries(beatboxx
     SDL3_image::SDL3_image
 
     glad
-)
-
-target_compile_definitions(beatboxx PRIVATE
-  RMLUI_SDL_VERSION_MAJOR=3
-  RMLUI_SDL_VERSION_MINOR=3
-  RMLUI_SDL_VERSION_PATCH=0
+    
+    RmlUi::RmlUi
+    rmlui_backend_SDL_GL3
 )

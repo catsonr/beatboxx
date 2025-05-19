@@ -54,15 +54,8 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize render state!\n");
         return SDL_APP_FAILURE;
     }
-    //
+
     // RmlUi initialization
-    /*
-    if( !Rml::Initialise() ) {
-        printf("[BBXX::init] failed to initialize RmlUi!\n");
-        return SDL_APP_FAILURE;
-    }
-    Rml::Context* context = Rml::CreateContext("default", Rml::Vector2i(renderstate.w, renderstate.h));
-    */
 
     if( !songselect.init(&renderstate, &inputstate, 100, 100) ) {
         SDL_Log("[BBXX::init] failed to initialize song select!\n");
@@ -137,6 +130,7 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
-    //Rml::RemoveContext(rmlctx->GetName());
+    if( rml_system_interface ) delete rml_system_interface;
+    if( rml_render_interface ) delete rml_render_interface;
     audiostate.cleanup();
 }
