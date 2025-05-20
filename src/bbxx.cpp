@@ -30,6 +30,9 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
+    // sets the minimum size the window can be reisized to
+    SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
+
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -50,12 +53,14 @@ SDL_AppResult BBXX::init()
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
-    
-    // sets the minimum size the window can be reisized to
-    SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
     if( !audiostate.init() ) {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
+    if( !glstate.init() ) {
+        SDL_Log("[BBXX::init] failed to initialize gl state!\n");
         return SDL_APP_FAILURE;
     }
 
@@ -75,6 +80,9 @@ void BBXX::draw()
 {
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+    
+    glstate.draw();
+
     SDL_GL_SwapWindow(window);
 }
 

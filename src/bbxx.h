@@ -14,6 +14,8 @@
 #include "AudioState.h"
 #include "RenderState.h"
 
+#include "GLState.h"
+
 // BBXX drawable utilities 
 #include "FPSCounter.h"
 #include "KeyDisplay.h"
@@ -35,6 +37,8 @@ private:
     InputState inputstate;
     AudioState audiostate;
     RenderState renderstate;
+    
+    GLState glstate;
     
     // drawables classes
     FPSCounter fpscounter;
