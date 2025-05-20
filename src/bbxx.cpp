@@ -7,21 +7,6 @@
 */
 SDL_AppResult BBXX::init()
 {
-    SDL_WindowFlags windowflags =
-        // TODO: support high pixel density displays
-        SDL_WINDOW_HIGH_PIXEL_DENSITY |
-        //SDL_WINDOW_ALWAYS_ON_TOP |
-        // TODO: support window resizing
-        SDL_WINDOW_RESIZABLE |
-        SDL_WINDOW_INPUT_FOCUS |
-        SDL_WINDOW_MOUSE_FOCUS;
-
-    if ( !SDL_CreateWindowAndRenderer(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags, &window, &renderer )) {
-        SDL_Log("[BBXX::init] failed to create window and/or renderer: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-    printf("[BBXX::init] created SDL window and renderer\n");
-    
     SDL_InitFlags initflags = 
         SDL_INIT_AUDIO;
         // TODO: support controllers!
@@ -30,12 +15,37 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize subsystem(s): %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    
-    if (SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE)) {
-        SDL_Log("[BBXX::init] failed to enable vsync: %s", SDL_GetError());
+
+    SDL_WindowFlags windowflags =
+        SDL_WINDOW_OPENGL |
+        SDL_WINDOW_HIGH_PIXEL_DENSITY |
+        SDL_WINDOW_RESIZABLE |
+        SDL_WINDOW_INPUT_FOCUS |
+        //SDL_WINDOW_ALWAYS_ON_TOP |
+        SDL_WINDOW_MOUSE_FOCUS;
+
+    window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags);
+    if( !window ) {
+        SDL_Log("[BBXX::init] failed to create window: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    gl = SDL_GL_CreateContext(window);
+    if ( !gl ) {
+        SDL_Log("[BBXX::init] failed to create OpenGL context: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     
+    if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
+        SDL_Log("[BBXX::init] failed to initialize glad: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
@@ -43,32 +53,12 @@ SDL_AppResult BBXX::init()
     
     // sets the minimum size the window can be reisized to
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
-    
 
     if( !audiostate.init() ) {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
         return SDL_APP_FAILURE;
     }
-    
-    if( !renderstate.init(window, renderer) ) {
-        SDL_Log("[BBXX::init] failed to initialize render state!\n");
-        return SDL_APP_FAILURE;
-    }
 
-    // RmlUi initialization
-
-    if( !songselect.init(&renderstate, &inputstate, 100, 100) ) {
-        SDL_Log("[BBXX::init] failed to initialize song select!\n");
-        return SDL_APP_FAILURE;
-    }
-    
-    const int keydisplaysize = 20;
-    if( !keydisplay.init(&renderstate, &inputstate, 0, WINDOW_HEIGHT - keydisplay.height(keydisplaysize), keydisplaysize) ) {
-        SDL_Log("[BBXX::init] failed to initialize key display!\n");
-        return SDL_APP_FAILURE;
-    }
-
-    fpscounter.start();
     return SDL_APP_CONTINUE;
 }
 
@@ -83,17 +73,9 @@ void BBXX::iterate()
 */
 void BBXX::draw()
 {
-    fpscounter.iterate();
-
-    SDL_SetRenderDrawColor(renderer, 211, 255, 233, 255);
-    SDL_RenderClear(renderer);
-
-    //textrender.draw();
-    fpscounter.draw(renderer);
-    keydisplay.draw();
-    songselect.draw();
-
-    SDL_RenderPresent(renderer);
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    SDL_GL_SwapWindow(window);
 }
 
 /*
@@ -101,7 +83,6 @@ void BBXX::draw()
     returns SDL_APP_SUCCESS of user clicks exit button
     returns SDL_APP_CONTINUE otherwise
 */
-
 // here are some other events that may be useful in the future <3
 // SDL_EVENT_KEYBOARD_ADDED,          /**< A new keyboard has been inserted into the system */
 // SDL_EVENT_KEYBOARD_REMOVED,
@@ -122,7 +103,6 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
         // there is also :
         inputstate.handle_event(event);
         audiostate.handle_event(event);
-        renderstate.handle_event(event);
     }
 
     return SDL_APP_CONTINUE;
@@ -130,7 +110,8 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
-    if( rml_system_interface ) delete rml_system_interface;
-    if( rml_render_interface ) delete rml_render_interface;
+    if( gl )
+        SDL_GL_DestroyContext(gl);
+
     audiostate.cleanup();
 }

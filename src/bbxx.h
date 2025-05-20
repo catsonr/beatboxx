@@ -6,11 +6,8 @@
 // SDL headers
 #include <SDL3/SDL.h>
 
-// RmlUi headers
-#include <RmlUi/Core.h>
-#include <RmlUi/Debugger.h>
-#include "RmlUi_Platform_SDL.h"
-#include "RmlUi_Renderer_GL3.h"
+// glad headers
+#include <glad/glad.h>
 
 // BBXX state classes
 #include "InputState.h"
@@ -33,10 +30,6 @@ private:
     int WINDOW_WIDTH_MIN { 800 };
     int WINDOW_HEIGHT_MIN { 600 };
     const char *WINDOW_TITLE { "beatboxx :)" };
-    
-    Rml::Context *rml_ctx { nullptr };
-    SystemInterface_SDL *rml_system_interface { nullptr };
-    RenderInterface_GL3 *rml_render_interface { nullptr };
 
     // state managing classes
     InputState inputstate;
@@ -54,6 +47,7 @@ public:
     /* PUBLIC MEMBERS */
     SDL_Window *window { nullptr };
     SDL_Renderer *renderer { nullptr };
+    SDL_GLContext gl { nullptr };
     
     // display scale
     static float ds;
