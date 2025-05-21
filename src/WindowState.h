@@ -1,14 +1,11 @@
-#ifndef RENDERSTATE_H
-#define RENDERSTATE_H
+#ifndef WINDOWSTATE_H
+#define WINDOWSTATE_H
 
 #include <SDL3/SDL.h>
 #include <cstring>
 
-struct RenderState
+struct WindowState
 {
-    // SDL renderer
-    SDL_Renderer *renderer;
-    // SDL window
     SDL_Window *window;
     
     // the width and height of the screen, in physical pixels
@@ -18,7 +15,7 @@ struct RenderState
     // will be 1.0 for most displays, but >1.0 for high-DPI screens, which must be accounted for
     float ds;
     
-    bool init(SDL_Window *window, SDL_Renderer *renderer)
+    bool init(SDL_Window *window)
     {
         if( !window ) {
             printf("[RenderState::init] unable to initialize RenderState. cannot use null window!\n");
@@ -26,12 +23,6 @@ struct RenderState
         }
         this->window = window;
 
-        if( !renderer ) {
-            printf("[RenderState::init] unable to initialize RenderState. cannot use null renderer!\n");
-            return false;
-        }
-        this->renderer = renderer;
-        
         refresh();
 
         return true;
@@ -58,6 +49,6 @@ struct RenderState
             refresh();
         }
     }
-}; // RenderState
+}; // WindowState
 
-#endif // RENDERSTATE_H
+#endif // WINDOWSTATE_H

@@ -1,11 +1,35 @@
 #ifndef GLSTATE_H
 #define GLSTATE_H
 
-#include <stdio.h>
+#include <fstream>
+#include <sstream>
+#include <string>
 
+#include <stdio.h>
 #include <glad/glad.h>
 
-static GLuint compile_shader(GLenum type, const char *src)
+#include "WindowState.h"
+
+static std::string load_file(const char* pathToAsset)
+{
+    std::string sdl_basepath = SDL_GetBasePath();
+    std::string fullpath = std::string(sdl_basepath) + pathToAsset;
+
+    std::ifstream file(fullpath);
+    if( !file.is_open() )
+    {
+        printf("[GLState::load_file] failed to open '%s'!!!\n", fullpath.c_str());
+        return "";
+    }
+    
+    printf("[GLState::load_file] loaded '%s'!\n", fullpath.c_str());
+    
+    std::stringstream ss;
+    ss << file.rdbuf();
+    return ss.str();
+}
+
+static GLuint compile_shader(GLenum type, const char* src)
 {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &src, NULL);
@@ -49,33 +73,24 @@ static GLuint create_program(const char *vert_src, const char *frag_src)
 
 struct GLState
 {
-    // vertex shader source
-    const char* vertex_shader_src = "#version 330 core\n"
-    "layout(location = 0) in vec3 aPos;\n"
-    "layout(location = 1) in vec3 aColor;\n"
-    "out vec3 vColor;\n"
-    "void main() {\n"
-    "  vColor = aColor;\n"
-    "  gl_Position = vec4(aPos, 1.0);\n"
-    "}\n";
+    WindowState windowstate;
 
-    // fragment shader source
-    const char* fragment_shader_src = "#version 330 core\n"
-    "in vec3 vColor;\n"
-    "out vec4 FragColor;\n"
-    "void main() {\n"
-    "  FragColor = vec4(vColor, 1.0);\n"
-    "}\n";
+    std::string vertex_shader_src = load_file("assets/shaders/triangle.vert");
+    std::string fragment_shader_src = load_file("assets/shaders/triangle.frag");
 
-    float vertices[18]{
-        0.0f, 0.5f, 0.0f, 1.f, 0.f, 0.f,
-        -0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f,
-        0.5f, -0.5f, 0.0f, 0.f, 0.f, 1.f
+    float vertices[36] = {
+        -1.0f, 1.0f, 0.0f, 1.f, 0.f, 0.f,  // top-left
+        -1.0f, -1.0f, 0.0f, 0.f, 1.f, 0.f, // bottom-left
+        1.0f, -1.0f, 0.0f, 0.f, 0.f, 1.f,  // bottom-right
+
+        -1.0f, 1.0f, 0.0f, 1.f, 0.f, 0.f, // top-left
+        1.0f, -1.0f, 0.0f, 0.f, 0.f, 1.f, // bottom-right
+        1.0f, 1.0f, 0.0f, 1.f, 1.f, 0.f   // top-right
     };
 
     GLuint vao, vbo;
     GLuint program;
-    
+
     ~GLState()
     {
         glDeleteProgram(program);
@@ -83,8 +98,10 @@ struct GLState
         glDeleteVertexArrays(1, &vao);
     }
 
-    bool init()
+    bool init(SDL_Window *window)
     {
+        windowstate.init(window);
+
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
@@ -98,7 +115,10 @@ struct GLState
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
         
-        program = create_program(vertex_shader_src, fragment_shader_src);
+        program = create_program(vertex_shader_src.c_str(), fragment_shader_src.c_str());
+        
+        glViewport(0, 0, windowstate.w, windowstate.h);
+
         
         return true;
     }
@@ -106,8 +126,7 @@ struct GLState
     void draw()
     {
         glUseProgram(program);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
     }
 }; // GLState
 

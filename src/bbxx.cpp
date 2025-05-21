@@ -7,6 +7,8 @@
 */
 SDL_AppResult BBXX::init()
 {
+    printf("!!! BBXX initialize !!!\n");
+
     SDL_InitFlags initflags = 
         SDL_INIT_AUDIO;
         // TODO: support controllers!
@@ -59,7 +61,7 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !glstate.init() ) {
+    if( !glstate.init(window) ) {
         SDL_Log("[BBXX::init] failed to initialize gl state!\n");
         return SDL_APP_FAILURE;
     }

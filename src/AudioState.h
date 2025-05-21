@@ -54,7 +54,7 @@ struct AudioState
     /* PUBLIC METHODS */
     bool loadBGM()
     {
-        BGM = Mix_LoadMUS("/Users/carson/Desktop/wrkspc/beatboxx/tracks/kaede.mp3");
+        BGM = Mix_LoadMUS("assets/tracks/kaede.mp3");
         if( BGM == NULL )
         {
             SDL_Log("[AudioState::loadBGM] failed to load BGM! %s", SDL_GetError());

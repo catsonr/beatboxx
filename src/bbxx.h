@@ -12,17 +12,10 @@
 // BBXX state classes
 #include "InputState.h"
 #include "AudioState.h"
-#include "RenderState.h"
+#include "WindowState.h"
 
 #include "GLState.h"
 //#include "RmlUiState.h"
-
-// BBXX drawable utilities 
-#include "FPSCounter.h"
-#include "KeyDisplay.h"
-
-// beatboxx specific utilities
-#include "SongSelect.h"
 
 class BBXX
 {
@@ -37,16 +30,9 @@ private:
     // state managing classes
     InputState inputstate;
     AudioState audiostate;
-    RenderState renderstate;
+    WindowState windowstate;
     
     GLState glstate;
-    
-    // drawables classes
-    FPSCounter fpscounter;
-    KeyDisplay keydisplay;
-    
-    // beatboxx specific classes
-    SongSelect songselect;
 
 public:
     /* PUBLIC MEMBERS */
