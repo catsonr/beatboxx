@@ -8,9 +8,3 @@
 	path = vendored/SDL_image
 	url = https://github.com/libsdl-org/SDL_image.git
 
-[submodule "vendored/freetype"]
-	path = vendored/freetype
-	url = https://gitlab.freedesktop.org/freetype/freetype.git
-[submodule "vendored/RmlUi"]
-	path = vendored/RmlUi
-	url = https://github.com/mikke89/RmlUi.git

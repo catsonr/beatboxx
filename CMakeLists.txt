@@ -12,11 +12,6 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 
-add_subdirectory(vendored/freetype EXCLUDE_FROM_ALL)
-add_library(Freetype::Freetype ALIAS freetype)
-
-#add_subdirectory(vendored/RmlUi EXCLUDE_FROM_ALL)
-
 if(EMSCRIPTEN)
 	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s FULL_ES3=1 -s USE_WEBGL2=1")
