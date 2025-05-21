@@ -36,7 +36,7 @@ SDL_AppResult BBXX::init()
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
@@ -47,9 +47,13 @@ SDL_AppResult BBXX::init()
     }
     
     if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
-        SDL_Log("[BBXX::init] failed to initialize glad: %s", SDL_GetError());
+        SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    const GLubyte* version = glGetString(GL_VERSION);
+    printf("GL_VERSION = %s!!!!\n", version);
+    
+    fflush(stdout);
 
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
@@ -61,7 +65,12 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !glstate.init(window) ) {
+    if( !windowstate.init(window) ) {
+        SDL_Log("[BBXX::init] failed to initialize window state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
+    if( !glstate.init(&windowstate) ) {
         SDL_Log("[BBXX::init] failed to initialize gl state!\n");
         return SDL_APP_FAILURE;
     }
@@ -80,9 +89,6 @@ void BBXX::iterate()
 */
 void BBXX::draw()
 {
-    glClearColor(0.1, 0.1, 0.1, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
     glstate.draw();
 
     SDL_GL_SwapWindow(window);
@@ -113,6 +119,7 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
         // there is also :
         inputstate.handle_event(event);
         audiostate.handle_event(event);
+        windowstate.handle_event(event);
     }
 
     return SDL_APP_CONTINUE;

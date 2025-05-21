@@ -3,6 +3,9 @@
 
 #define BBXVERSION "0.0.1"
 
+// c++ headers
+#include <cstdio>
+
 // SDL headers
 #include <SDL3/SDL.h>
 
@@ -13,9 +16,7 @@
 #include "InputState.h"
 #include "AudioState.h"
 #include "WindowState.h"
-
 #include "GLState.h"
-//#include "RmlUiState.h"
 
 class BBXX
 {

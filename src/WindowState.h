@@ -18,7 +18,7 @@ struct WindowState
     bool init(SDL_Window *window)
     {
         if( !window ) {
-            printf("[RenderState::init] unable to initialize RenderState. cannot use null window!\n");
+            printf("[WindowState::init] unable to initialize WindowState. cannot use null window!\n");
             return false;
         }
         this->window = window;
@@ -30,21 +30,27 @@ struct WindowState
     
     void refresh()
     {
+        if( !window )
+        {
+            printf("[WindowState::refresh] window is null. call WindowState::init()!!\n");
+            return;
+        }
+
         SDL_GetWindowSizeInPixels(window, &w, &h);
         ds = SDL_GetWindowDisplayScale(window);
         
-        printf("[RenderState::refresh]\n\twidth: %i\n\theight: %i\n\tdisplay scale: %f\n", w, h, ds);
+        //printf("[WindowState::refresh]\n\twidth: %i\n\theight: %i\n\tdisplay scale: %f\n", w, h, ds);
     }
     
     void handle_event(SDL_Event *event)
     {
         if(event->type == SDL_EVENT_WINDOW_RESIZED) {
-            printf("window resize\n");
+            printf("[WindowState::handle_event] window resize\n");
             
             refresh();
         }
         if(event->type == SDL_EVENT_WINDOW_DISPLAY_CHANGED) {
-            printf("display changed!\n");
+            printf("[WindowState::handle_event] display change\n");
             
             refresh();
         }

@@ -18,6 +18,8 @@
 
 #include <cstdio>
 
+#include "utilities.h"
+
 struct AudioState
 {
     /* PUBLIC MEMBERS */
@@ -54,7 +56,7 @@ struct AudioState
     /* PUBLIC METHODS */
     bool loadBGM()
     {
-        BGM = Mix_LoadMUS("assets/tracks/kaede.mp3");
+        BGM = Mix_LoadMUS(util::get_fullPath("assets/tracks/kaede.mp3").c_str());
         if( BGM == NULL )
         {
             SDL_Log("[AudioState::loadBGM] failed to load BGM! %s", SDL_GetError());
@@ -167,8 +169,6 @@ struct AudioState
     
     void cleanup()
     {
-        printf("[AudioState::cleanup] cleaning up audio :)\n");
-
         if(Mix_PlayingMusic())
         {
             //Mix_FadeOutMusic(1000); // miliseconds 

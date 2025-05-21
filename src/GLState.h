@@ -1,33 +1,10 @@
 #ifndef GLSTATE_H
 #define GLSTATE_H
 
-#include <fstream>
-#include <sstream>
-#include <string>
-
-#include <stdio.h>
 #include <glad/glad.h>
 
+#include "utilities.h"
 #include "WindowState.h"
-
-static std::string load_file(const char* pathToAsset)
-{
-    std::string sdl_basepath = SDL_GetBasePath();
-    std::string fullpath = std::string(sdl_basepath) + pathToAsset;
-
-    std::ifstream file(fullpath);
-    if( !file.is_open() )
-    {
-        printf("[GLState::load_file] failed to open '%s'!!!\n", fullpath.c_str());
-        return "";
-    }
-    
-    printf("[GLState::load_file] loaded '%s'!\n", fullpath.c_str());
-    
-    std::stringstream ss;
-    ss << file.rdbuf();
-    return ss.str();
-}
 
 static GLuint compile_shader(GLenum type, const char* src)
 {
@@ -73,10 +50,10 @@ static GLuint create_program(const char *vert_src, const char *frag_src)
 
 struct GLState
 {
-    WindowState windowstate;
+    WindowState* windowstate;
 
-    std::string vertex_shader_src = load_file("assets/shaders/triangle.vert");
-    std::string fragment_shader_src = load_file("assets/shaders/triangle.frag");
+    std::string vertex_shader_src = util::load_file("assets/shaders/triangle.vert");
+    std::string fragment_shader_src = util::load_file("assets/shaders/triangle.frag");
 
     float vertices[36] = {
         -1.0f, 1.0f, 0.0f, 1.f, 0.f, 0.f,  // top-left
@@ -90,17 +67,21 @@ struct GLState
 
     GLuint vao, vbo;
     GLuint program;
-
+    
     ~GLState()
     {
-        glDeleteProgram(program);
-        glDeleteBuffers(1, &vbo);
-        glDeleteVertexArrays(1, &vao);
+        if( program )
+            glDeleteProgram(program);
+        if( vbo )
+            glDeleteBuffers(1, &vbo);
+        if( vao)
+            glDeleteVertexArrays(1, &vao);
+        
     }
 
-    bool init(SDL_Window *window)
+    bool init(WindowState* windowstate)
     {
-        windowstate.init(window);
+        this->windowstate = windowstate;
 
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -116,17 +97,21 @@ struct GLState
         glEnableVertexAttribArray(1);
         
         program = create_program(vertex_shader_src.c_str(), fragment_shader_src.c_str());
-        
-        glViewport(0, 0, windowstate.w, windowstate.h);
 
-        
         return true;
     }
     
     void draw()
     {
         glUseProgram(program);
+        glViewport(0, 0, windowstate->w, windowstate->h);
+
+        glClearColor(0.1, 0.1, 0.1, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
+
+        // once end of draw() is reached, all rendering should be complete and ready to display
     }
 }; // GLState
 
