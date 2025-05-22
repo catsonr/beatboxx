@@ -50,10 +50,6 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    const GLubyte* version = glGetString(GL_VERSION);
-    printf("GL_VERSION = %s!!!!\n", version);
-    
-    fflush(stdout);
 
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
