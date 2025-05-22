@@ -28,7 +28,7 @@ struct ImguiState
         return true;
     }
 
-    void draw(FPSCounter* fpscounter)
+    void draw(FPSCounter* fpscounter, GLState* glstate)
     {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();

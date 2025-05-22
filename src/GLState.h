@@ -20,8 +20,15 @@ struct GLState
     WindowState* windowstate;
 
     /* QUAD PROGRAM STUFF */
+    /*
+        the quad shader program runs 'triangle.frag' for every pixel in the quad 
+        NDC of quad given by quad_vertices
+        
+        it is only used to draw a full screen quad as a background but could be used for any
+        arbitrary slice of the screen
+    */
     std::string quad_vert_src = util::load_file("assets/shaders/triangle.vert");
-    std::string quad_frag_src = util::load_file("assets/shaders/chess.frag");
+    std::string quad_frag_src = util::load_file("assets/shaders/triangle.frag");
 
     GLuint quad_vao, quad_vbo;
     GLuint quad_program;
@@ -42,6 +49,9 @@ struct GLState
 
     
     /* CUBE PROGRAM STUFF */
+    /*
+       the cube shader program renders a single shape with vertices cube_vertices
+    */
     std::string cube_vert_src = util::load_file("assets/shaders/cube.vert");
     std::string cube_frag_src = util::load_file("assets/shaders/cube.frag");
     
@@ -215,17 +225,6 @@ struct GLState
         glBindVertexArray(0);
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
-    }
-
-    ~GLState()
-    {
-        if( quad_program )
-            glDeleteProgram(quad_program);
-        if( quad_vbo )
-            glDeleteBuffers(1, &quad_vbo);
-        if( quad_vao)
-            glDeleteVertexArrays(1, &quad_vao);
-        
     }
 }; // GLState
 

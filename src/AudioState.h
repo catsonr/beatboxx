@@ -119,6 +119,8 @@ struct AudioState
         */
         
         playBGM();
+        // temporarily start music paused
+        Mix_PauseMusic();
         
         return true;
     }

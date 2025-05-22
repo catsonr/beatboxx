@@ -17,6 +17,7 @@ SDL_AppResult BBXX::init()
     }
 
     SDL_WindowFlags windowflags =
+        //SDL_WINDOW_FULLSCREEN |
         SDL_WINDOW_OPENGL |
         SDL_WINDOW_HIGH_PIXEL_DENSITY |
         SDL_WINDOW_RESIZABLE |
@@ -92,7 +93,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
-    imguistate.draw(&fpscounter);
+    imguistate.draw(&fpscounter, &glstate);
 
     SDL_GL_SwapWindow(window);
 }
