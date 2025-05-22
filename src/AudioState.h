@@ -49,7 +49,7 @@ struct AudioState
 
     void playBGM(int fadeInTime_ms = 0)
     {
-        SDL_Log("[AudioState::playBGM] playing w duration %f seconds", Mix_MusicDuration(BGM));
+        //SDL_Log("[AudioState::playBGM] playing w duration %f seconds", Mix_MusicDuration(BGM));
         Mix_FadeInMusic(BGM, loops, fadeInTime_ms);
     }
 
@@ -96,6 +96,7 @@ struct AudioState
         }
         SDL_Log("[AudioState::loadBGM] detected music type: %s", typ);
         
+        /*
         tag_title = Mix_GetMusicTitleTag(BGM);
         if (tag_title && SDL_strlen(tag_title) > 0) {
             SDL_Log("Title: %s", tag_title);
@@ -115,6 +116,7 @@ struct AudioState
         if (tag_copyright && SDL_strlen(tag_copyright) > 0) {
             SDL_Log("Copyright: %s", tag_copyright);
         }
+        */
         
         playBGM();
         
@@ -153,10 +155,12 @@ struct AudioState
         
         Mix_QuerySpec(&spec.freq, &spec.format, &spec.channels);
         
+        /*
         SDL_Log("[AudioState::init] opened audio at %d Hz %d bit%s %s audio buffer\n", spec.freq,
             (spec.format&0xFF),
             (SDL_AUDIO_ISFLOAT(spec.format) ? " (float)" : ""),
             (spec.channels > 2) ? "surround" : (spec.channels > 1) ? "stereo" : "mono");
+        */
 
         audio_open = 1;
         

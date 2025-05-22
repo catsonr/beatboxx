@@ -13,8 +13,6 @@
 // glm
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 struct GLState
@@ -146,21 +144,18 @@ struct GLState
 
         // model matrix
         m_model = glm::mat4(1.0f); // identity
-        m_model = glm::translate(m_model, glm::vec3(0, 1, 0));
+        m_model = glm::translate(m_model, glm::vec3(0, 0, 0));
         m_model = glm::rotate(m_model, glm::radians(45.0f), glm::vec3(0, 1, 1));
         m_model = glm::scale(m_model, glm::vec3(1, 1, 1));
-        //printf("m_model: %s\n", glm::to_string(m_model).c_str());
         
         // view matrix
-        camera_pos = glm::vec3(0, 0, -10);
+        camera_pos = glm::vec3(0, 0, -4);
         camera_target = glm::vec3(0, 0, 0);
         camera_up = glm::vec3(0, 1, 0);
         m_view = glm::lookAt(camera_pos, camera_target, camera_up);
-        //printf("m_view: %s\n", glm::to_string(m_view).c_str());
         
         // projection matrix
         m_proj = glm::perspective(glm::radians(fov), aspectRatio, near, far);
-        //printf("m_proj: %s\n", glm::to_string(m_proj).c_str());
         
         // final MVP
         m_MVP = m_proj * m_view * m_model;

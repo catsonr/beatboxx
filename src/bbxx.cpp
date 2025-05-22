@@ -7,8 +7,6 @@
 */
 SDL_AppResult BBXX::init()
 {
-    printf("!!! BBXX initialize !!!\n");
-
     SDL_InitFlags initflags = 
         SDL_INIT_AUDIO;
         // TODO: support controllers!
