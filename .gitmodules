@@ -11,3 +11,6 @@
 [submodule "vendored/imgui"]
 	path = vendored/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "vendored/glm"]
+	path = vendored/glm
+	url = https://github.com/g-truc/glm.git

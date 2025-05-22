@@ -1,6 +1,5 @@
 #version 330 core
 
-in vec3 vColor;
 out vec4 outColor;
 
 uniform float u_t;
@@ -14,12 +13,11 @@ void main()
   uv += vec2(u_t, u_t) * speed;
 
   vec2 c = floor(uv * 8.0);
-
   float checker = mod(c.x + c.y, 2.0);
 
-  vec3 colorA = vec3(1.0 * cos(u_t*speed), 1.0 * sin(u_t*speed), 1.0 * sin(u_t*speed) * cos(u_t*speed)); // black square color
-  vec3 colorB = vec3(1.0); // white square color
+  vec3 darksquare = vec3(1.0 * cos(u_t*speed), 1.0 * sin(u_t*speed), 1.0 * sin(u_t*speed) * cos(u_t*speed));
+  vec3 lightsquare = vec3(1.0);
 
-  vec3 finalColor = mix(colorA, colorB, checker);
+  vec3 finalColor = mix(darksquare, lightsquare, checker);
   outColor = vec4(finalColor, 1.0);
 }
