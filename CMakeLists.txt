@@ -34,6 +34,27 @@ target_include_directories(glad PUBLIC
 	glad/include/glad
 )
 
+# imgui
+file(GLOB IMGUI_SOURCES
+  vendored/imgui/imgui.cpp
+  vendored/imgui/imgui_draw.cpp
+  vendored/imgui/imgui_tables.cpp
+  vendored/imgui/imgui_widgets.cpp
+  vendored/imgui/imgui_demo.cpp
+
+  vendored/imgui/backends/imgui_impl_sdl3.cpp
+  vendored/imgui/backends/imgui_impl_opengl3.cpp
+)
+
+add_library(imgui STATIC ${IMGUI_SOURCES})
+
+target_include_directories(imgui PUBLIC
+    vendored/imgui
+    vendored/imgui/backends
+)
+
+target_link_libraries(imgui PRIVATE SDL3::SDL3)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
@@ -42,4 +63,5 @@ target_link_libraries(beatboxx
     SDL3_image::SDL3_image
 
     glad
+    imgui
 )

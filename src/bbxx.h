@@ -13,10 +13,12 @@
 #include <glad/glad.h>
 
 // BBXX state classes
+#include "FPSCounter.h"
 #include "InputState.h"
 #include "AudioState.h"
 #include "WindowState.h"
 #include "GLState.h"
+#include "ImguiState.h"
 
 class BBXX
 {
@@ -29,11 +31,13 @@ private:
     const char *WINDOW_TITLE { "beatboxx :)" };
 
     // state managing classes
+    FPSCounter fpscounter;
     InputState inputstate;
     AudioState audiostate;
     WindowState windowstate;
     
     GLState glstate;
+    ImguiState imguistate;
 
 public:
     /* PUBLIC MEMBERS */

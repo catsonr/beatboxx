@@ -1,12 +1,16 @@
 #ifndef WINDOWSTATE_H
 #define WINDOWSTATE_H
 
-#include <SDL3/SDL.h>
 #include <cstring>
+
+#include <SDL3/SDL.h>
+
+#include <glad/glad.h>
 
 struct WindowState
 {
-    SDL_Window *window;
+    SDL_Window* window;
+    SDL_GLContext* gl;
     
     // the width and height of the screen, in physical pixels
     int w, h;
@@ -15,13 +19,19 @@ struct WindowState
     // will be 1.0 for most displays, but >1.0 for high-DPI screens, which must be accounted for
     float ds;
     
-    bool init(SDL_Window *window)
+    bool init(SDL_Window *window, SDL_GLContext* gl)
     {
         if( !window ) {
-            printf("[WindowState::init] unable to initialize WindowState. cannot use null window!\n");
+            printf("[WindowState::init] unable to initialize WindowState. cannot use null SDL_Window!\n");
             return false;
         }
         this->window = window;
+
+        if( !gl ) {
+            printf("[WindowState::init] unable to initialize WindowState. cannot use null SDL_GLContext!\n");
+            return false;
+        }
+        this->gl = gl;
 
         refresh();
 
@@ -30,12 +40,6 @@ struct WindowState
     
     void refresh()
     {
-        if( !window )
-        {
-            printf("[WindowState::refresh] window is null. call WindowState::init()!!\n");
-            return;
-        }
-
         SDL_GetWindowSizeInPixels(window, &w, &h);
         ds = SDL_GetWindowDisplayScale(window);
         

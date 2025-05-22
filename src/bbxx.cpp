@@ -61,7 +61,7 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !windowstate.init(window) ) {
+    if( !windowstate.init(window, &gl) ) {
         SDL_Log("[BBXX::init] failed to initialize window state!\n");
         return SDL_APP_FAILURE;
     }
@@ -70,14 +70,22 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize gl state!\n");
         return SDL_APP_FAILURE;
     }
+    
+    if( !imguistate.init(&windowstate) ) {
+        SDL_Log("[BBXX::init] failed to initialize imgui state!\n");
+        return SDL_APP_FAILURE;
+    }
 
+    fpscounter.start();
     return SDL_APP_CONTINUE;
 }
 
 /* does all the calculations in preparation for drawing next frame */
 void BBXX::iterate()
 {
-
+    fpscounter.iterate();
+    
+    glstate.iterate(fpscounter.seconds);
 }
 
 /*
@@ -86,6 +94,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
+    imguistate.draw(&fpscounter);
 
     SDL_GL_SwapWindow(window);
 }
@@ -116,6 +125,8 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
         inputstate.handle_event(event);
         audiostate.handle_event(event);
         windowstate.handle_event(event);
+
+        ImGui_ImplSDL3_ProcessEvent(event);
     }
 
     return SDL_APP_CONTINUE;

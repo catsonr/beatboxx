@@ -1,8 +1,12 @@
 #ifndef GLSTATE_H
 #define GLSTATE_H
 
+#include <cstdio>
+
+// glad
 #include <glad/glad.h>
 
+// bbxx
 #include "utilities.h"
 #include "WindowState.h"
 
@@ -25,6 +29,8 @@ struct GLState
 
     GLuint vao, vbo;
     GLuint program;
+    
+    GLint u_t;
     
     ~GLState()
     {
@@ -55,21 +61,32 @@ struct GLState
         glEnableVertexAttribArray(1);
         
         program = util::create_program(vertex_shader_src.c_str(), fragment_shader_src.c_str());
+        glUseProgram(program);
+        
+        u_t = glGetUniformLocation(program, "u_t");
+        if( u_t == -1 ) {
+            printf("[GLState::init] unable to find u_t!\n");
+            return false;
+        }
 
         return true;
     }
     
+    void iterate(float t)
+    {
+        glUniform1f(u_t, t);
+    }
+    
     void draw()
     {
-        glUseProgram(program);
         glViewport(0, 0, windowstate->w, windowstate->h);
 
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
-
-        // once end of draw() is reached, all rendering should be complete and ready to display
+        
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / 6);
+        
+        // once end of draw() is reached, all rendering should be complete and ready for imgui
     }
 }; // GLState
 
