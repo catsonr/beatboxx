@@ -24,6 +24,9 @@ struct ImguiState
 
         ImGui_ImplSDL3_InitForOpenGL(windowstate->window, windowstate->gl);
         ImGui_ImplOpenGL3_Init("#version 330 core");
+        
+        // no imgui.ini
+        ImGui::GetIO().IniFilename = nullptr;
 
         return true;
     }

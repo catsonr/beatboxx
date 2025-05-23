@@ -43,6 +43,11 @@ namespace util
 
         std::stringstream ss;
         ss << file.rdbuf();
+        
+        if( ss.str().empty() ) {
+            printf("[GLState::load_file] warning! the file '%s' is empty!\n", path_fromRoot);
+        }
+
         return ss.str();
     }
 
@@ -57,7 +62,7 @@ namespace util
         {
             char log[512];
             glGetShaderInfoLog(shader, 512, NULL, log);
-            printf("shader compile error: %s\n", log);
+            printf("[util::compile_shader] shader compile error in file '%s':\n> COMPILE ERROR START <\n%s\n> COMPILE ERROR END <\n", src, log);
         }
 
         return shader;

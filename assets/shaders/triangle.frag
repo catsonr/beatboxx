@@ -32,6 +32,7 @@ void main()
     vec3 colorOFF = vec3(0.8);
     vec3 colorFINAL;
     
+    //float z = f(uv) - 0.1*sin(0.2*u_t + uv.x*uv.y);
     float z = f(uv);
     
     colorFINAL = mix(colorOFF, colorON, z);
