@@ -19,5 +19,5 @@ void main()
   vec3 lightsquare = vec3(1.0);
 
   vec3 finalColor = mix(darksquare, lightsquare, checker);
-  outColor = vec4(finalColor*0.05, 1.0);
+  outColor = vec4(finalColor, 1.0);
 }
