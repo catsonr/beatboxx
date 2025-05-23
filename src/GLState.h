@@ -72,6 +72,12 @@ struct GLState
         -0.5f, 0.5f, -0.5f
     };
 
+    std::vector<float> shadertoy_vertices = {
+        0.0, 0.5,
+        -0.5, -0.5,
+        0.5, -0.5
+    };
+
     WindowState* windowstate;
     
     /* for drawing 'screens' of shaders in world space */
@@ -79,6 +85,8 @@ struct GLState
 
     /* for drawing traditional shapes in world space */
     ShaderProgram shapes;
+    
+    ShaderProgram shadertoy;
     
     // projection matrix stuff
     glm::mat4 m_view, m_proj, m_VP;
@@ -121,8 +129,8 @@ struct GLState
         /* QUAD TRANSFORM */
         quad_mModel = glm::mat4(1.0f); // identity
         quad_mModel = glm::translate(quad_mModel, glm::vec3(0, 0, 10));
-        quad_mModel = glm::rotate(quad_mModel, glm::radians(45.0f), glm::vec3(0, 1, 0));
-        quad_mModel = glm::scale(quad_mModel, glm::vec3(20, 10, 1));
+        quad_mModel = glm::rotate(quad_mModel, glm::radians(30.0f), glm::vec3(0, 1, 0));
+        quad_mModel = glm::scale(quad_mModel, glm::vec3(10, 10, 1));
         
         shader.init("assets/shaders/triangle.vert", "assets/shaders/triangle.frag", shader_vertices, 3);
         shader.set_uniform("u_mModel", quad_mModel);
@@ -132,6 +140,8 @@ struct GLState
         shapes.set_uniform("u_mModel", cube_mModel);
         shapes.set_uniform("u_mVP", m_VP);
         
+        shadertoy.init("assets/shaders/shadertoy.vert", "assets/shaders/shadertoy.frag", shadertoy_vertices, 2);
+        
         return true;
     }
     
@@ -139,6 +149,9 @@ struct GLState
     void iterate(float t)
     {
         shader.set_uniform("u_t", t);
+        
+        shadertoy.set_uniform("iTime", t);
+        shadertoy.set_uniform("iResolution", glm::vec2(windowstate->w, windowstate->h));
     }
     
     void draw()
@@ -152,6 +165,8 @@ struct GLState
         
         shader.draw();
         shapes.draw();
+        
+        shadertoy.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
     }

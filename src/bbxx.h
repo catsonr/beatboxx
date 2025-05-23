@@ -24,8 +24,8 @@ class BBXX
 {
 private:
     /* PRIVATE MEMBERS */
-    int WINDOW_WIDTH { 1000 };
-    int WINDOW_HEIGHT { 1000 };
+    int WINDOW_WIDTH { 1280 };
+    int WINDOW_HEIGHT { 720 };
     int WINDOW_WIDTH_MIN { 800 };
     int WINDOW_HEIGHT_MIN { 600 };
     const char *WINDOW_TITLE { "beatboxx :)" };

@@ -81,6 +81,34 @@ public:
         return true;
     }
 
+    bool set_uniform(const char *name, glm::vec2 value) const
+    {
+        glUseProgram(program);
+
+        GLint location = glGetUniformLocation(program, name);
+
+        if ( location == -1 ) {
+            printf("[ShaderProgram::set_uniform] could not find uniform vec2 '%s'!\n", name);
+            return false;
+        }
+        glUniform2fv(location, 1, glm::value_ptr(value));
+        return true;
+    }
+
+    bool set_uniform(const char *name, glm::vec3 value) const
+    {
+        glUseProgram(program);
+
+        GLint location = glGetUniformLocation(program, name);
+
+        if ( location == -1 ) {
+            printf("[ShaderProgram::set_uniform] could not find uniform vec3 '%s'!\n", name);
+            return false;
+        }
+        glUniform3fv(location, 1, glm::value_ptr(value));
+        return true;
+    }
+
     bool set_uniform(const char* name, glm::mat4& matrix) const
     {
         glUseProgram(program);
