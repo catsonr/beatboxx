@@ -21,6 +21,26 @@ vec3 color_diffuse = u_color_diffuse;
 vec3 color_specular = u_color_specular;
 float shininess = u_shininess;
 
+vec3 repeat_x(vec3 p)
+{
+    // spacing
+    float s = 2.0;
+    p.x = p.x - s*round(p.x / s);
+    return p;
+}
+
+vec3 repeat_y(vec3 p)
+{
+    p.y = p.y - round(p.y);
+    return p;
+}
+
+vec3 repeat_z(vec3 p)
+{
+    p.z = p.z - round(p.z);
+    return p;
+}
+
 float sdf_intersect(float distA, float distB)
 {
     return max(distA, distB);
@@ -39,9 +59,9 @@ float sdf_difference(float distA, float distB)
 /*
     returns distance from point p and the surface of the unit sphere
 */
-float sphereSDF(vec3 p)
+float sphereSDF(vec3 p, vec3 center)
 {
-    return length(p) - 1.0;
+    return length(p - center) - 0.5;
 }
 
 float boxSDF(vec3 p, vec3 size)
@@ -56,7 +76,7 @@ float boxSDF(vec3 p, vec3 size)
 */
 float sceneSDF(vec3 p)
 {
-    float sphere = sphereSDF(p);
+    float sphere = sphereSDF(repeat_x(p), vec3(0, 0, 0));
     
     return sphere;
 }
@@ -101,7 +121,7 @@ vec3 phongIllumination(vec3 p, vec3 camera_pos)
     const vec3 ambientLight = 0.5 * vec3(1.0);
     vec3 color = ambientLight * color_ambient;
     
-    vec3 light_pos = vec3(4.0, 2.0, -4.0);
+    vec3 light_pos = vec3(0.0, 10.0, -1.0);
     vec3 light_intensity = vec3(0.4, 0.4, 0.4);
     
     color += lightContribution(p, camera_pos, light_pos, light_intensity);
