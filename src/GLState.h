@@ -92,6 +92,10 @@ struct GLState
     float aspectRatio;
     float near = 0.1f;
     float far = 100.0f;
+    
+    // raymarching parameters 
+    glm::vec3 color_ambient, color_diffuse, color_specular;
+    float shininess { 10.0f };
 
     bool init(WindowState* windowstate)
     {
@@ -132,13 +136,19 @@ struct GLState
         bg.set_uniform("u_mModel", bg_mModel);
         bg.set_uniform("u_mVP", m_VP);
         
+        cube.init("assets/shaders/cube.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);
+        cube.set_uniform("u_mModel", cube_mModel);
+        cube.set_uniform("u_mVP", m_VP);
+
         shader.init("assets/shaders/triangle.vert", "assets/shaders/march.frag", unitsquare_vertices, 3);
         shader.set_uniform("u_mModel", shader_mModel);
         shader.set_uniform("u_mVP", m_VP);
         
-        cube.init("assets/shaders/cube.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);
-        cube.set_uniform("u_mModel", cube_mModel);
-        cube.set_uniform("u_mVP", m_VP);
+        color_ambient = glm::vec3(0.5, 0.8, 1.0);
+
+        color_diffuse = glm::vec3(1.0, 1.0, 1.0);
+        
+        color_specular = glm::vec3(1.0, 1.0, 1.0);
         
         return true;
     }
@@ -149,7 +159,10 @@ struct GLState
         bg.set_uniform("u_t", t);
         bg.set_uniform("u_mModel", bg_mModel);
         
-        //shader.set_uniform("u_t", t);
+        shader.set_uniform("u_color_ambient", color_ambient);
+        shader.set_uniform("u_color_diffuse", color_diffuse);
+        shader.set_uniform("u_color_specular", color_specular);
+        shader.set_uniform("u_shininess", shininess);
     }
     
     void draw()

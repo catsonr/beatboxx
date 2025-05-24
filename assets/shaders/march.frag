@@ -4,6 +4,11 @@ out vec4 outColor;
 
 uniform float u_t;
 
+uniform vec3 u_color_ambient;
+uniform vec3 u_color_diffuse;
+uniform vec3 u_color_specular;
+uniform float u_shininess;
+
 // constants
 const int MAX_STEPS = 255;
 const float MIN_DIST = 0.0;
@@ -11,10 +16,10 @@ const float MAX_DIST = 100.0;
 const float EPSILON = 0.0001;
 
 // variables
-const vec3 color_ambient = vec3(0.47, 0.79, 1.0);
-const vec3 color_diffuse = vec3(1.0, 0.65, 0.85);
-const vec3 color_specular = vec3(1.0);
-const float shininess = 10.0;
+vec3 color_ambient = u_color_ambient;
+vec3 color_diffuse = u_color_diffuse;
+vec3 color_specular = u_color_specular;
+float shininess = u_shininess;
 
 float sdf_intersect(float distA, float distB)
 {
