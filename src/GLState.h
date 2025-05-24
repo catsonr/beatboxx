@@ -126,7 +126,7 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(4, 2, 1));
+        shader_mModel = glm::scale(shader_mModel, glm::vec3(10, 10, 1));
         
         bg.init("assets/shaders/triangle.vert", "assets/shaders/triangle.frag", unitsquare_vertices, 3);
         bg.set_uniform("u_mModel", bg_mModel);
@@ -149,7 +149,7 @@ struct GLState
         bg.set_uniform("u_t", t);
         bg.set_uniform("u_mModel", bg_mModel);
         
-        shader.set_uniform("u_t", t);
+        //shader.set_uniform("u_t", t);
     }
     
     void draw()
@@ -167,6 +167,7 @@ struct GLState
         bg.draw();
 
         // transparent
+        //glDisable(GL_DEPTH_TEST);
         shader.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
