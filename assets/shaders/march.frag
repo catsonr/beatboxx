@@ -173,7 +173,7 @@ void main()
     // ray didnt hit anything
     if(dist > MAX_DIST - EPSILON)
     {
-        outColor = vec4(0.0); // return nothing
+        outColor = vec4(0.2); // return nothing
         return;
     }
     

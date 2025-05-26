@@ -19,6 +19,9 @@ struct WindowState
     // will be 1.0 for most displays, but >1.0 for high-DPI screens, which must be accounted for
     float ds;
     
+    // whether or not BBXX is controling the mouse
+    bool focused { false };
+    
     bool init(SDL_Window *window, SDL_GLContext* gl)
     {
         if( !window ) {
@@ -48,15 +51,40 @@ struct WindowState
     
     void handle_event(SDL_Event *event)
     {
-        if(event->type == SDL_EVENT_WINDOW_RESIZED) {
+        if(event->type == SDL_EVENT_WINDOW_RESIZED)
+        {
             printf("[WindowState::handle_event] window resize\n");
             
             refresh();
         }
-        if(event->type == SDL_EVENT_WINDOW_DISPLAY_CHANGED) {
+
+        else if(event->type == SDL_EVENT_WINDOW_DISPLAY_CHANGED)
+        {
             printf("[WindowState::handle_event] display change\n");
             
             refresh();
+        }
+
+        else if( !focused && event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && event->button.button == SDL_BUTTON_LEFT )
+        {
+            printf("[WindowState::handle_event] window focus grab\n");
+            
+            focused = true;
+
+            SDL_HideCursor();
+            SDL_SetWindowRelativeMouseMode(window, true);
+            SDL_SetWindowMouseGrab(window, true);
+        }
+        
+        else if( focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE )
+        {
+            printf("[WindowState::handle_event] window focus release\n");
+
+            focused = false;
+
+            SDL_ShowCursor();
+            SDL_SetWindowRelativeMouseMode(window, false);
+            SDL_SetWindowMouseGrab(window, false);
         }
     }
 }; // WindowState
