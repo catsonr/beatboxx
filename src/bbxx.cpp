@@ -74,6 +74,11 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize imgui state!\n");
         return SDL_APP_FAILURE;
     }
+    
+    if( !miku.init(&audiostate) ) {
+        SDL_Log("[BBXX::init] failed to initialize miku!\n");
+        return SDL_APP_FAILURE;
+    }
 
     fpscounter.start();
     return SDL_APP_CONTINUE;
@@ -83,6 +88,7 @@ SDL_AppResult BBXX::init()
 void BBXX::iterate()
 {
     fpscounter.iterate();
+    miku.iterate();
     
     glstate.iterate(fpscounter.seconds, fpscounter.dt, &inputstate);
 }
@@ -93,7 +99,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
-    imguistate.draw(&fpscounter, &glstate);
+    imguistate.draw(&fpscounter, &glstate, &miku);
 
     SDL_GL_SwapWindow(window);
 }
@@ -120,7 +126,6 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
     }
 
     inputstate.handle_event(event);
-    audiostate.handle_event(event);
     windowstate.handle_event(event);
     glstate.handle_event(event);
 

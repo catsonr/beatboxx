@@ -19,6 +19,7 @@
 #include "WindowState.h"
 #include "GLState.h"
 #include "ImguiState.h"
+#include "Miku.h"
 
 class BBXX
 {
@@ -38,6 +39,8 @@ private:
     
     GLState glstate;
     ImguiState imguistate;
+    
+    Miku miku;
 
 public:
     /* PUBLIC MEMBERS */
