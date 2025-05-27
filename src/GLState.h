@@ -12,6 +12,7 @@
 // bbxx
 #include "utilities.h"
 #include "WindowState.h"
+#include "InputState.h"
 #include "ShaderProgram.h"
 
 // glm
@@ -22,7 +23,7 @@
 struct GLState
 {
     std::vector<float> unitsquare_vertices { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f, -0.5f, -0.5f, 0.0f };
-    std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f };
+    std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f };
 
     WindowState* windowstate;
     
@@ -37,25 +38,58 @@ struct GLState
     glm::mat4 bg_img_mModel, shader_mModel, threeD_mModel;
     
     // camera stuff
-    float mouse_sensitivity { 0.0020 };
+    float mouse_sensitivity { 0.002 };
+    float camera_movementSpeed { 0.0000008 };
     float pitch { 0 }, yaw { M_PI_2 };
 
-    glm::vec3 camera_pos, camera_target, camera_up;
-    float fov = 45.0f;
+    glm::vec3 camera_pos { 0, 0, -40 };
+    glm::vec3 camera_target { 0, 0, 0 };
+    glm::vec3 camera_up { 0, 1, 0 };
+    float fov = 15.0f;
     float aspectRatio;
     float near = 0.1f;
     float far = 100.0f;
     
     // raymarching parameters 
-    glm::vec3 color_ambient, color_diffuse, color_specular;
+    glm::vec3 color_ambient { 0.5, 0.8, 1.0 };
+    glm::vec3 color_diffuse { 1.0, 1.0, 1.0 };
+    glm::vec3 color_specular { 1.0, 1.0, 1.0 };
     float shininess { 10.0f };
     
     void set_mVP()
     {
+        aspectRatio = static_cast<float>(windowstate->w) / windowstate->h;
+
         m_view = glm::lookAt(camera_pos, camera_target, camera_up);
         m_proj = glm::perspective(glm::radians(fov), aspectRatio, near, far);
+
         m_VP = m_proj * m_view;
     }
+
+    // the only reason for #include "InputState.h"
+    void camera_move(InputState* inputstate, float dt)
+    {
+        glm::vec3 forward = glm::normalize(camera_target - camera_pos);
+        glm::vec3 right = glm::normalize( glm::cross(forward, camera_up) );
+        
+        float v = camera_movementSpeed * dt;
+        glm::vec3 delta {0, 0, 0};
+        
+        if(inputstate->key_down(SDL_SCANCODE_W)) delta += forward * v;
+        if(inputstate->key_down(SDL_SCANCODE_A)) delta += -right * v;
+        if(inputstate->key_down(SDL_SCANCODE_S)) delta += -forward * v;
+        if(inputstate->key_down(SDL_SCANCODE_D)) delta += right * v;
+        delta.y = 0;
+
+        if(inputstate->key_down(SDL_SCANCODE_SPACE)) delta += camera_up * v;
+        if(inputstate->key_down(SDL_SCANCODE_LSHIFT)) delta += -camera_up * v;
+        
+        camera_pos += delta;
+        camera_target += delta;
+        
+        set_mVP();
+    }
+    
     
     void handle_event(SDL_Event* event)
     {
@@ -66,14 +100,14 @@ struct GLState
             
             yaw += dx;
             pitch += -dy;
-            if( pitch > M_PI_2 ) pitch = M_2_PI;
-            else if( pitch < -M_PI_2 ) pitch = -M_2_PI;
+            if( pitch > M_PI_2 ) pitch = M_PI_2;
+            else if( pitch < -M_PI_2 ) pitch = -M_PI_2;
             
             glm::vec3 look;
             look.x = cos(yaw) * cos(pitch);
             look.y = sin(pitch);
             look.z = sin(yaw) * cos(pitch);
-            // look = glm::normalize(look); // shouldn't be neccessary ?
+            look = glm::normalize(look); // shouldn't be neccessary ?
             
             camera_target = camera_pos + look;
         }
@@ -83,19 +117,12 @@ struct GLState
     {
         this->windowstate = windowstate;
 
-        /* CAMERA STUFF */
-        aspectRatio = static_cast<float>(windowstate->w) / windowstate->h;
-
-        // view matrix
-        camera_pos = glm::vec3(0, 0, -4);
-        camera_target = glm::vec3(0, 0, 0);
-        camera_up = glm::vec3(0, 1, 0);
         set_mVP();
         
         /* BG TRANSFORM */
         bg_img_mModel = glm::mat4(1.0f); // identity
         bg_img_mModel = glm::translate(bg_img_mModel, glm::vec3(0, 0, 10));
-        bg_img_mModel = glm::rotate(bg_img_mModel, glm::radians(10.0f), glm::vec3(0, 0, 1));
+        bg_img_mModel = glm::rotate(bg_img_mModel, glm::radians(6.0f), glm::vec3(0, 0, 1));
         bg_img_mModel = glm::scale(bg_img_mModel, glm::vec3(100, 10, 1));
         
         /* SHADER TRANSFORM */
@@ -114,17 +141,15 @@ struct GLState
         threeD.init("assets/shaders/triangle.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);
         threeD.set_uniform("u_mModel", threeD_mModel);
         
-        color_ambient = glm::vec3(0.5, 0.8, 1.0);
-        color_diffuse = glm::vec3(1.0, 1.0, 1.0);
-        color_specular = glm::vec3(1.0, 1.0, 1.0);
         
         return true;
     }
     
-    // t (seconds) is temporarily being passed in to make my life easier
-    void iterate(float t)
+    // these are being passed temporarily -- there really shouldn't be anything passed to iterate()
+    void iterate(float t, float dt, InputState* inputstate)
     {
-        set_mVP();
+        camera_move(inputstate, dt);
+
         bg_img.set_uniform("u_mVP", m_VP);
         shader.set_uniform("u_mVP", m_VP);
         threeD.set_uniform("u_mVP", m_VP);
@@ -136,6 +161,13 @@ struct GLState
         shader.set_uniform("u_color_diffuse", color_diffuse);
         shader.set_uniform("u_color_specular", color_specular);
         shader.set_uniform("u_shininess", shininess);
+        
+        shader.set_uniform("u_camera_pos", camera_pos);
+        glm::mat4 m_inv_proj = glm::inverse(m_proj);
+        shader.set_uniform("u_m_inv_proj", m_inv_proj);
+        glm::mat4 m_inv_view = glm::inverse(m_view);
+        shader.set_uniform("u_m_inv_view", m_inv_view);
+        shader.set_uniform("u_windowresolution", glm::vec2(windowstate->w, windowstate->h));
     }
     
     void draw()
@@ -153,7 +185,7 @@ struct GLState
         threeD.draw();
 
         // transparent
-        //glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         shader.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui

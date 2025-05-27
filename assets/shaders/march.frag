@@ -9,6 +9,11 @@ uniform vec3 u_color_diffuse;
 uniform vec3 u_color_specular;
 uniform float u_shininess;
 
+uniform vec3 u_camera_pos;
+uniform mat4 u_m_inv_proj;
+uniform mat4 u_m_inv_view;
+uniform vec2 u_windowresolution;
+
 // constants
 const int MAX_STEPS = 255;
 const float MIN_DIST = 0.0;
@@ -20,6 +25,8 @@ vec3 color_ambient = u_color_ambient;
 vec3 color_diffuse = u_color_diffuse;
 vec3 color_specular = u_color_specular;
 float shininess = u_shininess;
+
+vec3 camera_pos = u_camera_pos;
 
 vec3 repeat_x(vec3 p)
 {
@@ -96,12 +103,12 @@ vec3 sceneNormal(vec3 p)
 /*
     gets the light contribution from a single light source
 */
-vec3 lightContribution(vec3 p, vec3 camera_pos, vec3 light_pos, vec3 light_intensity)
+vec3 lightContribution(vec3 p, vec3 light_pos, vec3 light_intensity)
 {
     
     vec3 n = sceneNormal(p);
     vec3 l = normalize(light_pos - p);
-    vec3 v = normalize(camera_pos - p);
+    vec3 v = normalize(u_camera_pos - p);
     vec3 r = normalize( reflect(-l, n) );
     
     float ln_dot = dot(l, n);
@@ -116,7 +123,7 @@ vec3 lightContribution(vec3 p, vec3 camera_pos, vec3 light_pos, vec3 light_inten
 /*
     gets the total illumination at a point p
 */
-vec3 phongIllumination(vec3 p, vec3 camera_pos)
+vec3 phongIllumination(vec3 p)
 {
     const vec3 ambientLight = 0.5 * vec3(1.0);
     vec3 color = ambientLight * color_ambient;
@@ -124,7 +131,7 @@ vec3 phongIllumination(vec3 p, vec3 camera_pos)
     vec3 light_pos = vec3(0.0, 10.0, -1.0);
     vec3 light_intensity = vec3(0.4, 0.4, 0.4);
     
-    color += lightContribution(p, camera_pos, light_pos, light_intensity);
+    color += lightContribution(p, light_pos, light_intensity);
     
     return color;
 }
@@ -132,13 +139,13 @@ vec3 phongIllumination(vec3 p, vec3 camera_pos)
 /*
     returns the distance to the nearest scene surface for the given ray
 */
-float distanceToSurface(vec3 camera_pos, vec3 dir, float start, float end)
+float distanceToSurface(vec3 dir, float start, float end)
 {
     float depth = start;
 
     for(int i = 0; i < MAX_STEPS; i++)
     {
-        float dist = sceneSDF(camera_pos + depth * dir);
+        float dist = sceneSDF(u_camera_pos + depth * dir);
         
         if(dist < EPSILON) return depth; // hit!
 
@@ -153,22 +160,24 @@ float distanceToSurface(vec3 camera_pos, vec3 dir, float start, float end)
 /*
     finds the direction of the ray
 */
-vec3 rayDirection(float fov, vec2 size, vec2 fragCoord)
+vec3 rayDirection(vec2 fragCoord)
 {
-    vec2 xy = (fragCoord / size) * 2.0 - 1.0;
-    xy.x *= size.x / size.y;
-    float z = 1.0 / tan(radians(fov) / 2.0);
+    vec2 ndc = (fragCoord / u_windowresolution) * 2.0 - 1.0;
+    vec4 clip = vec4(ndc, -1.0, 1.0);
+    vec4 eye = u_m_inv_proj * clip;
+    eye /= eye.w;
     
-    return normalize(vec3(xy, z));
+    vec4 raydir_wrldspc = u_m_inv_view * vec4(eye.xyz, 0.0);
+    
+    return normalize(raydir_wrldspc.xyz);
 }
 
 void main()
 {
     float throwaway = u_t;
     
-    vec3 raydir = rayDirection(45.0, vec2(1280, 720), gl_FragCoord.xy);
-    vec3 camera_pos = vec3(0.0, 0.0, -4.0);
-    float dist = distanceToSurface(camera_pos, raydir, MIN_DIST, MAX_DIST);
+    vec3 raydir = rayDirection(gl_FragCoord.xy);
+    float dist = distanceToSurface(raydir, MIN_DIST, MAX_DIST);
 
     // ray didnt hit anything
     if(dist > MAX_DIST - EPSILON)
@@ -180,10 +189,10 @@ void main()
     // ray hit something
 
     // get hit location
-    vec3 p = camera_pos + dist * raydir;
+    vec3 p = u_camera_pos + dist * raydir;
     
     // find illumination at point
-    vec3 finalColor = phongIllumination(p, camera_pos);
+    vec3 finalColor = phongIllumination(p);
 
     // return color
     outColor = vec4(finalColor, 0.9);

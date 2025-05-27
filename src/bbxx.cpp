@@ -84,7 +84,7 @@ void BBXX::iterate()
 {
     fpscounter.iterate();
     
-    glstate.iterate(fpscounter.seconds);
+    glstate.iterate(fpscounter.seconds, fpscounter.dt, &inputstate);
 }
 
 /*
