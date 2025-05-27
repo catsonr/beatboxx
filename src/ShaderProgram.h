@@ -109,6 +109,20 @@ public:
         return true;
     }
 
+    bool set_uniform(const char *name, glm::vec4 value) const
+    {
+        glUseProgram(program);
+
+        GLint location = glGetUniformLocation(program, name);
+
+        if ( location == -1 ) {
+            printf("[ShaderProgram::set_uniform] could not find uniform vec4 '%s'!\n", name);
+            return false;
+        }
+        glUniform4fv(location, 1, glm::value_ptr(value));
+        return true;
+    }
+
     bool set_uniform(const char* name, glm::mat4& matrix) const
     {
         glUseProgram(program);

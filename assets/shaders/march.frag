@@ -1,15 +1,24 @@
+/*
+   this fragment shader performs the raymarch algorithm on an arbitrary surface
+   this surface will contain all points from [-1, 1] in R^2
+    that is, transforming the model will not change how the raymarching looks, it will only
+    change where on screen the result is placed, and how it is streched and rotated
+*/
+
 #version 330 core
 
 out vec4 outColor;
 
-uniform float u_t;
-
+// aesthetic values
 uniform vec3 u_color_ambient;
 uniform vec3 u_color_diffuse;
 uniform vec3 u_color_specular;
+uniform vec4 u_color_none;
 uniform float u_shininess;
 
+// camera stuffs
 uniform vec3 u_camera_pos;
+uniform mat4 u_m_inv_model;
 uniform mat4 u_m_inv_proj;
 uniform mat4 u_m_inv_view;
 uniform vec2 u_windowresolution;
@@ -36,46 +45,12 @@ vec3 repeat_x(vec3 p)
     return p;
 }
 
-vec3 repeat_y(vec3 p)
-{
-    p.y = p.y - round(p.y);
-    return p;
-}
-
-vec3 repeat_z(vec3 p)
-{
-    p.z = p.z - round(p.z);
-    return p;
-}
-
-float sdf_intersect(float distA, float distB)
-{
-    return max(distA, distB);
-}
-
-float sdf_union(float distA, float distB)
-{
-    return min(distA, distB);
-}
-
-float sdf_difference(float distA, float distB)
-{
-    return max(distA, -distB);
-}
-
 /*
     returns distance from point p and the surface of the unit sphere
 */
 float sphereSDF(vec3 p, vec3 center)
 {
     return length(p - center) - 0.5;
-}
-
-float boxSDF(vec3 p, vec3 size)
-{
-    vec3 q = abs(p) - size;
-
-    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
 /*
@@ -105,7 +80,6 @@ vec3 sceneNormal(vec3 p)
 */
 vec3 lightContribution(vec3 p, vec3 light_pos, vec3 light_intensity)
 {
-    
     vec3 n = sceneNormal(p);
     vec3 l = normalize(light_pos - p);
     vec3 v = normalize(u_camera_pos - p);
@@ -139,22 +113,22 @@ vec3 phongIllumination(vec3 p)
 /*
     returns the distance to the nearest scene surface for the given ray
 */
-float distanceToSurface(vec3 dir, float start, float end)
+float march(vec3 ray_origin, vec3 ray_direction)
 {
-    float depth = start;
+    float t = MIN_DIST;
 
     for(int i = 0; i < MAX_STEPS; i++)
     {
-        float dist = sceneSDF(u_camera_pos + depth * dir);
+        float dist = sceneSDF(ray_origin + ray_direction*t);
         
-        if(dist < EPSILON) return depth; // hit!
+        if(dist < EPSILON) return t; // hit!
 
-        depth += dist; // march
+        t += dist; // march
 
-        if(depth >= end) return end; // didn't hit anything
+        if(t >= MAX_DIST) return MAX_DIST; // didn't hit anything
     }
     
-    return end;
+    return MAX_DIST;
 }
 
 /*
@@ -174,25 +148,30 @@ vec3 rayDirection(vec2 fragCoord)
 
 void main()
 {
-    float throwaway = u_t;
+    // find ray in world space
+    vec3 ray_origin_wrldspc    = u_camera_pos;
+    vec3 ray_direction_wrldspc = rayDirection(gl_FragCoord.xy);
     
-    vec3 raydir = rayDirection(gl_FragCoord.xy);
-    float dist = distanceToSurface(raydir, MIN_DIST, MAX_DIST);
+    // transform to object space
+    vec3 ray_origin    = (u_m_inv_model * vec4(ray_origin_wrldspc, 1.0)).xyz;
+    vec3 ray_direction = normalize( (u_m_inv_model * vec4(ray_direction_wrldspc, 0.0)).xyz );
+
+    float dist = march(ray_origin, ray_direction);
 
     // ray didnt hit anything
     if(dist > MAX_DIST - EPSILON)
     {
-        outColor = vec4(0.2); // return nothing
+        outColor = u_color_none;
         return;
     }
     
     // ray hit something
 
     // get hit location
-    vec3 p = u_camera_pos + dist * raydir;
+    vec3 hit_pos = ray_origin + ray_direction*dist;
     
     // find illumination at point
-    vec3 finalColor = phongIllumination(p);
+    vec3 finalColor = phongIllumination(hit_pos);
 
     // return color
     outColor = vec4(finalColor, 0.9);

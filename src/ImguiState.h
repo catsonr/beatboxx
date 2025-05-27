@@ -65,6 +65,7 @@ struct ImguiState
         ImGui::ColorEdit3("ambient", glm::value_ptr(glstate->color_ambient));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(glstate->color_diffuse));
         ImGui::ColorEdit3("specular", glm::value_ptr(glstate->color_specular));
+        ImGui::ColorEdit4("bg", glm::value_ptr(glstate->color_none));
         ImGui::SliderFloat("shininess", &glstate->shininess, 0.1f, 255.0f);
         ImGui::End();
 

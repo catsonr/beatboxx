@@ -20,6 +20,7 @@ struct WindowState
     float ds;
     
     // whether or not BBXX is controling the mouse
+    bool grab_focus { false };
     bool focused { false };
     
     bool init(SDL_Window *window, SDL_GLContext* gl)
@@ -65,25 +66,25 @@ struct WindowState
             refresh();
         }
 
-        else if( !focused && event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && event->button.button == SDL_BUTTON_LEFT )
+        else if( grab_focus && !focused && event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && event->button.button == SDL_BUTTON_LEFT )
         {
             printf("[WindowState::handle_event] window focus grab\n");
             
             focused = true;
 
-            SDL_HideCursor();
-            SDL_SetWindowRelativeMouseMode(window, true);
+            //SDL_HideCursor();
+            //SDL_SetWindowRelativeMouseMode(window, true);
             SDL_SetWindowMouseGrab(window, true);
         }
         
-        else if( focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE )
+        else if( grab_focus && focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE )
         {
             printf("[WindowState::handle_event] window focus release\n");
 
             focused = false;
 
-            SDL_ShowCursor();
-            SDL_SetWindowRelativeMouseMode(window, false);
+            //SDL_ShowCursor();
+            //SDL_SetWindowRelativeMouseMode(window, false);
             SDL_SetWindowMouseGrab(window, false);
         }
     }

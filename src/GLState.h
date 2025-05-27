@@ -54,6 +54,7 @@ struct GLState
     glm::vec3 color_ambient { 0.5, 0.8, 1.0 };
     glm::vec3 color_diffuse { 1.0, 1.0, 1.0 };
     glm::vec3 color_specular { 1.0, 1.0, 1.0 };
+    glm::vec4 color_none { 0.1, 0.1, 0.1, 0.1 };
     float shininess { 10.0f };
     
     void set_mVP()
@@ -89,8 +90,7 @@ struct GLState
         
         set_mVP();
     }
-    
-    
+
     void handle_event(SDL_Event* event)
     {
         if( windowstate->focused && event->type == SDL_EVENT_MOUSE_MOTION )
@@ -124,23 +124,26 @@ struct GLState
         bg_img_mModel = glm::translate(bg_img_mModel, glm::vec3(0, 0, 10));
         bg_img_mModel = glm::rotate(bg_img_mModel, glm::radians(6.0f), glm::vec3(0, 0, 1));
         bg_img_mModel = glm::scale(bg_img_mModel, glm::vec3(100, 10, 1));
+
+        bg_img.init("assets/shaders/triangle.vert", "assets/shaders/triangle.frag", unitsquare_vertices, 3);
+        bg_img.set_uniform("u_mModel", bg_img_mModel);
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(10, 10, 1));
-        
-        /* THREED TRANSFORM */
-        threeD_mModel = glm::mat4(1.0f);
-        
-        bg_img.init("assets/shaders/triangle.vert", "assets/shaders/triangle.frag", unitsquare_vertices, 3);
-        bg_img.set_uniform("u_mModel", bg_img_mModel);
+        shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 3, 0));
+        shader_mModel = glm::rotate(shader_mModel, glm::radians(-6.0f), glm::vec3(0, 0, 1));
+        shader_mModel = glm::scale(shader_mModel, glm::vec3(4, 1, 1));
 
         shader.init("assets/shaders/triangle.vert", "assets/shaders/march.frag", unitsquare_vertices, 3);
         shader.set_uniform("u_mModel", shader_mModel);
         
+        /* THREED TRANSFORM */
+        threeD_mModel = glm::mat4(1.0f);
+        threeD_mModel = glm::translate(threeD_mModel, glm::vec3(3, 3, 0));
+        threeD_mModel = glm::scale(threeD_mModel, glm::vec3(2, 2, 2));
+
         threeD.init("assets/shaders/triangle.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);
         threeD.set_uniform("u_mModel", threeD_mModel);
-        
         
         return true;
     }
@@ -160,14 +163,21 @@ struct GLState
         shader.set_uniform("u_color_ambient", color_ambient);
         shader.set_uniform("u_color_diffuse", color_diffuse);
         shader.set_uniform("u_color_specular", color_specular);
+        shader.set_uniform("u_color_none", color_none);
         shader.set_uniform("u_shininess", shininess);
         
-        shader.set_uniform("u_camera_pos", camera_pos);
+        glm::mat4 shader_m_inv_model = glm::inverse(shader_mModel);
         glm::mat4 m_inv_proj = glm::inverse(m_proj);
-        shader.set_uniform("u_m_inv_proj", m_inv_proj);
         glm::mat4 m_inv_view = glm::inverse(m_view);
+        glm::vec2 windowresolution = glm::vec2(windowstate->w, windowstate->h);
+
+        shader.set_uniform("u_camera_pos", camera_pos);
+        shader.set_uniform("u_m_inv_model", shader_m_inv_model);
+        shader.set_uniform("u_m_inv_proj", m_inv_proj);
         shader.set_uniform("u_m_inv_view", m_inv_view);
-        shader.set_uniform("u_windowresolution", glm::vec2(windowstate->w, windowstate->h));
+        shader.set_uniform("u_windowresolution", windowresolution);
+
+        //shader.set_uniform("u_mModel", shader_mModel);
     }
     
     void draw()
