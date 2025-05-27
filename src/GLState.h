@@ -70,6 +70,8 @@ struct GLState
     // the only reason for #include "InputState.h"
     void camera_move(InputState* inputstate, float dt)
     {
+        if( !windowstate->focused ) return;
+
         glm::vec3 forward = glm::normalize(camera_target - camera_pos);
         glm::vec3 right = glm::normalize( glm::cross(forward, camera_up) );
         
@@ -93,7 +95,10 @@ struct GLState
 
     void handle_event(SDL_Event* event)
     {
-        if( windowstate->focused && event->type == SDL_EVENT_MOUSE_MOTION )
+        if( !windowstate->focused ) return;
+
+        // mouse movement
+        if( event->type == SDL_EVENT_MOUSE_MOTION )
         {
             float dx = event->motion.xrel * mouse_sensitivity;
             float dy = event->motion.yrel * mouse_sensitivity;

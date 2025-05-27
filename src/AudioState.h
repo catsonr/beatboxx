@@ -127,6 +127,9 @@ struct AudioState
     
     void handle_event(const SDL_Event *event)
     {
+        // temp
+        return;
+
         if( event->type == SDL_EVENT_KEY_UP && event->key.scancode == SDL_SCANCODE_SPACE)
         {
             if(Mix_PausedMusic()) {

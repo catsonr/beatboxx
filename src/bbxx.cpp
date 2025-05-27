@@ -122,7 +122,7 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
     inputstate.handle_event(event);
     audiostate.handle_event(event);
     windowstate.handle_event(event);
-    //glstate.handle_event(event);
+    glstate.handle_event(event);
 
     ImGui_ImplSDL3_ProcessEvent(event);
 
