@@ -21,6 +21,20 @@ class ShaderProgram
 public:
     ShaderProgram() = default;
     
+    std::string fix_headers(std::string& SHADERCODE)
+    {
+        #ifdef __EMSCRIPTEN__
+            const std::string oldHeader = "#version 330 core";
+            const std::string newHeader = "#version 300 es\nprecision highp float;";
+            auto pos = SHADERCODE.find(oldHeader);
+            if (pos != std::string::npos) {
+                SHADERCODE.replace(pos, oldHeader.size(), newHeader);
+            }
+        #endif
+            
+        return SHADERCODE;
+    }
+    
     /* PUBLIC METHODS */
     bool init(const char* vert_src_path, const char* frag_src_path, std::vector<float>& vbo_data, int stride)
     {
@@ -28,7 +42,10 @@ public:
         this->stride = stride;
         
         std::string vert_contents = util::load_file(vert_src_path);
+        vert_contents = fix_headers(vert_contents);
+
         std::string frag_contents = util::load_file(frag_src_path);
+        frag_contents = fix_headers(frag_contents);
 
         program = util::create_program(vert_contents.c_str(), frag_contents.c_str());
         if( program == 0 ) {

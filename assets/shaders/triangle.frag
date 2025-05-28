@@ -10,9 +10,9 @@ float f(vec2 uv)
     float y = uv.y;
     float t = u_t;
     
-    float dpi = 10;
-    float skew = 2;
-    return 0.5 * ( cos(dpi*x + dpi*skew*y) * cos(dpi*skew*x - dpi*y) + 1 );
+    float dpi = 10.0;
+    float skew = 2.0;
+    return 0.5 * ( cos(dpi*x + dpi*skew*y) * cos(dpi*skew*x - dpi*y) + 1.0 );
     
     // smooth checkerboard
     //return 0.5 * (sin(x) * sin(y) + 1);
@@ -23,10 +23,10 @@ float f(vec2 uv)
 
 void main()
 {
-    float scale = 1;
+    float scale = 1.0;
     float speed = 0.125;
 
-    vec2 uv = gl_FragCoord.xy / vec2(50) + u_t*speed;
+    vec2 uv = gl_FragCoord.xy / vec2(50.0) + u_t*speed;
     
     vec3 colorON = vec3(1.0);
     vec3 colorOFF = vec3(0.8);

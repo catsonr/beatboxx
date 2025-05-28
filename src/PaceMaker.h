@@ -37,7 +37,7 @@ struct Pace
             {
                 double t = std::stod(line);
                 beats.push_back(t);
-                printf("beat #%d @ t=%.3f\n", (int)beats.size(), beats.back());
+                //printf("beat #%d @ t=%.3f\n", (int)beats.size(), beats.back());
             }
             catch(const std::exception& e)
             {

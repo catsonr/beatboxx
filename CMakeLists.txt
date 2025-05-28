@@ -13,17 +13,20 @@ add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
 
-if(EMSCRIPTEN)
-	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s FULL_ES3=1 -s USE_WEBGL2=1")
-endif()
-
 file(GLOB_RECURSE PROJECT_SOURCES
      CONFIGURE_DEPENDS
      "${CMAKE_SOURCE_DIR}/src/*.cpp"
      "${CMAKE_SOURCE_DIR}/src/*.h"
 )
 add_executable(beatboxx ${PROJECT_SOURCES})
+
+if(EMSCRIPTEN)
+	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s FULL_ES3=1 -s USE_WEBGL2=1 -s ALLOW_MEMORY_GROWTH=1")
+  target_link_options(beatboxx PRIVATE
+    "--preload-file=${CMAKE_SOURCE_DIR}/assets@/assets"
+  )
+endif()
 
 # glad
 add_library(glad STATIC

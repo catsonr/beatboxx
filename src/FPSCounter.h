@@ -6,14 +6,14 @@
 struct FPSCounter
 {
     /* PUBLIC MEMBERS */
-    uint64_t then, now, dt;
+    uint64_t then { 0 }, now { 0 }, dt { 0 };
     uint64_t freq { SDL_GetPerformanceFrequency() };
     
     float seconds { 0 };
     float d_seconds { 0 };
 
-    float fps, ema_fps;
-    const float alpha = 0.1f;
+    float fps { 0 }, ema_fps { 0 };
+    const float alpha { 0.1f };
 
     /* PUBLIC METHODS */
     void start()
@@ -24,8 +24,9 @@ struct FPSCounter
     void iterate()
     {
         now = SDL_GetPerformanceCounter();
-        
         dt = now - then;
+        if(dt == 0) return;
+        
         d_seconds = (float)dt / freq;
         seconds += d_seconds;
 

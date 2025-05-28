@@ -34,10 +34,17 @@ SDL_AppResult BBXX::init()
     // sets the minimum size the window can be reisized to
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    #ifndef __EMSCRIPTEN__
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    #else
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    #endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     gl = SDL_GL_CreateContext(window);
     if ( !gl ) {
@@ -45,10 +52,12 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
-        SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    //#ifndef __EMSCRIPTEN__ // only needed on desktop
+        if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
+            SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
+            return SDL_APP_FAILURE;
+        }
+    //#endif
 
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);

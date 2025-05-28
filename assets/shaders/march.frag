@@ -1,11 +1,11 @@
+#version 330 core
+
 /*
    this fragment shader performs the raymarch algorithm on an arbitrary surface
    this surface will contain all points from [-1, 1] in R^2
     that is, transforming the model will not change how the raymarching looks, it will only
     change where on screen the result is placed, and how it is streched and rotated
 */
-
-#version 330 core
 
 out vec4 outColor;
 
@@ -30,12 +30,13 @@ const float MAX_DIST = 100.0;
 const float EPSILON = 0.0001;
 
 // variables
-vec3 color_ambient = u_color_ambient;
-vec3 color_diffuse = u_color_diffuse;
-vec3 color_specular = u_color_specular;
-float shininess = u_shininess;
+// TODO: remove these!
+vec3 color_ambient;
+vec3 color_diffuse;
+vec3 color_specular;
+float shininess;
 
-vec3 camera_pos = u_camera_pos;
+vec3 camera_pos;
 
 vec3 repeat_x(vec3 p)
 {
@@ -58,7 +59,7 @@ float sphereSDF(vec3 p, vec3 center)
 */
 float sceneSDF(vec3 p)
 {
-    float sphere = sphereSDF(repeat_x(p), vec3(0, 0, 0));
+    float sphere = sphereSDF(repeat_x(p), vec3(0.0, 0.0, 0.0));
     
     return sphere;
 }
@@ -148,6 +149,14 @@ vec3 rayDirection(vec2 fragCoord)
 
 void main()
 {
+    // TODO: remove these!
+    color_ambient = u_color_ambient;
+    color_diffuse = u_color_diffuse;
+    color_specular = u_color_specular;
+    shininess = u_shininess;
+
+    camera_pos = u_camera_pos;
+
     // find ray in world space
     vec3 ray_origin_wrldspc    = u_camera_pos;
     vec3 ray_direction_wrldspc = rayDirection(gl_FragCoord.xy);

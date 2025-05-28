@@ -56,7 +56,12 @@ struct ImguiState
         );
 
         ImGui_ImplSDL3_InitForOpenGL(windowstate->window, windowstate->gl);
-        ImGui_ImplOpenGL3_Init("#version 330 core");
+        
+        #ifndef __EMSCRIPTEN__
+            ImGui_ImplOpenGL3_Init("#version 330 core");
+        #else
+            ImGui_ImplOpenGL3_Init("#version 300 es");
+        #endif
         
         // no imgui.ini
         io.IniFilename = nullptr;
@@ -124,7 +129,7 @@ struct ImguiState
             ImGui::Text("pace::measure count = %i", (int)miku->pace.measures.size());
         }
         
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
         ImGui::End();
 
