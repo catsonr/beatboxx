@@ -26,7 +26,10 @@ struct ImguiState
         // TODO: error checking!
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO(); (void)io;
+        ImGuiIO &io = ImGui::GetIO();
+        
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
         
         // default latin font
         ImFontConfig cfg;
@@ -57,6 +60,8 @@ struct ImguiState
         
         // no imgui.ini
         io.IniFilename = nullptr;
+        // high dpi support
+        io.DisplayFramebufferScale = ImVec2(40, 40);
 
         return true;
     }
@@ -85,7 +90,7 @@ struct ImguiState
         ImGui::End();
         
         ImGui::Begin("miku", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        if( ImGui::CollapsingHeader("Track", ImGuiTreeNodeFlags_DefaultOpen) ) {
+        if( ImGui::CollapsingHeader("Track", ImGuiTreeNodeFlags_Leaf) ) {
             if( ImGui::Checkbox("playing", &mikuplaying) ) {
                 if(mikuplaying) {
                     miku->pacemaker.start();
@@ -104,16 +109,22 @@ struct ImguiState
                         int(len) / 60, int(len) % 60);
         }
         
-        if( ImGui::CollapsingHeader("PaceMaker", ImGuiTreeNodeFlags_Framed) ) {
-            if( ImGui::Button("pacemaker::beat !") ) {
+        if( ImGui::CollapsingHeader("PaceMaker", ImGuiTreeNodeFlags_OpenOnArrow) ) {
+            if( ImGui::Button("pacemaker::beat()!") ) {
                 miku->pacemaker.beat();
             }
-            if( ImGui::Button("pacemaker::save !") ) {
+            if( ImGui::Button("pacemaker::save()!") ) {
                 miku->pacemaker.save();
             }
 
             ImGui::Text("pacemaker::beat count = %i", (int)miku->pacemaker.beat_positions.size());
         }
+        
+        if( ImGui::CollapsingHeader("Pace", ImGuiTreeNodeFlags_Leaf) ) {
+            ImGui::Text("pace::measure count = %i", (int)miku->pace.measures.size());
+        }
+        
+        ImGui::ShowDemoWindow();
 
         ImGui::End();
 
