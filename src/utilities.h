@@ -35,20 +35,46 @@ namespace util
         std::ifstream file(fullpath);
         if (!file.is_open())
         {
-            printf("[GLState::load_file] failed to open '%s'!!!\n", fullpath.c_str());
+            printf("[util::load_file] failed to open '%s'!!!\n", fullpath.c_str());
             return "";
         }
 
-        printf("[GLState::load_file] loaded '%s'!\n", fullpath.c_str());
+        //printf("[util::load_file] loaded '%s'!\n", fullpath.c_str());
 
         std::stringstream ss;
         ss << file.rdbuf();
         
         if( ss.str().empty() ) {
-            printf("[GLState::load_file] warning! the file '%s' is empty!\n", path_fromRoot);
+            printf("[util::load_file] warning! the file '%s' is empty!\n", path_fromRoot);
         }
 
         return ss.str();
+    }
+    
+    inline bool save_file_string(const char* path_fromRoot, const std::string& s)
+    {
+        std::string fullpath = get_fullPath(path_fromRoot);
+        
+        std::ofstream file(fullpath);
+        if (!file.is_open())
+        {
+            printf("[util::save_file_string] failed to open '%s' for writing!\n",
+                   fullpath.c_str());
+            return false;
+        }
+
+        // write out the entire string
+        file << s;
+        if (!file.good())
+        {
+            printf("[util::save_file_string] error writing to '%s'\n",
+                   fullpath.c_str());
+            return false;
+        }
+
+        file.close();
+        printf("[util::save_file_string] successfully wrote '%s'\n", path_fromRoot);
+        return true;
     }
 
     inline GLuint compile_shader(GLenum type, const char *src)
@@ -84,7 +110,7 @@ namespace util
         {
             char log[512];
             glGetProgramInfoLog(program, 512, NULL, log);
-            printf("program link error: %s\n", log);
+            printf("[util::create_program] program link error: %s\n", log);
         }
 
         glDeleteShader(vertex);

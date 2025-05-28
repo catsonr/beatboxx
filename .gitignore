@@ -1,5 +1,7 @@
-build
-emsdk
+build/
+emsdk/
+assets/out/
+
 .DS_STORE
 beatboxx
 ingui.ini

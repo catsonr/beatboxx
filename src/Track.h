@@ -52,6 +52,8 @@ struct Track
         album = Mix_GetMusicAlbumTag(music);
         copyright = Mix_GetMusicCopyrightTag(music);
         
+        length = Mix_MusicDuration(music);
+        
         return true;
     }
 
@@ -61,6 +63,23 @@ struct Track
         
         Mix_FadeInMusic(music, 0, fadeInTime_ms);
         playing = true;
+        
+        printf("[Track::play] playing track!\n");
+    }
+    
+    void pause()
+    {
+        if(!playing) return;
+        
+        Mix_PauseMusic();
+        playing = false;
+
+        printf("[Track::pause] paused track!\n");
+    }
+    
+    double get_pos()
+    {
+        return Mix_GetMusicPosition(music);
     }
 
     /* DECONSTRUCTORS */

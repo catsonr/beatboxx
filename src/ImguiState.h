@@ -16,6 +16,8 @@ struct ImguiState
     WindowState* windowstate;
     
     float padding = 10.f;
+    
+    bool mikuplaying { false };
 
     bool init(WindowState* windowstate)
     {
@@ -73,14 +75,33 @@ struct ImguiState
         ImVec2 raymarch_size = ImGui::GetWindowSize();
         ImGui::End();
         
-        ImGui::SetNextWindowPos(
-            {raymarch_pos.x, raymarch_pos.y + raymarch_size.y + padding }
-        );
-        ImGui::SetNextWindowSize(
-            {250, 100}
-        );
         ImGui::Begin("miku", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("miku");
+        if( ImGui::Checkbox("playing", &mikuplaying) ) {
+            if(mikuplaying) {
+                miku->pacemaker.start();
+                miku->track.play();
+            }
+            else miku->track.pause();
+        }
+        ImGui::Text("artist: %s", miku->track.artist);
+        ImGui::Text("album: %s", miku->track.album);
+        ImGui::Text("title: %s", miku->track.title);
+
+        double pos = miku->track.get_pos();
+        double len = miku->track.length;
+        ImGui::Text("%02d:%02d / %02d:%02d",
+                    int(pos) / 60, int(pos) % 60,
+                    int(len) / 60, int(len) % 60);
+        
+        if( ImGui::Button("pacemaker::beat !") ) {
+            miku->pacemaker.beat();
+        }
+        if( ImGui::Button("pacemaker::save !") ) {
+            miku->pacemaker.save();
+        }
+
+        ImGui::Text("pacemaker::beat count = %i", (int)miku->pacemaker.beat_positions.size());
+
         ImGui::End();
 
         ImGui::Render();
