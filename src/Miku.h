@@ -11,6 +11,7 @@ struct Miku
 
     Track track;
     PaceMaker pacemaker{ &track };
+    Pace pace;
 
     bool init(AudioState* audiostate)
     {
@@ -23,6 +24,11 @@ struct Miku
         }
         
         printf("[Miku::init] loaded track '%s' off '%s' by '%s'\n", track.title, track.album, track.artist);
+        
+        if( !pace.init("assets/tracks/lamp.pacemaker") ) {
+            SDL_Log("[Miku::init] failed to initialize pace!\n");
+            return false;
+        }
         
         return true;
     }
