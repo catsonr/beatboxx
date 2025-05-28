@@ -126,7 +126,9 @@ struct ImguiState
         }
         
         if( ImGui::CollapsingHeader("Pace", ImGuiTreeNodeFlags_Leaf) ) {
-            ImGui::Text("pace::measure count = %i", (int)miku->pace.measures.size());
+            ImGui::Text("pace::current beat = %i", (int)miku->track.pace.currentbeat);
+            ImGui::Text("pace::beat count = %i", (int)miku->track.pace.beats.size());
+            ImGui::Text("pace::measure count = %i", (int)miku->track.pace.measures.size());
         }
         
         //ImGui::ShowDemoWindow();

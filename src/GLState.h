@@ -135,16 +135,16 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 3, 0));
-        shader_mModel = glm::rotate(shader_mModel, glm::radians(-6.0f), glm::vec3(0, 0, 1));
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(4, 1, 1));
+        //shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 3, 0));
+        //shader_mModel = glm::rotate(shader_mModel, glm::radians(-6.0f), glm::vec3(0, 0, 1));
+        shader_mModel = glm::scale(shader_mModel, glm::vec3(4, 4, 1));
 
         shader.init("assets/shaders/triangle.vert", "assets/shaders/march.frag", unitsquare_vertices, 3);
         shader.set_uniform("u_mModel", shader_mModel);
         
         /* THREED TRANSFORM */
         threeD_mModel = glm::mat4(1.0f);
-        threeD_mModel = glm::translate(threeD_mModel, glm::vec3(3, 3, 0));
+        threeD_mModel = glm::translate(threeD_mModel, glm::vec3(3, 3, 2));
         threeD_mModel = glm::scale(threeD_mModel, glm::vec3(2, 2, 2));
 
         threeD.init("assets/shaders/triangle.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);

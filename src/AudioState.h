@@ -23,7 +23,7 @@
 struct AudioState
 {
     /* PUBLIC MEMBERS */
-    Mix_Chunk *channel[8] {}; // the eight audio channels provided by SDL_mixer
+    Mix_Chunk *channels[MIX_DEFAULT_CHANNELS] {}; // the eight audio channels provided by SDL_mixer
     bool audio_open { false };
     int audio_volume { MIX_MAX_VOLUME };
 
@@ -35,7 +35,7 @@ struct AudioState
         spec.freq = MIX_DEFAULT_FREQUENCY;
         spec.format = MIX_DEFAULT_FORMAT;
         spec.channels = MIX_DEFAULT_CHANNELS;
-
+        
         if( !Mix_OpenAudio(0, &spec) )
         {
             SDL_Log("[AudioState::init] failed to open mixer! %s", SDL_GetError());
@@ -59,10 +59,53 @@ struct AudioState
         return true;
     }
 
-
+    int load_sfx(const char* path)
+    {
+        if( !audio_open ) {
+            SDL_Log("[AudioState::load_sfx] failed to load sound effect, audio not open!\n");
+            return -1;
+        }
+        
+        std::string fullpath = util::get_fullPath(path);
+        Mix_Chunk* sfx = Mix_LoadWAV(fullpath.c_str());
+        if( !sfx ) {
+            SDL_Log("[AudioState::load_sfx] failed to load sound effect '%s': %s", fullpath.c_str(), SDL_GetError());
+            return -1;
+        }
+        
+        for(int i = 0; i < MIX_DEFAULT_CHANNELS; i++)
+        {
+            if( !channels[i] ) {
+                channels[i] = sfx;
+                return i;
+            }
+        }
+        
+        SDL_Log("[AudioState::load_sfx] failed to load '%s', all 8 channels already in use!\n", path);
+        Mix_FreeChunk(sfx);
+        return -1;
+    }
+    
+    void play_sfx(int channel, int loops=0)
+    {
+        if(channel < 0 || channel >= MIX_DEFAULT_CHANNELS || !channels[channel]) {
+            printf("[AudioState::play_sfx] could not play sfx -- no chunk in channel %i!\n", channel);
+            return;
+        }
+        
+        Mix_PlayChannel(channel, channels[channel], loops);
+    }
     
     void cleanup()
     {
+        for(int i = 0; i < MIX_DEFAULT_CHANNELS; i++)
+        {
+            if( channels[i] ) {
+                Mix_FreeChunk(channels[i]);
+                channels[i] = nullptr;
+            }
+        }
+
         if( audio_open )
         {
             Mix_CloseAudio();

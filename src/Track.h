@@ -2,10 +2,12 @@
 #define TRACK_H
 
 #include "AudioState.h"
+#include "Pace.h"
 
 struct Track
 {
     AudioState* audiostate;
+    Pace pace;
 
     std::string path;
     Mix_Music* music { nullptr };
@@ -24,11 +26,11 @@ struct Track
     bool playing { false };
     
     /* PUBLIC METHODS */
-    bool init(std::string& path)
+    bool init(std::string& bgm_path)
     {
-        this->path = path;
+        this->path = bgm_path;
         
-        music = Mix_LoadMUS(util::get_fullPath(path.c_str()).c_str());
+        music = Mix_LoadMUS(util::get_fullPath(bgm_path.c_str()).c_str());
         if( music == NULL ) {
             SDL_Log("[Track::init] failed to load music!\n");
             return false;
@@ -53,6 +55,11 @@ struct Track
         copyright = Mix_GetMusicCopyrightTag(music);
         
         length = Mix_MusicDuration(music);
+
+        if( !pace.init("assets/tracks/lamp.pacemaker") ) {
+            SDL_Log("[Track::init] failed to initialize pace!\n");
+            return false;
+        }
         
         return true;
     }
@@ -63,6 +70,8 @@ struct Track
         
         Mix_FadeInMusic(music, 0, fadeInTime_ms);
         playing = true;
+        
+        pace.start();
         
         printf("[Track::play] playing track!\n");
     }

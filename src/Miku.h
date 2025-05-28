@@ -3,6 +3,7 @@
 
 #include "Track.h"
 #include "AudioState.h"
+#include "Pace.h"
 #include "PaceMaker.h"
 
 struct Miku
@@ -11,7 +12,8 @@ struct Miku
 
     Track track;
     PaceMaker pacemaker{ &track };
-    Pace pace;
+    
+    int click_channel { -1 };
 
     bool init(AudioState* audiostate)
     {
@@ -25,8 +27,9 @@ struct Miku
         
         printf("[Miku::init] loaded track '%s' off '%s' by '%s'\n", track.title, track.album, track.artist);
         
-        if( !pace.init("assets/tracks/lamp.pacemaker") ) {
-            SDL_Log("[Miku::init] failed to initialize pace!\n");
+        click_channel = audiostate->load_sfx("assets/sfx/click.wav");
+        if( click_channel < 0 ) {
+            SDL_Log("[Miku::init] failed to load sfx!\n");
             return false;
         }
         
@@ -35,7 +38,10 @@ struct Miku
     
     void iterate()
     {
-        
+        //return;
+        if( track.pace.iterate(track.get_pos()) ) {
+            audiostate->play_sfx(click_channel);
+        }
     }
 }; // Miku
 
