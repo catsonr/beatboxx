@@ -7,9 +7,13 @@
 #include "AudioState.h"
 #include "Pace.h"
 
+#include "PaceMaker.h"
+
 struct Miku
 {
     AudioState* audiostate;
+    
+    PaceMaker pacemaker;
 
     Track lamp {
         "assets/tracks/lamp.mp3",
@@ -19,9 +23,13 @@ struct Miku
         "assets/tracks/kaede.mp3",
         "assets/tracks/kaede.pacemaker" 
     };
+    Track hiposi {
+        "assets/tracks/hi-posi.mp3",
+        "assets/tracks/hi-posi.pacemaker" 
+    };
 
-    std::vector<Track*> tracks { &lamp, &kaede };
-    int current_track_index { 1 };
+    std::vector<Track*> tracks { &lamp, &kaede, &hiposi };
+    int current_track_index { 0 };
     Track* current_track { tracks[current_track_index] };
     
     int click_channel { -1 };

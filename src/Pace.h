@@ -50,19 +50,23 @@ struct Pace
         return true;
     }
     
-    std::string serialize() const
+    std::string serialize(const std::vector<double>& beats_vector) const
     {
         std::ostringstream ss;
         
-        for(double t : beats)
+        for(double t : beats_vector)
             ss << t << "\n";
 
         return ss.str();
     }
     
-    void save(const char* path) const
+    void save(const char* path, const std::vector<double>* beat_vector=nullptr) const
     {
-        std::string file_content = serialize();
+        const auto& tosave = beat_vector ? *beat_vector : beats;
+        
+        printf("[Pace::save] writing %i beats to '%s'!\n", (int)tosave.size(), path);
+
+        std::string file_content = serialize(tosave);
         util::save_file_string(path, file_content);
     }
     

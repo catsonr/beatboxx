@@ -176,10 +176,27 @@ struct ImguiState
                         int(pos) / 60, int(pos) % 60,
                         int(len) / 60, int(len) % 60);
 
-            ImGui::ProgressBar((float)miku->current_track->pace.currentbeat / (float)miku->current_track->pace.beats.size());
+            ImGui::ProgressBar(miku->current_track->get_pos() / miku->current_track->length );
         }
         ImGui::Separator();
         ImGui::Separator();
+        
+        if( ImGui::CollapsingHeader("PaceMaker") ) {
+            if( ImGui::Button("PaceMaker::start() !") ) {
+                miku->pacemaker.start(miku->current_track);
+            }
+
+            if( ImGui::Button("PaceMaker::beat() !") ) {
+                miku->pacemaker.beat();
+            }
+
+            static char pacemakersavepath[256] = "assets/out/hi-posi.pacemaker";
+            ImGui::InputText("##pacemaker save path", pacemakersavepath, IM_ARRAYSIZE(pacemakersavepath));
+            ImGui::SameLine();
+            if( ImGui::Button("Pace::save() !") ) {
+                miku->current_track->pace.save(pacemakersavepath, &miku->pacemaker.beats);
+            }
+        }
         
         if( ImGui::CollapsingHeader("Pace", ImGuiTreeNodeFlags_Leaf) ) {
             ImGui::Text("beat count = %i", (int)miku->current_track->pace.beats.size());
@@ -255,7 +272,7 @@ struct ImguiState
             ImGui::EndDisabled();
             
             static char pacesavepath[256] = "assets/out/lamp.pacemaker";
-            ImGui::InputText("##save path", pacesavepath, IM_ARRAYSIZE(pacesavepath));
+            ImGui::InputText("##pace save path", pacesavepath, IM_ARRAYSIZE(pacesavepath));
             ImGui::SameLine();
             if( ImGui::Button("save() !") ) {
                 miku->current_track->pace.save(pacesavepath);
