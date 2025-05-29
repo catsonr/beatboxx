@@ -63,7 +63,17 @@ struct Track
         
         return true;
     }
+    
+    void play__force()
+    {
+        Mix_HaltMusic();
+        Mix_PlayMusic(music, 0);
 
+        playing = true;
+        pace.start();
+    }
+
+    /* begin (or restart) playback */
     void play(int fadeInTime_ms = 0)
     {
         if(playing) return;
@@ -73,9 +83,10 @@ struct Track
         
         pace.start();
         
-        printf("[Track::play] playing track!\n");
+        printf("[Track::play] playing '%s'!\n", title);
     }
     
+    /* pause playback */
     void pause()
     {
         if(!playing) return;
@@ -83,12 +94,58 @@ struct Track
         Mix_PauseMusic();
         playing = false;
 
-        printf("[Track::pause] paused track!\n");
+        printf("[Track::pause] paused '%s'!\n", title);
+    }
+    
+    /* resume playback */
+    void resume()
+    {
+        if(playing) return;
+        
+        Mix_ResumeMusic();
+        playing = true;
+
+        printf("[Track::resume] resumed '%s'!\n", title);
     }
     
     double get_pos()
     {
         return Mix_GetMusicPosition(music);
+    }
+    
+    double get_dt(int beat_index)
+    {
+        if( beat_index == 0 ) return 0.f; 
+        
+        return pace.beats[beat_index] - pace.beats[beat_index - 1];
+    }
+    
+    void set_ddt(int beat_index, double change_in_dt)
+    {
+        SDL_assert(beat_index > 0);
+        
+        double dt = get_dt(beat_index);
+        dt += change_in_dt;
+        
+        pace.beats[beat_index] = pace.beats[beat_index - 1] + dt;
+    }
+    
+    bool set_pos(double pos)
+    {
+        if( !Mix_SetMusicPosition(pos) ) {
+            SDL_Log("[Track::set_pos] failed to set track position: %s", SDL_GetError());
+            return false;
+        }
+        
+        return true;
+    }
+    
+    bool set_pos_atBeat(int beat)
+    {
+        double pos = pace.beats[beat];
+        
+        pace.currentbeat = beat;
+        return set_pos(pos);
     }
 
     /* DECONSTRUCTORS */

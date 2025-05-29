@@ -29,7 +29,7 @@ private:
     int WINDOW_HEIGHT { 720 };
     int WINDOW_WIDTH_MIN { 800 };
     int WINDOW_HEIGHT_MIN { 600 };
-    const char *WINDOW_TITLE { "beatboxx :)" };
+    const char *WINDOW_TITLE { "beatboxx <3" };
 
     // state managing classes
     FPSCounter fpscounter;
@@ -48,18 +48,12 @@ public:
     SDL_Renderer *renderer { nullptr };
     SDL_GLContext gl { nullptr };
     
-    // display scale
-    static float ds;
-    
     /* PUBLIC METHODS */
     SDL_AppResult init();
     void iterate();
     void draw();
     SDL_AppResult handle_event(SDL_Event *event);
     void quit();
-    
-    int get_windowWidth() const { return WINDOW_WIDTH; }
-    int get_windowHeight() const { return WINDOW_HEIGHT; }
 }; // BBXX
 
 #endif // BBXX_H

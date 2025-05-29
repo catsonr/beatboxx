@@ -76,12 +76,13 @@ struct Pace
         currentbeat = 0;
     }
 
+    // assumes 'now' is track position
     bool iterate(double now)
     {
         now += offset;
 
         if( currentbeat < beats.size() && now >= beats[currentbeat] ) {
-            printf("beat %i!\n", (int)currentbeat);
+            //printf("beat %i!\n", (int)currentbeat);
             currentbeat++;
             return true;
         }
