@@ -116,76 +116,76 @@ struct ImguiState
         ImGui::SetNextWindowPos(
             ImVec2(padding, padding)
         );
-        ImGui::Begin("FPSCounter", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Begin("FPSCounter", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("fps: %.1f", fpscounter->fps);
         ImGui::Text("ema_fps: %.1f", fpscounter->ema_fps);
         ImGui::Text("time elapsed (s): %.1f", fpscounter->seconds);
-        ImGui::End();
+    ImGui::End(); // FPSCounter
 
-        /*
-        ImGui::Begin("raymarching colors", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        ///*
+    ImGui::Begin("raymarching colors", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::ColorEdit3("ambient", glm::value_ptr(glstate->color_ambient));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(glstate->color_diffuse));
         ImGui::ColorEdit3("specular", glm::value_ptr(glstate->color_specular));
         ImGui::ColorEdit4("bg", glm::value_ptr(glstate->color_none));
         ImGui::SliderFloat("shininess", &glstate->shininess, 0.1f, 255.0f);
-        ImGui::End();
-        */
+    ImGui::End(); // raymarching colors
+        //*/
         
-        ImGui::Begin("miku", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        if( ImGui::CollapsingHeader("Track", ImGuiTreeNodeFlags_Leaf) ) {
-            ImGui::Text("title: %s", miku->track.title);
-            ImGui::Text("album: %s", miku->track.album);
-            ImGui::Text("artist: %s", miku->track.artist);
-
-            if (!miku->track.playing)
+    ImGui::Begin("miku", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    
+        if( ImGui::BeginCombo("current track", miku->current_track->title) )
+        {
+            for(int i = 0; i < miku->tracks.size(); i++)
             {
-                if( miku->track.get_pos() > 0) {
+                const bool is_selected = ( i == miku->current_track_index );
+                
+                if( ImGui::Selectable(miku->tracks[i]->title, is_selected) )
+                    miku->set_current_track(i);
+            }
+            
+            ImGui::EndCombo();
+        }
+
+        if( ImGui::CollapsingHeader("Track", ImGuiTreeNodeFlags_Leaf) ) {
+            ImGui::Text("title: %s", miku->current_track->title);
+            ImGui::Text("album: %s", miku->current_track->album);
+            ImGui::Text("artist: %s", miku->current_track->artist);
+
+            if (!miku->current_track->playing)
+            {
+                if( miku->current_track->get_pos() > 0) {
                     if (ImGui::Button("resume() !")) {
-                        miku->track.resume();
+                        miku->current_track->resume();
                     }
                 }
 
                 if (ImGui::Button("play() !")) {
-                    miku->track.play();
+                    miku->current_track->play();
                 }
             }
             else {
                 if (ImGui::Button("pause() !")) {
-                    miku->track.pause();
+                    miku->current_track->pause();
                 }
             }
 
-            double pos = miku->track.get_pos();
-            double len = miku->track.length;
+            double pos = miku->current_track->get_pos();
+            double len = miku->current_track->length;
             ImGui::Text("%02d:%02d / %02d:%02d",
                         int(pos) / 60, int(pos) % 60,
                         int(len) / 60, int(len) % 60);
 
-            ImGui::ProgressBar((float)miku->track.pace.currentbeat / (float)miku->track.pace.beats.size());
+            ImGui::ProgressBar((float)miku->current_track->pace.currentbeat / (float)miku->current_track->pace.beats.size());
         }
         ImGui::Separator();
         ImGui::Separator();
-        
-        /*
-        if( ImGui::CollapsingHeader("PaceMaker", ImGuiTreeNodeFlags_OpenOnArrow) ) {
-            if( ImGui::Button("pacemaker::beat()!") ) {
-                miku->pacemaker.beat();
-            }
-            if( ImGui::Button("pacemaker::save()!") ) {
-                miku->pacemaker.save();
-            }
-
-            ImGui::Text("pacemaker::beat count = %i", (int)miku->pacemaker.beat_positions.size());
-        }
-        */
         
         if( ImGui::CollapsingHeader("Pace", ImGuiTreeNodeFlags_Leaf) ) {
-            ImGui::Text("beat count = %i", (int)miku->track.pace.beats.size());
-            ImGui::Text("current beat = %i", (int)miku->track.pace.currentbeat);
-            //ImGui::Text("pace::measure count = %i", (int)miku->track.pace.measures.size());
+            ImGui::Text("beat count = %i", (int)miku->current_track->pace.beats.size());
+            ImGui::Text("current beat = %i", (int)miku->current_track->pace.currentbeat);
             
-            auto& pace   = miku->track.pace;
+            auto& pace   = miku->current_track->pace;
             auto &beats = pace.beats;
             int currentbeat = (int)pace.currentbeat;
 
@@ -200,7 +200,7 @@ struct ImguiState
                 dt.resize(windowcount);
 
                 for (int i = 0; i < windowcount; ++i)
-                    dt[i] = miku->track.get_dt(firstbeat + i);
+                    dt[i] = miku->current_track->get_dt(firstbeat + i);
 
                 float dt_min = dt[0], dt_max = dt[0];
                 for (float v : dt)
@@ -218,13 +218,13 @@ struct ImguiState
                 snprintf(overlay, sizeof(overlay), "beat %d dt = %f", currentbeat, dt.back());
 
                 ImGui::PlotLines(
-                    "dt",           // label
+                    "dt (seconds)", // label
                     dt.data(),      // data
                     (int)dt.size(), // count
                     0,              // values offset
                     overlay,        // no overlay text
-                    dt_min,          // y-axis minimum
-                    dt_max,          // y-axis maximum
+                    dt_min,         // y-axis minimum
+                    dt_max,         // y-axis maximum
                     ImVec2(0, 100)  // plot size
                 );
             }
@@ -239,27 +239,34 @@ struct ImguiState
             ImGui::SliderInt("posbeat", &posbeat, 1, pace.beats.size());
             ImGui::SameLine();
             if( ImGui::Button("set_pos_atBeat() !") ) {
-                miku->track.set_pos_atBeat(posbeat - 1);
+                miku->current_track->set_pos_atBeat(posbeat - 1);
             }
             
             static int editbeat = 2;
-            ImGui::SliderInt("editbeat", &editbeat, 2, miku->track.pace.beats.size());
+            ImGui::SliderInt("editbeat", &editbeat, 2, miku->current_track->pace.beats.size());
             static float ddt = 0.0f;
             ImGui::SameLine();
             ImGui::SliderFloat("ddt", &ddt, -0.2f, 0.2f);
-            if( ddt == 0.0f ) ImGui::BeginDisabled();
+            ImGui::BeginDisabled(ddt == 0.0f);
             if( ImGui::Button("set_ddt() !") ) {
-                miku->track.set_ddt(editbeat - 1, ddt);
+                miku->current_track->set_ddt(editbeat - 1, ddt);
                 ddt = 0.0f;
             }
-            if( ddt == 0.0f ) ImGui::EndDisabled();
+            ImGui::EndDisabled();
+            
+            static char pacesavepath[256] = "assets/out/lamp.pacemaker";
+            ImGui::InputText("##save path", pacesavepath, IM_ARRAYSIZE(pacesavepath));
+            ImGui::SameLine();
+            if( ImGui::Button("save() !") ) {
+                miku->current_track->pace.save(pacesavepath);
+            }
         }
         ImGui::Separator();
         ImGui::Separator();
 
         //ImGui::ShowDemoWindow();
 
-        ImGui::End();
+    ImGui::End(); // miku
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

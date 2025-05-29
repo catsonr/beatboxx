@@ -29,7 +29,7 @@ private:
     int WINDOW_HEIGHT { 720 };
     int WINDOW_WIDTH_MIN { 800 };
     int WINDOW_HEIGHT_MIN { 600 };
-    const char *WINDOW_TITLE { "beatboxx <3" };
+    const char *WINDOW_TITLE { "beatboxx 🎵" };
 
     // state managing classes
     FPSCounter fpscounter;

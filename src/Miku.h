@@ -1,31 +1,59 @@
 #ifndef MIKU_H
 #define MIKU_H
 
+#include <vector>
+
 #include "Track.h"
 #include "AudioState.h"
 #include "Pace.h"
-#include "PaceMaker.h"
 
 struct Miku
 {
     AudioState* audiostate;
 
-    Track track;
-    PaceMaker pacemaker{ &track };
+    Track lamp {
+        "assets/tracks/lamp.mp3",
+        "assets/tracks/lamp.pacemaker" 
+    };
+    Track kaede {
+        "assets/tracks/kaede.mp3",
+        "assets/tracks/kaede.pacemaker" 
+    };
+
+    std::vector<Track*> tracks { &lamp, &kaede };
+    int current_track_index { 1 };
+    Track* current_track { tracks[current_track_index] };
     
     int click_channel { -1 };
+    
+    void set_current_track(int track_index)
+    {
+        // TODO: better error checking
+        SDL_assert( track_index >= 0 && track_index < tracks.size() );
+        
+        current_track->stop();
+        
+        current_track_index = track_index;
+        current_track = tracks[current_track_index];
+        
+        current_track->play__force();
+        current_track->pause();
+    }
 
     bool init(AudioState* audiostate)
     {
         this->audiostate = audiostate;
         
-        std::string trackpath { "assets/tracks/lamp.mp3" };
-        if( !track.init(trackpath) ) {
-            SDL_Log("[Miku::init] failed to initialize track!\n");
-            return false;
+        for(Track* track : tracks)
+        {
+            if (!track->init()) {
+                SDL_Log("[Miku::init] failed to initialize track!\n");
+                return false;
+            }
+
+            printf("[Miku::init] loaded track '%s' off '%s' by '%s'\n", track->title, track->album, track->artist);
         }
-        
-        printf("[Miku::init] loaded track '%s' off '%s' by '%s'\n", track.title, track.album, track.artist);
+
         
         click_channel = audiostate->load_sfx("assets/sfx/click.wav");
         if( click_channel < 0 ) {
@@ -38,9 +66,17 @@ struct Miku
     
     void iterate()
     {
-        //return;
-        if( track.pace.iterate(track.get_pos()) ) {
+        // set beat to current position in song
+        if( current_track->pace.iterate(current_track->get_pos()) ) {
             audiostate->play_sfx(click_channel);
+        }
+    }
+    
+    void cleanup()
+    {
+        for(Track* track : tracks)
+        {
+            track->destory();
         }
     }
 }; // Miku

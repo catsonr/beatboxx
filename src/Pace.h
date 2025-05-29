@@ -9,8 +9,6 @@
 
 struct Pace
 {
-    int beats_per_measure { 4 };
-    std::vector<std::vector<double>> measures;
     std::vector<double> beats;
     
     double offset { 0.12 };
@@ -49,15 +47,23 @@ struct Pace
             }
         }
         
-        // divide beats into measures 
-        measures.clear();
-        for(size_t i = 0; i < beats.size(); i += beats_per_measure)
-        {
-            size_t count = std::min<size_t>(beats_per_measure, beats.size() - i);
-            measures.emplace_back(beats.begin() + i, beats.begin() + i + count);
-        }
-        
         return true;
+    }
+    
+    std::string serialize() const
+    {
+        std::ostringstream ss;
+        
+        for(double t : beats)
+            ss << t << "\n";
+
+        return ss.str();
+    }
+    
+    void save(const char* path) const
+    {
+        std::string file_content = serialize();
+        util::save_file_string(path, file_content);
     }
     
     bool init(const char* path_to_pacemakerfile)

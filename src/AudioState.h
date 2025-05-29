@@ -6,6 +6,8 @@
     SDL_mixer can manage playback of one music channel along with eight channels of
     16-bit stereo audio
     
+    Track handles loading and playing music, so long as Mix_AudioOpen() is successfully called
+    
     NOTES:
         midi soundfonts can be set with either FluidSynth or Timidity
 */

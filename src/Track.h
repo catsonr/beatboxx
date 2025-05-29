@@ -9,7 +9,9 @@ struct Track
     AudioState* audiostate;
     Pace pace;
 
-    std::string path;
+    const char* bgm_path;
+    const char* pace_path;
+
     Mix_Music* music { nullptr };
     
     // the length of the song, in seconds
@@ -25,12 +27,16 @@ struct Track
     
     bool playing { false };
     
+    /* CONSTRUCTOR */
+    Track(const char* bgm_path, const char* pace_path) : 
+        bgm_path(bgm_path),
+        pace_path(pace_path)
+    {}
+    
     /* PUBLIC METHODS */
-    bool init(std::string& bgm_path)
+    bool init()
     {
-        this->path = bgm_path;
-        
-        music = Mix_LoadMUS(util::get_fullPath(bgm_path.c_str()).c_str());
+        music = Mix_LoadMUS(util::get_fullPath(bgm_path).c_str());
         if( music == NULL ) {
             SDL_Log("[Track::init] failed to load music!\n");
             return false;
@@ -56,7 +62,7 @@ struct Track
         
         length = Mix_MusicDuration(music);
 
-        if( !pace.init("assets/tracks/lamp.pacemaker") ) {
+        if( !pace.init(pace_path) ) {
             SDL_Log("[Track::init] failed to initialize pace!\n");
             return false;
         }
@@ -83,7 +89,7 @@ struct Track
         
         pace.start();
         
-        printf("[Track::play] playing '%s'!\n", title);
+        //printf("[Track::play] playing '%s'!\n", title);
     }
     
     /* pause playback */
@@ -94,7 +100,7 @@ struct Track
         Mix_PauseMusic();
         playing = false;
 
-        printf("[Track::pause] paused '%s'!\n", title);
+        //printf("[Track::pause] paused '%s'!\n", title);
     }
     
     /* resume playback */
@@ -105,7 +111,14 @@ struct Track
         Mix_ResumeMusic();
         playing = true;
 
-        printf("[Track::resume] resumed '%s'!\n", title);
+        //printf("[Track::resume] resumed '%s'!\n", title);
+    }
+    
+    /* prevents further playback */
+    void stop()
+    {
+        Mix_HaltMusic();
+        playing = false;
     }
     
     double get_pos()
@@ -147,14 +160,13 @@ struct Track
         pace.currentbeat = beat;
         return set_pos(pos);
     }
-
-    /* DECONSTRUCTORS */
-    ~Track()
+    
+    void destory()
     {
-        //if( music ) Mix_FreeMusic(music);
-        //music = nullptr;
-    }
+        if( music ) Mix_FreeMusic(music);
 
+        music = nullptr;
+    }
 }; // Track
 
 #endif // TRACK_H

@@ -22,7 +22,7 @@ SDL_AppResult BBXX::init()
         SDL_WINDOW_HIGH_PIXEL_DENSITY |
         SDL_WINDOW_RESIZABLE |
         SDL_WINDOW_INPUT_FOCUS |
-        //SDL_WINDOW_ALWAYS_ON_TOP |
+        SDL_WINDOW_ALWAYS_ON_TOP |
         SDL_WINDOW_MOUSE_FOCUS;
 
     window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags);
@@ -145,8 +145,11 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
 
 void BBXX::quit()
 {
+    printf("[BBXX::quit] cleaning up ...\n");
+
     if( gl )
         SDL_GL_DestroyContext(gl);
 
+    miku.cleanup();
     audiostate.cleanup();
 }
