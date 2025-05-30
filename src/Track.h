@@ -84,10 +84,10 @@ struct Track
     {
         if(playing) return;
         
+        pace.start();
         Mix_FadeInMusic(music, 0, fadeInTime_ms);
         playing = true;
         
-        pace.start();
         
         //printf("[Track::play] playing '%s'!\n", title);
     }

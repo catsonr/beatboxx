@@ -9,35 +9,48 @@
 
 #include <vector>
 
+#include <SDL3/SDL.h>
+
 #include "Track.h"
 #include "utilities.h"
 
 struct PaceMaker
 {
+    // the track being used
     Track* track { nullptr };
+
+    // beat times in seconds since start of track
     std::vector<double> beats;
-    double start_position;
     
+    uint64_t startTime_ticks { 0 };
+    double one_over_freq { 1.0f / (double)SDL_GetPerformanceFrequency() };
+
     bool started { false };
-    
     int beats_per_bar { 4 };
     
     void start(Track* track)
     {
         this->track = track;
         
-        track->play__force();
-
-        beats.clear();
         started = true;
+        beats.clear();
+
+        track->play__force();
+        startTime_ticks = SDL_GetPerformanceCounter();
     }
     
     void beat()
     {
         if( !started ) return;
 
-        beats.push_back( track->get_pos() );
-        printf("[PaceMaker::beat] beat (%i) : #%i\n", (int)(beats.size()-1) % beats_per_bar + 1, (int)beats.size());
+        uint64_t now = SDL_GetPerformanceCounter();
+        uint64_t dt = now - startTime_ticks;
+        
+        double elapsedTime = (double)dt * one_over_freq;
+        
+        beats.push_back(elapsedTime);
+        
+        printf("[PaceMaker::beat] beat %d @ t=%f seconds\n", (int)beats.size(), beats.back());
     }
 }; // PaceMaker
 

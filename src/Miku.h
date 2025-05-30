@@ -44,8 +44,8 @@ struct Miku
         current_track_index = track_index;
         current_track = tracks[current_track_index];
         
-        current_track->play__force();
-        current_track->pause();
+        current_track->pace.reset();
+        pacemaker.started = false;
     }
 
     bool init(AudioState* audiostate)
@@ -74,8 +74,8 @@ struct Miku
     
     void iterate()
     {
-        // set beat to current position in song
-        if( current_track->pace.iterate(current_track->get_pos()) ) {
+        // if new beat happens
+        if( current_track->pace.iterate() ) {
             audiostate->play_sfx(click_channel);
         }
     }

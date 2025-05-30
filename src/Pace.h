@@ -10,8 +10,8 @@
 struct Pace
 {
     std::vector<double> beats;
-    
-    double offset { 0.12 };
+    size_t currentbeat { 0 };
+    bool started { false };
     
     bool parse(const char* path_to_pacemakerfile)
     {
@@ -80,19 +80,35 @@ struct Pace
         return true;
     }
     
-    size_t currentbeat { 0 };
-    void start()
+    uint64_t startTime_ticks { 0 };
+    double one_over_freq { 1.0f / (double)SDL_GetPerformanceFrequency() };
+    
+    void reset()
     {
         currentbeat = 0;
+        startTime_ticks = 0;
+        started = false;
+    }
+    
+    void start()
+    {
+        reset();
+
+        started = true;
+        startTime_ticks = SDL_GetPerformanceCounter();
     }
 
-    // assumes 'now' is track position
-    bool iterate(double now)
+    const double offset { 0.125f };
+    bool iterate()
     {
-        now += offset;
-
-        if( currentbeat < beats.size() && now >= beats[currentbeat] ) {
-            //printf("beat %i!\n", (int)currentbeat);
+        if( !started || currentbeat >= beats.size() )
+            return false;
+        
+        uint64_t now = SDL_GetPerformanceCounter();
+        uint64_t dt = now - startTime_ticks;
+        double secondsElaped = (double)dt * one_over_freq + offset;
+        
+        if( secondsElaped >= beats[currentbeat] ) {
             currentbeat++;
             return true;
         }
