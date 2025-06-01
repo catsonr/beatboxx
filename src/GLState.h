@@ -135,11 +135,15 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        //shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 3, 0));
-        //shader_mModel = glm::rotate(shader_mModel, glm::radians(-6.0f), glm::vec3(0, 0, 1));
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(4, 4, 1));
+        shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 0, 0));
+        //shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
+        //shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
+        shader_mModel = glm::scale(shader_mModel, glm::vec3(16, 9, 1));
 
-        shader.init("assets/shaders/triangle.vert", "assets/shaders/march.frag", unitsquare_vertices, 3);
+        if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/triangle_hexagon.frag", unitsquare_vertices, 3) ) {
+            printf("[GlState::init] ShaderProgram 'shader' failed to initialize\n");
+            return false;
+        }
         shader.set_uniform("u_mModel", shader_mModel);
         
         /* THREED TRANSFORM */
@@ -158,31 +162,16 @@ struct GLState
     {
         camera_move(inputstate, dt);
 
+        // vertex shader uniforms
         bg_img.set_uniform("u_mVP", m_VP);
         shader.set_uniform("u_mVP", m_VP);
         threeD.set_uniform("u_mVP", m_VP);
 
+        // fragment shader uniforms 
         bg_img.set_uniform("u_t", t);
-        bg_img.set_uniform("u_mModel", bg_img_mModel);
         
-        shader.set_uniform("u_color_ambient", color_ambient);
-        shader.set_uniform("u_color_diffuse", color_diffuse);
-        shader.set_uniform("u_color_specular", color_specular);
-        shader.set_uniform("u_color_none", color_none);
-        shader.set_uniform("u_shininess", shininess);
-        
-        glm::mat4 shader_m_inv_model = glm::inverse(shader_mModel);
-        glm::mat4 m_inv_proj = glm::inverse(m_proj);
-        glm::mat4 m_inv_view = glm::inverse(m_view);
-        glm::vec2 windowresolution = glm::vec2(windowstate->w, windowstate->h);
-
-        shader.set_uniform("u_camera_pos", camera_pos);
-        shader.set_uniform("u_m_inv_model", shader_m_inv_model);
-        shader.set_uniform("u_m_inv_proj", m_inv_proj);
-        shader.set_uniform("u_m_inv_view", m_inv_view);
-        shader.set_uniform("u_windowresolution", windowresolution);
-
-        //shader.set_uniform("u_mModel", shader_mModel);
+        glm::vec4 mouse = glm::vec4( inputstate->mouse_x, inputstate->mouse_y, windowstate->w, windowstate->h );
+        shader.set_uniform("u_mouse", mouse);
     }
     
     void draw()

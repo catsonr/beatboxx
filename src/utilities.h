@@ -89,6 +89,10 @@ namespace util
             char log[512];
             glGetShaderInfoLog(shader, 512, NULL, log);
             printf("[util::compile_shader] shader compile error in file '%s':\n> COMPILE ERROR START <\n%s\n> COMPILE ERROR END <\n", src, log);
+            
+            glDeleteShader(shader);
+            
+            return 0;
         }
 
         return shader;
@@ -97,7 +101,10 @@ namespace util
     inline GLuint create_program(const char *vert_src, const char *frag_src)
     {
         GLuint vertex = compile_shader(GL_VERTEX_SHADER, vert_src);
+        if( vertex == 0 ) return 0;
+
         GLuint fragment = compile_shader(GL_FRAGMENT_SHADER, frag_src);
+        if( fragment == 0 ) return 0;
 
         GLuint program = glCreateProgram();
         glAttachShader(program, vertex);
@@ -111,6 +118,8 @@ namespace util
             char log[512];
             glGetProgramInfoLog(program, 512, NULL, log);
             printf("[util::create_program] program link error: %s\n", log);
+            
+            return 0;
         }
 
         glDeleteShader(vertex);

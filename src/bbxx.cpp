@@ -22,7 +22,7 @@ SDL_AppResult BBXX::init()
         SDL_WINDOW_HIGH_PIXEL_DENSITY |
         SDL_WINDOW_RESIZABLE |
         SDL_WINDOW_INPUT_FOCUS |
-        SDL_WINDOW_ALWAYS_ON_TOP |
+        //SDL_WINDOW_ALWAYS_ON_TOP |
         SDL_WINDOW_MOUSE_FOCUS;
 
     window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags);
@@ -31,7 +31,6 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
-    // sets the minimum size the window can be reisized to
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
     #ifndef __EMSCRIPTEN__
@@ -52,12 +51,10 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    //#ifndef __EMSCRIPTEN__ // only needed on desktop
-        if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
-            SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
-    //#endif
+    if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
+        SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
 
     // sets metadata about beatboxx. competely optional to have
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
@@ -89,6 +86,7 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
+    printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
     return SDL_APP_CONTINUE;
 }

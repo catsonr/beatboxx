@@ -122,7 +122,7 @@ struct ImguiState
         ImGui::Text("time elapsed (s): %.1f", fpscounter->seconds);
     ImGui::End(); // FPSCounter
 
-        ///*
+        /*
     ImGui::Begin("raymarching colors", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::ColorEdit3("ambient", glm::value_ptr(glstate->color_ambient));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(glstate->color_diffuse));
@@ -130,9 +130,12 @@ struct ImguiState
         ImGui::ColorEdit4("bg", glm::value_ptr(glstate->color_none));
         ImGui::SliderFloat("shininess", &glstate->shininess, 0.1f, 255.0f);
     ImGui::End(); // raymarching colors
-        //*/
+        */
         
-    ImGui::Begin("miku", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    static bool mikushow = false;
+    if( mikushow )
+    {
+    ImGui::Begin("miku", &mikushow, ImGuiWindowFlags_AlwaysAutoResize);
     
         if( ImGui::BeginCombo("current track", miku->current_track->title) )
         {
@@ -284,6 +287,8 @@ struct ImguiState
         //ImGui::ShowDemoWindow();
 
     ImGui::End(); // miku
+
+    }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
