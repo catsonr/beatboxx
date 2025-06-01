@@ -128,13 +128,13 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::translate(shader_mModel, glm::vec3(2, 0, 2));
+        //shader_mModel = glm::translate(shader_mModel, glm::vec3(2, 0, 2));
         //shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
         //shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
-        float shader_size = 12.0;
+        float shader_size = 3.0;
         shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
 
-        if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/triangle_hexagon.frag", unitsquare_vertices, 3) ) {
+        if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/lygiatest.frag", unitsquare_vertices, 3) ) {
             printf("[GlState::init] ShaderProgram 'shader' failed to initialize\n");
             return false;
         }
@@ -166,7 +166,7 @@ struct GLState
         
         glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds, inputstate->mouse_y * windowstate->ds, windowstate->w, windowstate->h );
         shader.set_uniform("u_mouse", mouse);
-        shader.set_uniform("u_t", t);
+        //shader.set_uniform("u_t", t);
     }
     
     void draw()

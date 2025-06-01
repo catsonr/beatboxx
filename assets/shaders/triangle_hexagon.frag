@@ -4,7 +4,7 @@ in vec2 v_uv;
 
 out vec4 outColor;
 
-uniform float u_t;
+//uniform float u_t;
 uniform vec4 u_mouse;
 
 float hexagon_dist(vec2 p)

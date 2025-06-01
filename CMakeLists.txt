@@ -25,6 +25,7 @@ if(EMSCRIPTEN)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s FULL_ES3=1 -s USE_WEBGL2=1 -s ALLOW_MEMORY_GROWTH=1")
   target_link_options(beatboxx PRIVATE
     "--preload-file=${CMAKE_SOURCE_DIR}/assets@/assets"
+    "--preload-file=${CMAKE_SOURCE_DIR}/vendored/lygia@/vendored/lygia"
   )
 endif()
 
