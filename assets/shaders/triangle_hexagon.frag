@@ -4,7 +4,7 @@ in vec2 v_uv;
 
 out vec4 outColor;
 
-//uniform float u_t;
+uniform float u_t;
 uniform vec4 u_mouse;
 
 float hexagon_dist(vec2 p)
@@ -39,20 +39,17 @@ vec4 hexagon_coords(vec2 uv)
 
 void main()
 {
-    vec3 color = vec3(0.0, 0.25, 1.0);
-    float alpha = 1.0;
+    vec3 basecolor = vec3(0.49, 0.63, 1.0);
 
     vec2 uv = v_uv;
-    uv *= 10.0;
+    uv *= 7.0;
     
     float d = hexagon_dist(uv);
-    float radius = (u_mouse.x / u_mouse.z) * 4;
+    float radius = u_mouse.x / u_mouse.z;
     float edge = smoothstep(radius, radius + 0.001, d);
     
-    vec3 color_inside = vec3(color);
-    vec3 color_outside = vec3(0.13, 0.49, 1.0);
+    vec4 c_inside = vec4(basecolor, 1.0);
+    vec4 c_outside = vec4(basecolor * 0.5, 0.0);
     
-    color = mix(color_inside, color_outside, edge);
-    
-    outColor = vec4(color, alpha);
+    outColor = mix(c_inside, c_outside, edge);
 }

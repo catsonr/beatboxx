@@ -42,20 +42,13 @@ struct GLState
     float camera_movementSpeed { 0.0000008 };
     float pitch { 0 }, yaw { M_PI_2 };
 
-    glm::vec3 camera_pos { 0, 0, -40 };
+    glm::vec3 camera_pos { 0, 0, -4 };
     glm::vec3 camera_target { 0, 0, 0 };
     glm::vec3 camera_up { 0, 1, 0 };
-    float fov = 15.0f;
+    float fov = 45.0f;
     float aspectRatio;
     float near = 0.1f;
     float far = 100.0f;
-    
-    // raymarching parameters 
-    glm::vec3 color_ambient { 0.5, 0.8, 1.0 };
-    glm::vec3 color_diffuse { 1.0, 1.0, 1.0 };
-    glm::vec3 color_specular { 1.0, 1.0, 1.0 };
-    glm::vec4 color_none { 0.1, 0.1, 0.1, 0.1 };
-    float shininess { 10.0f };
     
     void set_mVP()
     {
@@ -135,10 +128,11 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::translate(shader_mModel, glm::vec3(0, 0, 0));
+        shader_mModel = glm::translate(shader_mModel, glm::vec3(2, 0, 2));
         //shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
         //shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(16, 9, 1));
+        float shader_size = 12.0;
+        shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
 
         if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/triangle_hexagon.frag", unitsquare_vertices, 3) ) {
             printf("[GlState::init] ShaderProgram 'shader' failed to initialize\n");
@@ -170,8 +164,9 @@ struct GLState
         // fragment shader uniforms 
         bg_img.set_uniform("u_t", t);
         
-        glm::vec4 mouse = glm::vec4( inputstate->mouse_x, inputstate->mouse_y, windowstate->w, windowstate->h );
+        glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds, inputstate->mouse_y * windowstate->ds, windowstate->w, windowstate->h );
         shader.set_uniform("u_mouse", mouse);
+        shader.set_uniform("u_t", t);
     }
     
     void draw()
@@ -186,10 +181,13 @@ struct GLState
         
         // opaque
         bg_img.draw();
-        threeD.draw();
+        //threeD.draw();
 
         // transparent
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CW);
+        //glDisable(GL_DEPTH_TEST);
         shader.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
