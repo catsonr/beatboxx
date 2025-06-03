@@ -16,3 +16,6 @@
 [submodule "vendored/vcpkg"]
 	path = vendored/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "vendored/msdf-atlas-gen"]
+	path = vendored/msdf-atlas-gen
+	url = https://github.com/Chlumsky/msdf-atlas-gen
