@@ -8,9 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
+find_package(msdfgen CONFIG REQUIRED)
+
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
 
 file(GLOB_RECURSE PROJECT_SOURCES
@@ -65,9 +66,10 @@ target_link_libraries(beatboxx
   PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
-    SDL3_image::SDL3_image
     glm::glm
 
     glad
     imgui
+    
+    msdfgen::msdfgen
 )

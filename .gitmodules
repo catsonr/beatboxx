@@ -4,10 +4,6 @@
 [submodule "vendored/SDL_mixer"]
     path = vendored/SDL_mixer
     url = https://github.com/libsdl-org/SDL_mixer
-[submodule "vendored/SDL_image"]
-	path = vendored/SDL_image
-	url = https://github.com/libsdl-org/SDL_image.git
-
 [submodule "vendored/imgui"]
 	path = vendored/imgui
 	url = https://github.com/ocornut/imgui.git
@@ -17,3 +13,6 @@
 [submodule "vendored/lygia"]
 	path = vendored/lygia
 	url = https://github.com/patriciogonzalezvivo/lygia.git
+[submodule "vendored/vcpkg"]
+	path = vendored/vcpkg
+	url = https://github.com/microsoft/vcpkg.git

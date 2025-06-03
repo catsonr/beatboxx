@@ -5,3 +5,12 @@ assets/out/
 .DS_STORE
 beatboxx
 ingui.ini
+
+vcpkg_installed/
+vendored/vcpkg/buildtrees/
+vendored/vcpkg/installed/
+vendored/vcpkg/packages/
+vendored/vcpkg/downloads/
+vendored/vcpkg/archives/
+vendored/vcpkg/locks/
+vendored/vcpkg/vcpkg.cache
