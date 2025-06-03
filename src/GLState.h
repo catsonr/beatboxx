@@ -128,9 +128,9 @@ struct GLState
         
         /* SHADER TRANSFORM */
         shader_mModel = glm::mat4(1.0f);
-        //shader_mModel = glm::translate(shader_mModel, glm::vec3(2, 0, 2));
-        //shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
-        //shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
+        shader_mModel = glm::translate(shader_mModel, glm::vec3(-2, 0, 2));
+        shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
+        shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
         float shader_size = 3.0;
         shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
 
@@ -164,9 +164,9 @@ struct GLState
         // fragment shader uniforms 
         bg_img.set_uniform("u_t", t);
         
-        glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds, inputstate->mouse_y * windowstate->ds, windowstate->w, windowstate->h );
+        glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds / windowstate->w, inputstate->mouse_y * windowstate->ds / windowstate->h, windowstate->w, windowstate->h );
         shader.set_uniform("u_mouse", mouse);
-        //shader.set_uniform("u_t", t);
+        shader.set_uniform("u_t", t);
     }
     
     void draw()
@@ -184,9 +184,9 @@ struct GLState
         //threeD.draw();
 
         // transparent
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glFrontFace(GL_CW);
+        //glEnable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
+        //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
         shader.draw();
         

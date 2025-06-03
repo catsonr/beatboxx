@@ -44,9 +44,8 @@ public:
         std::string vert_contents = util::load_file(vert_src_path);
         vert_contents = fix_headers(vert_contents);
 
-        std::string frag_contents = util::load_file(frag_src_path);
+        std::string frag_contents = util::replace_includes(frag_src_path);
         frag_contents = fix_headers(frag_contents);
-        frag_contents = util::replace_includes(frag_contents.c_str());
         
         program = util::create_program(vert_contents.c_str(), frag_contents.c_str());
         if( program == 0 ) {
