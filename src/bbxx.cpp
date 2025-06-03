@@ -86,7 +86,7 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    msdfstate.init();
+    //msdfstate.init();
 
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
