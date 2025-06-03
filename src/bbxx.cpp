@@ -85,6 +85,8 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize miku!\n");
         return SDL_APP_FAILURE;
     }
+    
+    msdfstate.init();
 
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
