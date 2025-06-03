@@ -29,12 +29,15 @@ case "$COMMAND" in
   compile)
     rm -rf build
 
+	export VCPKG_ROOT="$(pwd)/vendored/vcpkg"
+	export PATH="$VCPKG_ROOT:$PATH"
     # If directory emsdk/ exists
     if [ -d "emsdk" ]; then
       source ./emsdk/emsdk_env.sh
-      emcmake cmake -B build
+      emcmake cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+
     else
-      cmake -B build
+      cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
     fi
 
     cmake --build build
