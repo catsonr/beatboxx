@@ -140,7 +140,7 @@ struct GLState
         shader_mModel = glm::translate(shader_mModel, glm::vec3(-2, 0, 2));
         shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
         shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
-        float shader_size = 3.0;
+        float shader_size = 9.0;
         shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
 
         if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/lygiatest.frag", unitsquare_vertices, 3) ) {
@@ -169,6 +169,7 @@ struct GLState
         bg_img.set_uniform("u_mVP", m_VP);
         shader.set_uniform("u_mVP", m_VP);
         threeD.set_uniform("u_mVP", m_VP);
+        msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
 
         // fragment shader uniforms 
         bg_img.set_uniform("u_t", t);
@@ -197,7 +198,7 @@ struct GLState
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
-        shader.draw();
+        //shader.draw();
         
         msdfstate.draw();
         

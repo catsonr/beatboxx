@@ -122,7 +122,7 @@ struct ImguiState
         ImGui::Text("time elapsed (s): %.1f", fpscounter->seconds);
     ImGui::End(); // FPSCounter
         
-    static bool mikushow = true;
+    static bool mikushow = false;
     if( mikushow )
     {
     ImGui::Begin("miku", &mikushow, ImGuiWindowFlags_AlwaysAutoResize);

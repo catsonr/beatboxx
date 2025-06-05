@@ -8,23 +8,30 @@
 
 struct MSDFState
 {
+    // gl stuff
     std::vector<float> quad = {
-        // Triangle #1
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom-left, UV (0,0)
-        1.0f, -1.0f, 0.0f, 1.0f, 0.0f,  // bottom-right, UV (1,0)
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right, UV (1,1)
-        // Triangle #2
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom-left, UV (0,0)
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top-right, UV (1,1)
-        -1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top-left, UV (0,1)
+    //  pos.x,  pos.y,  pos.z,    u,   v
+   -1.0f,   -1.0f,   0.0f,    0.0f,  1.0f,   // bottom-left (u=0,v=1 in top-left coords)
+    1.0f,   -1.0f,   0.0f,    1.0f,  1.0f,   // bottom-right (u=1,v=1)
+    1.0f,    1.0f,   0.0f,    1.0f,  0.0f,   // top-right (u=1,v=0)
+
+   -1.0f,   -1.0f,   0.0f,    0.0f,  1.0f,   // bottom-left
+    1.0f,    1.0f,   0.0f,    1.0f,  0.0f,   // top-right
+   -1.0f,    1.0f,   0.0f,    0.0f,  0.0f    // top-left (u=0,v=0)
     };
     int stride = 5; // 3 floats for pos + 2 floats for UV
     ShaderProgram msdfprogram; 
+    GLuint msdftexture;
 
+    glm::mat4 mModel { glm::mat4(1.0f) };
+    
+    GLuint char_vao, char_vbo;
+
+    // msdf-atlas-gen stuff 
+    float atlas_pixelRange = 2.0f;
     int atlas_width, atlas_height;
     const msdf_atlas::byte *atlas_pixels;
-
-    GLuint msdftexture;
+    std::vector<msdf_atlas::GlyphGeometry> atlas_glyphs;
 
     bool init(const char *path_fromRoot)
     {
@@ -50,14 +57,15 @@ struct MSDFState
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         
-        glm::mat4 identity = glm::mat4(1.0f);
-        msdfprogram.set_uniform("u_mModel", identity);
-        msdfprogram.set_uniform("u_mVP", identity);
+        mModel = glm::translate(mModel, glm::vec3(0, 0, 1));
+        msdfprogram.set_uniform("u_mModel", mModel);
+        // msdfprogram.set_uniform("u_mVP", identity); // set by GLState::init
 
         msdfprogram.set_uniform("u_atlas", 0);
         glm::vec4 text_color = glm::vec4(1.0);
         msdfprogram.set_uniform("u_color", text_color);
-        msdfprogram.set_uniform("u_pxRange", 2.0f);
+        glm::vec4 text_bg_color = glm::vec4(0.0);
+        msdfprogram.set_uniform("u_color_bg", text_bg_color);
         
         return true;
     }
@@ -70,6 +78,7 @@ struct MSDFState
         msdfprogram.draw();
     }
 
+    // (mostly) from https://github.com/Chlumsky/msdf-atlas-gen
     bool generateAtlas(const char *path_fromRoot)
     {
         bool success = false;
@@ -101,7 +110,7 @@ struct MSDFState
                 // setScale for a fixed size or setMinimumScale to use the largest that fits
                 packer.setMinimumScale(48.0);
                 // setPixelRange or setUnitRange
-                packer.setPixelRange(2.0);
+                packer.setPixelRange(atlas_pixelRange);
                 packer.setMiterLimit(1.0);
                 // Compute atlas layout - pack glyphs
                 packer.pack(glyphs.data(), glyphs.size());
@@ -115,8 +124,8 @@ struct MSDFState
                     msdf_atlas::msdfGenerator,              // function to generate bitmaps for individual glyphs
                     msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3> // class that stores the atlas bitmap
                     // For example, a custom atlas storage class that stores it in VRAM can be used.
-                    >
-                    generator(width, height);
+                >
+                generator(width, height);
                 // GeneratorAttributes can be modified to change the generator's default settings.
                 msdf_atlas::GeneratorAttributes attributes;
                 generator.setAttributes(attributes);
@@ -132,9 +141,13 @@ struct MSDFState
                 printf("[MSDFState::generateAtlas] generated atlas of size %dx%d!\n", bitmap.width, bitmap.height);
                 msdfgen::savePng(bitmap, util::get_fullPath("msdftest.png").c_str());
                 
+                // width and height (in pixels) of atlas
                 atlas_width = bitmap.width;
                 atlas_height = bitmap.height;
+                // raw pixel data of atlas
                 atlas_pixels = bitmap.pixels;
+                // save glyphs to MSDFState member for future access
+                atlas_glyphs = std::move(glyphs);
 
                 // Cleanup
                 msdfgen::destroyFont(font);
