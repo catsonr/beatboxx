@@ -15,6 +15,8 @@
 #include "InputState.h"
 #include "ShaderProgram.h"
 
+#include "MSDFState.h"
+
 // glm
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -26,6 +28,7 @@ struct GLState
     std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f };
 
     WindowState* windowstate;
+    MSDFState msdfstate;
     
     ShaderProgram bg_img;
     ShaderProgram shader;
@@ -115,6 +118,12 @@ struct GLState
     {
         this->windowstate = windowstate;
 
+        //if( !msdfstate.init("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf") ) {
+        if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
+            printf("[GLState::init] failed to initialize msdf state!\n");
+            return false;
+        }
+
         set_mVP();
         
         /* BG TRANSFORM */
@@ -189,6 +198,8 @@ struct GLState
         //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
         shader.draw();
+        
+        msdfstate.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
     }

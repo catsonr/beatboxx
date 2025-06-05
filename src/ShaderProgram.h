@@ -36,6 +36,7 @@ public:
     }
     
     /* PUBLIC METHODS */
+    // init with a single attribute 
     bool init(const char* vert_src_path, const char* frag_src_path, std::vector<float>& vbo_data, int stride)
     {
         this->vbo_length = vbo_data.size();
@@ -64,9 +65,70 @@ public:
         glEnableVertexAttribArray(0); // attribute assumed to exist at location = 0
         glVertexAttribPointer(0, stride, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
         
+        glBindVertexArray(0);
+        
         return true;
     }
     
+    // init with two (interwoven) attributes
+    bool init(const char* vert_src_path, const char* frag_src_path, std::vector<float>& vbo_data, int strideA, int strideB)
+    {
+        vbo_length = (int)vbo_data.size();
+        this->stride = strideA + strideB;
+
+        std::string vert_contents = util::load_file(vert_src_path);
+        vert_contents = fix_headers(vert_contents);
+
+        std::string frag_contents = util::replace_includes(frag_src_path);
+        frag_contents = fix_headers(frag_contents);
+
+        program = util::create_program(vert_contents.c_str(), frag_contents.c_str());
+        if (program == 0) {
+            printf("[ShaderProgram::init] failed to create shader program!\n");
+            return false;
+        }
+        glUseProgram(program);
+        
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER,
+                     vbo_length * sizeof(float),
+                     vbo_data.data(),
+                     GL_STATIC_DRAW);
+        
+        GLsizei stride_bytes = this->stride * sizeof(float);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(
+            0,       // location = 0
+            strideA, // number of floats for attribute 0
+            GL_FLOAT,
+            GL_FALSE,
+            stride_bytes, // full bytes per vertex
+            (void *)(0)  // offset = 0
+        );
+
+        // 5) Attribute 1 = next 'strideB' floats:
+        //    location = 1, size = strideB, offset = strideA * sizeof(float)
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1,       // location = 1
+            strideB, // number of floats for attribute 1
+            GL_FLOAT,
+            GL_FALSE,
+            stride_bytes,
+            (void *)(strideA * sizeof(float)) // skip strideA floats
+        );
+
+        // 6) Unbind VAO to lock state:
+        glBindVertexArray(0);
+
+        return true;
+    }
+
     void use()
     {
         glUseProgram(program);
@@ -82,19 +144,37 @@ public:
         glBindVertexArray(0);
     }
     
-    bool set_uniform(const char* name, float value) const
+    bool set_uniform(const char* name, int value) const
     {
         glUseProgram(program);
 
         GLint location = glGetUniformLocation(program, name);
-        
-        if( location == -1 ) {
+
+        if (location == -1)
+        {
+            printf("[ShaderProgram::set_uniform] could not find uniform int '%s'!\n", name);
+            return false;
+        }
+
+        glUniform1i(location, value);
+
+        return true;
+    }
+
+    bool set_uniform(const char *name, float value) const
+    {
+        glUseProgram(program);
+
+        GLint location = glGetUniformLocation(program, name);
+
+        if (location == -1)
+        {
             printf("[ShaderProgram::set_uniform] could not find uniform float '%s'!\n", name);
             return false;
         }
-        
+
         glUniform1f(location, value);
-        
+
         return true;
     }
 
@@ -104,7 +184,8 @@ public:
 
         GLint location = glGetUniformLocation(program, name);
 
-        if ( location == -1 ) {
+        if (location == -1)
+        {
             printf("[ShaderProgram::set_uniform] could not find uniform vec2 '%s'!\n", name);
             return false;
         }

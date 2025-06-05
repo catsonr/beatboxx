@@ -86,8 +86,6 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    msdfstate.generateAtlas("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf");
-
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
     return SDL_APP_CONTINUE;

@@ -21,8 +21,6 @@
 #include "ImguiState.h"
 #include "Miku.h"
 
-#include "MSDFState.h"
-
 class BBXX
 {
 private:
@@ -44,8 +42,6 @@ private:
     
     Miku miku;
     
-    MSDFState msdfstate;
-
 public:
     /* PUBLIC MEMBERS */
     SDL_Window *window { nullptr };
