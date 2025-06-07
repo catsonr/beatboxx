@@ -120,10 +120,13 @@ struct GLState
 
         //if( !msdfstate.init("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf") ) {
         if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
+        //if( !msdfstate.init("assets/fonts/splatoon3/SpAlterna-Regular.otf") ) {
+        //if( !msdfstate.init("assets/fonts/DotGothic16/DotGothic16-Regular.ttf") ) {
+        //if( !msdfstate.init("assets/fonts/Exile/Exile-Regular.ttf") ) {
             printf("[GLState::init] failed to initialize msdf state!\n");
             return false;
         }
-
+        
         set_mVP();
         
         /* BG TRANSFORM */

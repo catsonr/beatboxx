@@ -123,7 +123,6 @@ public:
             (void *)(strideA * sizeof(float)) // skip strideA floats
         );
 
-        // 6) Unbind VAO to lock state:
         glBindVertexArray(0);
 
         return true;

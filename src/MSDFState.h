@@ -32,6 +32,17 @@ struct MSDFState
     int atlas_width, atlas_height;
     const msdf_atlas::byte *atlas_pixels;
     std::vector<msdf_atlas::GlyphGeometry> atlas_glyphs;
+    
+    msdf_atlas::GlyphGeometry* get_glyphFromChar(const char c)
+    {
+        for(auto& glyph : atlas_glyphs)
+        {
+            if( glyph.getCodepoint() == c) return &glyph;
+        }
+        
+        printf("could not find character '%c' in atlas!\n", c);
+        return nullptr;
+    }
 
     bool init(const char *path_fromRoot)
     {
@@ -41,7 +52,36 @@ struct MSDFState
             return false;
         }
         
-        if( !msdfprogram.init("assets/shaders/msdf.vert", "assets/shaders/msdf.frag", quad, 3, 2) ) {
+        msdf_atlas::GlyphGeometry* glyph = get_glyphFromChar('$');
+        double al, ab, ar, at; // atlas left, bottom, right, top
+        double pl, pb, pr, pt; // plane left, bottom, right, top
+        glyph->getQuadAtlasBounds(al, ab, ar, at);
+        glyph->getQuadPlaneBounds(pl, pb, pr, pt);
+        
+        printf("glyph '%c':\n", (char)glyph->getCodepoint());
+        printf("atlas bounds: l=%f, b=%f, r=%f, t=%f\n", al, ab, ar, at);
+        printf("plane bounds: l=%f, b=%f, r=%f, t=%f\n", pl, pb, pr, pt);
+
+        float u0 = al / float(atlas_width);
+        float v0 = ab / float(atlas_height);
+        float u1 = ar / float(atlas_width);
+        float v1 = at / float(atlas_height);
+
+        // these x0 & y0 is flipped with x1 & y1, otherwise the text is mirrored vertically and horizontally
+        float x1 = pl, y1 = pb;
+        float x0 = pr, y0 = pt;
+
+        std::vector<float> char_verts = {
+             x0,    y0,   0.0f, u0, v1,
+             x1,    y0,   0.0f, u1, v1,
+             x1,    y1,   0.0f, u1, v0,
+
+             x0,    y0,   0.0f, u0, v1,
+             x1,    y1,   0.0f, u1, v0,
+             x0,    y1,   0.0f, u0, v0,
+        };
+        
+        if( !msdfprogram.init("assets/shaders/msdf.vert", "assets/shaders/msdf.frag", char_verts, 3, 2) ) {
             printf("[MSDFState::init] failed to create shader program!\n");
             return false;
         }
@@ -78,7 +118,7 @@ struct MSDFState
         msdfprogram.draw();
     }
 
-    // (mostly) from https://github.com/Chlumsky/msdf-atlas-gen
+    // mostly from https://github.com/Chlumsky/msdf-atlas-gen
     bool generateAtlas(const char *path_fromRoot)
     {
         bool success = false;
@@ -97,7 +137,8 @@ struct MSDFState
                 // The second argument can be ignored unless you mix different font sizes in one atlas.
                 // In the last argument, you can specify a charset other than ASCII.
                 // To load specific glyph indices, use loadGlyphs instead.
-                fontGeometry.loadCharset(font, 1.0, msdf_atlas::Charset::ASCII);
+                double fontScale = 1.0f;
+                fontGeometry.loadCharset(font, fontScale, msdf_atlas::Charset::ASCII);
                 // Apply MSDF edge coloring. See edge-coloring.h for other coloring strategies.
                 const double maxCornerAngle = 3.0;
                 for (msdf_atlas::GlyphGeometry &glyph : glyphs)
@@ -111,7 +152,7 @@ struct MSDFState
                 packer.setMinimumScale(48.0);
                 // setPixelRange or setUnitRange
                 packer.setPixelRange(atlas_pixelRange);
-                packer.setMiterLimit(1.0);
+                packer.setMiterLimit(1.0); // no idea what this is, but it's on the github
                 // Compute atlas layout - pack glyphs
                 packer.pack(glyphs.data(), glyphs.size());
                 // Get final atlas dimensions
@@ -139,7 +180,7 @@ struct MSDFState
                 const msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3>& atlas = generator.atlasStorage();
                 msdfgen::BitmapConstRef<msdf_atlas::byte, 3> bitmap = atlas;
                 printf("[MSDFState::generateAtlas] generated atlas of size %dx%d!\n", bitmap.width, bitmap.height);
-                msdfgen::savePng(bitmap, util::get_fullPath("msdftest.png").c_str());
+                msdfgen::savePng(bitmap, util::get_fullPath("msdf-atlas.png").c_str());
                 
                 // width and height (in pixels) of atlas
                 atlas_width = bitmap.width;
