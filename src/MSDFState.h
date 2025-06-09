@@ -57,10 +57,6 @@ struct MSDFState
         double pl, pb, pr, pt; // plane left, bottom, right, top
         glyph->getQuadAtlasBounds(al, ab, ar, at);
         glyph->getQuadPlaneBounds(pl, pb, pr, pt);
-        
-        printf("glyph '%c':\n", (char)glyph->getCodepoint());
-        printf("atlas bounds: l=%f, b=%f, r=%f, t=%f\n", al, ab, ar, at);
-        printf("plane bounds: l=%f, b=%f, r=%f, t=%f\n", pl, pb, pr, pt);
 
         float u0 = al / float(atlas_width);
         float v0 = ab / float(atlas_height);
@@ -89,6 +85,8 @@ struct MSDFState
         // create texture from atlas
         glGenTextures(1, &msdftexture);
         glBindTexture(GL_TEXTURE_2D, msdftexture);
+        
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, atlas_width, atlas_height, 0, GL_RGB, GL_UNSIGNED_BYTE, atlas_pixels);
 
@@ -102,7 +100,7 @@ struct MSDFState
         // msdfprogram.set_uniform("u_mVP", identity); // set by GLState::init
 
         msdfprogram.set_uniform("u_atlas", 0);
-        glm::vec4 text_color = glm::vec4(1.0);
+        glm::vec4 text_color = glm::vec4(0.2, 8.0, 0.5, 1.0);
         msdfprogram.set_uniform("u_color", text_color);
         glm::vec4 text_bg_color = glm::vec4(0.0);
         msdfprogram.set_uniform("u_color_bg", text_bg_color);
