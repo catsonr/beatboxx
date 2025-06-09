@@ -129,6 +129,7 @@ SDL_AppResult BBXX::handle_event(SDL_Event *event)
     // application closed
     if(event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
     {
+        printf("[BBXX::handle_event] window close requested!\n");
         return SDL_APP_SUCCESS;
     }
 

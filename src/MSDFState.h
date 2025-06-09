@@ -33,6 +33,7 @@ struct MSDFState
     const msdf_atlas::byte *atlas_pixels;
     std::vector<msdf_atlas::GlyphGeometry> atlas_glyphs;
     
+    /* PUBLIC METHODS */
     msdf_atlas::GlyphGeometry* get_glyphFromChar(const char c)
     {
         for(auto& glyph : atlas_glyphs)
@@ -40,8 +41,44 @@ struct MSDFState
             if( glyph.getCodepoint() == c) return &glyph;
         }
         
-        printf("could not find character '%c' in atlas!\n", c);
+        printf("[MSDFState::get_glyphFromChar] could not find character '%c' in atlas!\n", c);
         return nullptr;
+    }
+    
+    std::vector<float> glyph_vao(const char c)
+    {
+        msdf_atlas::GlyphGeometry* glyph = get_glyphFromChar(c);
+        double al, ab, ar, at; // atlas left, bottom, right, top
+        double pl, pb, pr, pt; // plane left, bottom, right, top
+        glyph->getQuadAtlasBounds(al, ab, ar, at);
+        glyph->getQuadPlaneBounds(pl, pb, pr, pt);
+
+        // u coords are reversed from the expected u0=left, u1=right so opengl renders with correct orientation
+        float u0 = (float)ar / atlas_width;
+        float u1 = (float)al / atlas_width;
+
+        float v0 = (float)ab / atlas_height;
+        float v1 = (float)at / atlas_height;
+        
+        float width = pr - pl;
+        float height = pt - pb;
+
+        float x0 = pl - (width / 2.0);
+        float x1 = x0 + width;
+
+        float y0 = pb - (height / 2.0);
+        float y1 = y0 + height;
+
+        return {
+             x0, y0, 0.0f, u0, v0,
+             x1, y0, 0.0f, u1, v0,
+             x1, y1, 0.0f, u1, v1,
+
+             x0, y0, 0.0f, u0, v0,
+             x1, y1, 0.0f, u1, v1,
+             x0, y1, 0.0f, u0, v1,
+        };
+        
     }
 
     bool init(const char *path_fromRoot)
@@ -52,32 +89,9 @@ struct MSDFState
             return false;
         }
         
-        msdf_atlas::GlyphGeometry* glyph = get_glyphFromChar('$');
-        double al, ab, ar, at; // atlas left, bottom, right, top
-        double pl, pb, pr, pt; // plane left, bottom, right, top
-        glyph->getQuadAtlasBounds(al, ab, ar, at);
-        glyph->getQuadPlaneBounds(pl, pb, pr, pt);
-
-        float u0 = al / float(atlas_width);
-        float v0 = ab / float(atlas_height);
-        float u1 = ar / float(atlas_width);
-        float v1 = at / float(atlas_height);
-
-        // these x0 & y0 is flipped with x1 & y1, otherwise the text is mirrored vertically and horizontally
-        float x1 = pl, y1 = pb;
-        float x0 = pr, y0 = pt;
-
-        std::vector<float> char_verts = {
-             x0,    y0,   0.0f, u0, v1,
-             x1,    y0,   0.0f, u1, v1,
-             x1,    y1,   0.0f, u1, v0,
-
-             x0,    y0,   0.0f, u0, v1,
-             x1,    y1,   0.0f, u1, v0,
-             x0,    y1,   0.0f, u0, v0,
-        };
+        std::vector<float> glyph_verts = glyph_vao('$');
         
-        if( !msdfprogram.init("assets/shaders/msdf.vert", "assets/shaders/msdf.frag", char_verts, 3, 2) ) {
+        if( !msdfprogram.init("assets/shaders/msdf.vert", "assets/shaders/msdf.frag", glyph_verts, 3, 2) ) {
             printf("[MSDFState::init] failed to create shader program!\n");
             return false;
         }
@@ -119,7 +133,6 @@ struct MSDFState
     // mostly from https://github.com/Chlumsky/msdf-atlas-gen
     bool generateAtlas(const char *path_fromRoot)
     {
-        bool success = false;
         // Initialize instance of FreeType library
         if (msdfgen::FreetypeHandle *ft = msdfgen::initializeFreetype())
         {
@@ -173,11 +186,15 @@ struct MSDFState
                 generator.generate(glyphs.data(), glyphs.size());
                 // The atlas bitmap can now be retrieved via atlasStorage as a BitmapConstRef.
                 // The glyphs array (or fontGeometry) contains positioning data for typesetting text.
-                //success = my_project::submitAtlasBitmapAndLayout(generator.atlasStorage(), glyphs);
-                success = true;
                 const msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3>& atlas = generator.atlasStorage();
                 msdfgen::BitmapConstRef<msdf_atlas::byte, 3> bitmap = atlas;
-                printf("[MSDFState::generateAtlas] generated atlas of size %dx%d!\n", bitmap.width, bitmap.height);
+                
+                if(!bitmap.pixels) {
+                    printf("[MSDFState::generateAtlas] failed to generate atlas for font '%s'!\n", path_fromRoot);
+                    return false;
+                }
+
+                printf("[MSDFState::generateAtlas] generated atlas of size %dx%d for font '%s'\n", bitmap.width, bitmap.height, path_fromRoot);
                 msdfgen::savePng(bitmap, util::get_fullPath("msdf-atlas.png").c_str());
                 
                 // width and height (in pixels) of atlas
@@ -193,7 +210,7 @@ struct MSDFState
             }
             msdfgen::deinitializeFreetype(ft);
         }
-        return success;
+        return true;
     }
 }; // MSDFState
 

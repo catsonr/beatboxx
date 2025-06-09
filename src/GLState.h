@@ -119,9 +119,9 @@ struct GLState
         this->windowstate = windowstate;
 
         //if( !msdfstate.init("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf") ) {
-        //if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
+        if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
         //if( !msdfstate.init("assets/fonts/splatoon3/SpAlterna-Regular.otf") ) {
-        if( !msdfstate.init("assets/fonts/DotGothic16/DotGothic16-Regular.ttf") ) {
+        //if( !msdfstate.init("assets/fonts/DotGothic16/DotGothic16-Regular.ttf") ) {
         //if( !msdfstate.init("assets/fonts/Exile/Exile-Regular.ttf") ) {
             printf("[GLState::init] failed to initialize msdf state!\n");
             return false;
@@ -143,7 +143,7 @@ struct GLState
         shader_mModel = glm::translate(shader_mModel, glm::vec3(-2, 0, 2));
         shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
         shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
-        float shader_size = 9.0;
+        float shader_size = 3.0;
         shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
 
         if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/lygiatest.frag", unitsquare_vertices, 3) ) {
@@ -201,7 +201,7 @@ struct GLState
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
-        //shader.draw();
+        shader.draw();
         
         msdfstate.draw();
         
