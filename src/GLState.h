@@ -15,7 +15,7 @@
 #include "InputState.h"
 #include "ShaderProgram.h"
 
-#include "MSDFState.h"
+//#include "MSDFState.h"
 
 #include "NanoVGState.h"
 
@@ -30,7 +30,7 @@ struct GLState
     std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f };
 
     WindowState* windowstate;
-    MSDFState msdfstate;
+    //MSDFState msdfstate;
     
     ShaderProgram bg_img;
     ShaderProgram shader;
@@ -121,13 +121,13 @@ struct GLState
         this->windowstate = windowstate;
 
         //if( !msdfstate.init("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf") ) {
-        if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
+        //if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
         //if( !msdfstate.init("assets/fonts/splatoon3/SpAlterna-Regular.otf") ) {
         //if( !msdfstate.init("assets/fonts/DotGothic16/DotGothic16-Regular.ttf") ) {
         //if( !msdfstate.init("assets/fonts/Exile/Exile-Regular.ttf") ) {
-            printf("[GLState::init] failed to initialize msdf state!\n");
-            return false;
-        }
+        //    printf("[GLState::init] failed to initialize msdf state!\n");
+        //    return false;
+        //}
         
         set_mVP();
         
@@ -174,13 +174,13 @@ struct GLState
         bg_img.set_uniform("u_mVP", m_VP);
         shader.set_uniform("u_mVP", m_VP);
         threeD.set_uniform("u_mVP", m_VP);
-        msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
+        //msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
 
         // fragment shader uniforms 
         bg_img.set_uniform("u_t", t);
         
         glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds / windowstate->w, inputstate->mouse_y * windowstate->ds / windowstate->h, windowstate->w, windowstate->h );
-        shader.set_uniform("u_mouse", mouse);
+        //shader.set_uniform("u_mouse", mouse);
         shader.set_uniform("u_t", t);
     }
     
@@ -205,7 +205,7 @@ struct GLState
         //glDisable(GL_DEPTH_TEST);
         shader.draw();
         
-        msdfstate.draw();
+        //msdfstate.draw();
         
         // once end of draw() is reached, all rendering should be complete and ready for imgui
     }

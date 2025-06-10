@@ -1,5 +1,11 @@
 #include <glad/glad.h>
+
+#ifdef __EMSCRIPTEN__
+#define NANOVG_GLES3_IMPLEMENTATION
+#else
 #define NANOVG_GL3_IMPLEMENTATION
+#endif
+
 #include <nanovg.h>
 #include <nanovg_gl.h>
 
@@ -7,7 +13,11 @@
 
 bool NanoVGState::init(WindowState* windowstate)
 {
+#ifdef __EMSCRIPTEN__
+    vg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+#else
     vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+#endif
 
     if ( !vg ) {
         printf("[NanoVGState::init] failed to create nvg context!\n");
@@ -42,7 +52,11 @@ void NanoVGState::draw()
 void NanoVGState::cleanup()
 {
     if( vg ) {
+#ifdef __EMSCRIPTEN__
+        nvgDeleteGLES3(vg);
+#else
         nvgDeleteGL3(vg);
+#endif
         vg = nullptr;
     }
 }

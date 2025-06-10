@@ -14,18 +14,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-find_package(msdfgen CONFIG REQUIRED)
-find_package(freetype CONFIG REQUIRED)
-#set(MSDF_ATLAS_GEN_BUILD_MSDFGEN OFF CACHE BOOL "")
-file(GLOB MSDF_ATLAS_GEN_SOURCES
-    "vendored/msdf-atlas-gen/msdf-atlas-gen/*.cpp"
-)
-add_library(msdf-atlas-gen STATIC ${MSDF_ATLAS_GEN_SOURCES})
-target_include_directories(msdf-atlas-gen PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen/artery-font-format
-)
-target_link_libraries(msdf-atlas-gen PUBLIC msdfgen::msdfgen freetype)
+# msdfgen and msdf-atlas-gen only included if on native build
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  find_package(msdfgen CONFIG REQUIRED)
+  file(GLOB MSDF_ATLAS_GEN_SOURCES
+      "vendored/msdf-atlas-gen/msdf-atlas-gen/*.cpp"
+  )
+  add_library(msdf-atlas-gen STATIC ${MSDF_ATLAS_GEN_SOURCES})
+  target_include_directories(msdf-atlas-gen PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen
+      ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen/artery-font-format
+  )
+  target_link_libraries(msdf-atlas-gen PUBLIC msdfgen::msdfgen freetype)
+endif()
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
@@ -115,7 +116,13 @@ target_link_libraries(beatboxx
     json
     
     nanovg
-    
+)
+
+# msdfgen and msdf-atlas-gen only included if on native build
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  target_link_libraries(beatboxx
+  PRIVATE
     msdfgen::msdfgen
     msdf-atlas-gen
-)
+  )
+endif()
