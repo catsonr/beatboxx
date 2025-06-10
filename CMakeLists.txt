@@ -85,6 +85,23 @@ target_include_directories(json INTERFACE
   ${CMAKE_SOURCE_DIR}
 )
 
+# nanovg
+set(NANOVG_ROOT "${CMAKE_SOURCE_DIR}/vendored/nanovg")
+set(NANOVG_SOURCES
+  "${NANOVG_ROOT}/src/nanovg.c"
+)
+
+add_library(nanovg STATIC ${NANOVG_SOURCES})
+
+target_include_directories(nanovg PUBLIC
+  "${NANOVG_ROOT}/src"
+)
+
+target_link_libraries(nanovg
+  glad
+  glm::glm
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
@@ -96,6 +113,8 @@ target_link_libraries(beatboxx
     imgui
     
     json
+    
+    nanovg
     
     msdfgen::msdfgen
     msdf-atlas-gen

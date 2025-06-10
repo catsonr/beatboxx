@@ -19,3 +19,6 @@
 [submodule "vendored/msdf-atlas-gen"]
 	path = vendored/msdf-atlas-gen
 	url = https://github.com/Chlumsky/msdf-atlas-gen
+[submodule "vendored/nanovg"]
+	path = vendored/nanovg
+	url = https://github.com/memononen/nanovg.git

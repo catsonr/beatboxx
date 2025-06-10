@@ -17,6 +17,8 @@
 
 #include "MSDFState.h"
 
+#include "NanoVGState.h"
+
 // glm
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>

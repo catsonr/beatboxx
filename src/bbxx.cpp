@@ -86,6 +86,11 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
+    if( !nanovgstate.init(&windowstate) ) {
+        SDL_Log("[BBXX::init] failed to initialize nanovg state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
     return SDL_APP_CONTINUE;
@@ -106,6 +111,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
+    nanovgstate.draw();
     imguistate.draw(&fpscounter, &glstate, &miku);
 
     SDL_GL_SwapWindow(window);
@@ -150,5 +156,6 @@ void BBXX::quit()
         SDL_GL_DestroyContext(gl);
 
     miku.cleanup();
+    nanovgstate.cleanup();
     audiostate.cleanup();
 }
