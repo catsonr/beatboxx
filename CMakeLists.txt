@@ -78,6 +78,13 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PRIVATE SDL3::SDL3)
 
+# nlohmann/json
+add_library(json INTERFACE)
+
+target_include_directories(json INTERFACE
+  ${CMAKE_SOURCE_DIR}
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
@@ -87,6 +94,8 @@ target_link_libraries(beatboxx
 
     glad
     imgui
+    
+    json
     
     msdfgen::msdfgen
     msdf-atlas-gen

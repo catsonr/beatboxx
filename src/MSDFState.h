@@ -1,7 +1,18 @@
 #ifndef MSDFSTATE_H
 #define MSDFSTATE_H
 
+/*
+    msdf-atlas-gen is installed with vcpkg, which does not play well with emscripten when compiling
+    
+    MSDFState will only be defined on native builds of beatboxx and really should never be used,
+    as it will likely be deleted in the future
+    
+    MSDFState generates and saves a font atlas to assets/fonts/{that font}/ upon initialization
+*/
+#ifndef __EMSCRIPTEN__
 #include <msdf-atlas-gen/msdf-atlas-gen.h>
+
+#include <nlohmann/json.hpp>
 
 #include "utilities.h"
 #include "ShaderProgram.h"
@@ -119,6 +130,12 @@ struct MSDFState
         glm::vec4 text_bg_color = glm::vec4(0.0);
         msdfprogram.set_uniform("u_color_bg", text_bg_color);
         
+        if( !save_font(path_fromRoot) )
+        {
+            printf("[MSDFState::init] failed to save font '%s'!\n", path_fromRoot);
+            return false;
+        }
+        
         return true;
     }
     
@@ -212,6 +229,50 @@ struct MSDFState
         }
         return true;
     }
+    
+    #include <filesystem>
+    #include <fstream>
+    bool save_font(const char* path_fromRoot)
+    {
+        // create spot for font atlas + data
+        namespace fs = std::filesystem;
+        fs::path font_file(path_fromRoot);
+        std::string font_name = font_file.stem().string();
+        fs::path out_dir = util::get_fullPath(("assets/fonts/" + font_name).c_str());
+        fs::create_directories(out_dir);
+        
+        // save atlas
+        fs::path png_path = out_dir / "msdf-atlas.png";
+        msdfgen::BitmapConstRef<msdf_atlas::byte,3> bitmap(
+            atlas_pixels,
+            static_cast<unsigned int>(atlas_width),
+            static_cast<unsigned int>(atlas_height)
+        );
+        msdfgen::savePng(bitmap, png_path.string().c_str());
+        
+        // save data
+        fs::path data_path = out_dir / "msdf-data.json";
+        std::ofstream data_file(data_path);
+        using json = nlohmann::json;
+        json data = json::array();
+        for(auto& glyph : atlas_glyphs)
+        {
+            double al, ab, ar, at, pl, pb, pr, pt;
+            glyph.getQuadAtlasBounds(al, ab, ar, at);
+            glyph.getQuadPlaneBounds(pl, pb, pr, pt);
+            data.push_back({
+                { "codepoint", glyph.getCodepoint() },
+                { "atlas", { al, ab, ar, at} },
+                { "plane", { pl, pb, pr, pt} }
+            });
+        }
+        data_file << data.dump(2) << std::endl;
+        data_file.close();
+        
+        return true;
+    }
 }; // MSDFState
+
+#endif // __EMSCRIPTEN__
 
 #endif // MSDFSTATE_H
