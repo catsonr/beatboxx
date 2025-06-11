@@ -112,9 +112,7 @@ target_link_libraries(beatboxx
 
     glad
     imgui
-    
     json
-    
     nanovg
 )
 
@@ -126,3 +124,7 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     msdf-atlas-gen
   )
 endif()
+
+target_include_directories(beatboxx PRIVATE
+  ${CMAKE_SOURCE_DIR}/src
+)

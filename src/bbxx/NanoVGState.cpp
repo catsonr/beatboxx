@@ -1,15 +1,18 @@
-#include <glad/glad.h>
+#include "NanoVGState.h"
 
+
+/*
+   NanoVG requires some #define gl_implementation in some .cpp once and only once,
+   so we do it here
+*/
+#include <glad/glad.h>
 #ifdef __EMSCRIPTEN__
 #define NANOVG_GLES3_IMPLEMENTATION
 #else
 #define NANOVG_GL3_IMPLEMENTATION
 #endif
-
 #include <nanovg.h>
 #include <nanovg_gl.h>
-
-#include "NanoVGState.h"
 
 bool NanoVGState::init(WindowState* windowstate)
 {

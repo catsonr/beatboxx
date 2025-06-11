@@ -2,8 +2,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-
-#include "bbxx.h"
+#include <bbxx/BBXX.h>
 BBXX bx;
 
 /* This function runs once at startup. */
@@ -30,7 +29,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    printf("[main] quitting beatboxx ...\n");
+    printf("[main] quitting BBXX ...\n");
 
     bx.quit();
 }

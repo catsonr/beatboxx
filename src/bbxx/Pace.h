@@ -1,10 +1,13 @@
 #ifndef PACE_H
 #define PACE_H
 
+// std
 #include <vector>
 
+// SDL
 #include <SDL3/SDL.h>
 
+// bbxx
 #include "utilities.h"
 
 struct Pace

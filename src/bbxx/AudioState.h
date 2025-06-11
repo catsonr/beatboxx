@@ -15,11 +15,14 @@
 #ifndef AUDIOSTATE_H
 #define AUDIOSTATE_H
 
+// std
+#include <cstdio>
+
+// SDL
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
-#include <cstdio>
-
+// bbxx
 #include "utilities.h"
 
 struct AudioState

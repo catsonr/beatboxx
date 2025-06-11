@@ -1,15 +1,7 @@
 #ifndef BBXX_H
 #define BBXX_H
 
-#define BBXVERSION "0.0.1"
-
-// c++ headers
-#include <cstdio>
-
-// SDL headers
 #include <SDL3/SDL.h>
-
-// glad headers
 #include <glad/glad.h>
 
 // BBXX state classes
@@ -22,6 +14,8 @@
 #include "Miku.h"
 
 #include "NanoVGState.h"
+
+#include <bbxx/screen/Screen.h>
 
 class BBXX
 {
@@ -46,6 +40,8 @@ private:
     
     NanoVGState nanovgstate;
     
+    std::stack<Screen> screens;
+    
 public:
     /* PUBLIC MEMBERS */
     SDL_Window *window { nullptr };
@@ -56,7 +52,7 @@ public:
     SDL_AppResult init();
     void iterate();
     void draw();
-    SDL_AppResult handle_event(SDL_Event *event);
+    SDL_AppResult handle_event(const SDL_Event *event);
     void quit();
 }; // BBXX
 

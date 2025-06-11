@@ -1,12 +1,13 @@
 #ifndef IMGUISTATE_H
 #define IMGUISTATE_H
 
+// imgui
 #include <imgui.h>
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
+// bbxx
 #include "FPSCounter.h"
-
 #include "WindowState.h"
 #include "GLState.h"
 #include "Miku.h"
@@ -122,7 +123,7 @@ struct ImguiState
         ImGui::Text("time elapsed (s): %.1f", fpscounter->seconds);
     ImGui::End(); // FPSCounter
         
-    static bool mikushow = true;
+    static bool mikushow = false;
     if( mikushow )
     {
     ImGui::Begin("miku", &mikushow, ImGuiWindowFlags_AlwaysAutoResize);

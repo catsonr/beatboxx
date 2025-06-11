@@ -1,13 +1,17 @@
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H
 
+// std
 #include <vector>
 
+// glad
 #include <glad/glad.h>
 
+// glm
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// bxxx
 #include "utilities.h"
 
 class ShaderProgram

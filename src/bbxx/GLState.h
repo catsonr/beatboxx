@@ -1,13 +1,19 @@
 #ifndef GLSTATE_H
 #define GLSTATE_H
 
+// std
 #include <cstdio>
 
-// SDL3
+// SDL
 #include <SDL3/SDL.h>
 
 // glad
 #include <glad/glad.h>
+
+// glm
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // bbxx
 #include "utilities.h"
@@ -15,22 +21,12 @@
 #include "InputState.h"
 #include "ShaderProgram.h"
 
-//#include "MSDFState.h"
-
-#include "NanoVGState.h"
-
-// glm
-#include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 struct GLState
 {
     std::vector<float> unitsquare_vertices { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f, -0.5f, -0.5f, 0.0f };
     std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f };
 
     WindowState* windowstate;
-    //MSDFState msdfstate;
     
     ShaderProgram bg_img;
     ShaderProgram shader;
@@ -91,7 +87,7 @@ struct GLState
         set_mVP();
     }
 
-    void handle_event(SDL_Event* event)
+    void handle_event(const SDL_Event* event)
     {
         if( !windowstate->focused ) return;
 
@@ -120,15 +116,6 @@ struct GLState
     {
         this->windowstate = windowstate;
 
-        //if( !msdfstate.init("assets/fonts/Nabla/Nabla-Regular-VariableFont_EDPT,EHLT.ttf") ) {
-        //if( !msdfstate.init("assets/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf") ) {
-        //if( !msdfstate.init("assets/fonts/splatoon3/SpAlterna-Regular.otf") ) {
-        //if( !msdfstate.init("assets/fonts/DotGothic16/DotGothic16-Regular.ttf") ) {
-        //if( !msdfstate.init("assets/fonts/Exile/Exile-Regular.ttf") ) {
-        //    printf("[GLState::init] failed to initialize msdf state!\n");
-        //    return false;
-        //}
-        
         set_mVP();
         
         /* BG TRANSFORM */

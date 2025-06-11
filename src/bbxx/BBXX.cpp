@@ -1,4 +1,4 @@
-#include "bbxx.h"
+#include <bbxx/BBXX.h>
 
 /*
     does all necessary SDL initialization
@@ -42,8 +42,8 @@ SDL_AppResult BBXX::init()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     #endif
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     gl = SDL_GL_CreateContext(window);
     if ( !gl ) {
@@ -55,11 +55,6 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-    // sets metadata about beatboxx. competely optional to have
-    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, WINDOW_TITLE);
-    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING, BBXVERSION);
-    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING, "game");
 
     if( !audiostate.init() ) {
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
@@ -111,7 +106,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
-    nanovgstate.draw();
+    //nanovgstate.draw();
     imguistate.draw(&fpscounter, &glstate, &miku);
 
     SDL_GL_SwapWindow(window);
@@ -130,7 +125,7 @@ void BBXX::draw()
 // SDL_EVENT_AUDIO_DEVICE_ADDED = 0x1100,  /**< A new audio device is available */
 // SDL_EVENT_AUDIO_DEVICE_REMOVED,
 // SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED,  /**< An audio device's format has been changed by the system. */
-SDL_AppResult BBXX::handle_event(SDL_Event *event)
+SDL_AppResult BBXX::handle_event(const SDL_Event* event)
 {
     // application closed
     if(event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)

@@ -1,10 +1,13 @@
 #ifndef WINDOWSTATE_H
 #define WINDOWSTATE_H
 
+// std
 #include <cstring>
 
+// SDL
 #include <SDL3/SDL.h>
 
+// glad
 #include <glad/glad.h>
 
 struct WindowState
@@ -50,7 +53,7 @@ struct WindowState
         //printf("[WindowState::refresh]\n\twidth: %i\n\theight: %i\n\tdisplay scale: %f\n", w, h, ds);
     }
     
-    void handle_event(SDL_Event *event)
+    void handle_event(const SDL_Event *event)
     {
         if(event->type == SDL_EVENT_WINDOW_RESIZED)
         {
