@@ -115,7 +115,7 @@ struct GLState
     bool init(WindowState* windowstate)
     {
         this->windowstate = windowstate;
-
+        
         set_mVP();
         
         /* BG TRANSFORM */
@@ -190,7 +190,7 @@ struct GLState
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
-        shader.draw();
+        //shader.draw();
         
         //msdfstate.draw();
         

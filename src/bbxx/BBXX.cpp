@@ -16,16 +16,8 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
-    SDL_WindowFlags windowflags =
-        //SDL_WINDOW_FULLSCREEN |
-        SDL_WINDOW_OPENGL |
-        SDL_WINDOW_HIGH_PIXEL_DENSITY |
-        SDL_WINDOW_RESIZABLE |
-        SDL_WINDOW_INPUT_FOCUS |
-        //SDL_WINDOW_ALWAYS_ON_TOP |
-        SDL_WINDOW_MOUSE_FOCUS;
 
-    window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, windowflags);
+    window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH_INITIAL, WINDOW_HEIGHT_INITIAL, windowflags);
     if( !window ) {
         SDL_Log("[BBXX::init] failed to create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
@@ -33,15 +25,15 @@ SDL_AppResult BBXX::init()
 
     SDL_SetWindowMinimumSize(window, WINDOW_WIDTH_MIN, WINDOW_HEIGHT_MIN);
 
-    #ifndef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    #else
+#else
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    #endif
+#endif
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
@@ -52,7 +44,7 @@ SDL_AppResult BBXX::init()
     }
     
     if( !gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) ) {
-        SDL_Log("[BBXX::init] failed to initialize glad for OpenGL 3.2 core: %s", SDL_GetError());
+        SDL_Log("[BBXX::init] failed to initialize glad: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
@@ -76,11 +68,6 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !miku.init(&audiostate) ) {
-        SDL_Log("[BBXX::init] failed to initialize miku!\n");
-        return SDL_APP_FAILURE;
-    }
-    
     if( !nanovgstate.init(&windowstate) ) {
         SDL_Log("[BBXX::init] failed to initialize nanovg state!\n");
         return SDL_APP_FAILURE;
@@ -95,7 +82,6 @@ SDL_AppResult BBXX::init()
 void BBXX::iterate()
 {
     fpscounter.iterate();
-    miku.iterate();
     
     glstate.iterate(fpscounter.seconds, fpscounter.dt, &inputstate);
 }
@@ -106,8 +92,8 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
-    //nanovgstate.draw();
-    imguistate.draw(&fpscounter, &glstate, &miku);
+    nanovgstate.draw();
+    imguistate.draw(&fpscounter, &glstate);
 
     SDL_GL_SwapWindow(window);
 }
@@ -128,7 +114,7 @@ void BBXX::draw()
 SDL_AppResult BBXX::handle_event(const SDL_Event* event)
 {
     // application closed
-    if(event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+    if( event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED )
     {
         printf("[BBXX::handle_event] window close requested!\n");
         return SDL_APP_SUCCESS;
@@ -150,7 +136,6 @@ void BBXX::quit()
     if( gl )
         SDL_GL_DestroyContext(gl);
 
-    miku.cleanup();
     nanovgstate.cleanup();
     audiostate.cleanup();
 }

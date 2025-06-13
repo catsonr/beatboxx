@@ -10,21 +10,31 @@
 // glad
 #include <glad/glad.h>
 
+// bbxx
+#include "utilities.h"
+
 struct WindowState
 {
     SDL_Window* window;
     SDL_GLContext* gl;
     
-    // the width and height of the screen, in physical pixels
+    // the width and height of the screen, in PHYSICAL pixels
     int w, h;
     
     // display scale 
     // will be 1.0 for most displays, but >1.0 for high-DPI screens, which must be accounted for
     float ds;
     
-    // whether or not BBXX is controling the mouse
-    bool grab_focus { true };
+    // if bbxx will try to grab focus of the mouse
+    bool grab_focus { false };
+
+    // if the mouse is focused to the window
     bool focused { false };
+    
+    // common, shared colors
+    util::Color color_highlight { 1.0f, 1.0f, 1.0f, 1.0f };
+    util::Color color_midtone { 0.5f, 0.5f, 0.5f, 0.5f };
+    util::Color color_shadow { 1.0f, 1.0f, 1.0f, 1.0f };
     
     bool init(SDL_Window *window, SDL_GLContext* gl)
     {
@@ -71,6 +81,7 @@ struct WindowState
         
         else if( grab_focus )
         {
+            // if ctrl + left click
             if ( !focused &&
                 event->type == SDL_EVENT_MOUSE_BUTTON_DOWN &&
                 event->button.button == SDL_BUTTON_LEFT &&
@@ -82,7 +93,7 @@ struct WindowState
                 focused = true;
 
                 SDL_HideCursor();
-                SDL_SetWindowRelativeMouseMode(window, true);
+                //SDL_SetWindowRelativeMouseMode(window, true);
                 SDL_SetWindowMouseGrab(window, true);
             }
 
@@ -93,7 +104,7 @@ struct WindowState
                 focused = false;
 
                 SDL_ShowCursor();
-                SDL_SetWindowRelativeMouseMode(window, false);
+                //SDL_SetWindowRelativeMouseMode(window, false);
                 SDL_SetWindowMouseGrab(window, false);
             }
         }

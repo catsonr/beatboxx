@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <vector>
 #include <unordered_set>
+#include <random>
 
 // SDL
 #include <SDL3/SDL.h>
@@ -15,8 +16,60 @@
 // glad
 #include <glad/glad.h>
 
+// glm
+#include <glm/glm.hpp>
+
 namespace util
 {
+    struct Color
+    {
+        float r { 0.0f };
+        float g { 0.0f };
+        float b { 0.0f };
+        float a { 0.0f };
+        
+        /* CONSTRUCTORS */
+        Color(float r, float g, float b, float a=1.0f) :
+            r(r),
+            g(g),
+            b(b),
+            a(a)
+        {}
+        
+        static constexpr int MAX_INT_VALUE = 255;
+        static constexpr float ONE_OVER_MAX_INT_VALUE = 1.0f / MAX_INT_VALUE;
+        Color(int r, int g, int b, int a=MAX_INT_VALUE, int maxvalue=MAX_INT_VALUE) :
+            r(r * ONE_OVER_MAX_INT_VALUE),
+            g(g * ONE_OVER_MAX_INT_VALUE),
+            b(b * ONE_OVER_MAX_INT_VALUE),
+            a(a * ONE_OVER_MAX_INT_VALUE)
+        {}
+        
+        /* PUBLIC METHODS */
+        glm::vec4 as_glmvec4() const
+        {
+            return { r, g, b, a };
+        }
+        
+        glm::vec3 as_glmvec3(bool premultiplied=false) const
+        {
+            if( premultiplied )
+                return { r*a, g*a, b*a };
+            
+            return { r, g, b };
+        }
+    }; // Color
+
+    static uint32_t RNG_SEED = std::random_device{}();
+    static std::mt19937 rng(/*RNG_SEED*/ 0);
+    
+    // returns a random float from [0, 1]
+    static std::uniform_real_distribution<float> float_dist(0.0f, 1.0f);
+    inline float rand()
+    {
+        return float_dist(rng);
+    }
+
     inline std::string get_fullPath(const char *path_fromRoot)
     {
         // check if path is already full path
@@ -88,67 +141,6 @@ namespace util
 
         return ss.str();
     }
-
-    /*
-    inline std::string replace_includes_rec(const char* code, std::unordered_set<std::string>& seen)
-    {
-        std::stringstream lines(code);
-        std::stringstream lines_out;
-        std::string line;
-
-        while(std::getline(lines, line))
-        {
-            size_t include_pos = line.find("#include");
-
-            if(include_pos != std::string::npos)
-            {
-                size_t quote_first = line.find('"', include_pos);
-                size_t quote_second = (quote_first == std::string::npos) ?
-                    std::string::npos :
-                    line.find('"', quote_first + 1
-                );
-
-                if(quote_first != std::string::npos && quote_second != std::string::npos)
-                {
-                    std::string include_path = line.substr(
-                        quote_first + 1,
-                        quote_second - quote_first - 1
-                    );
-
-                    if(seen.insert(include_path).second)
-                    {
-                        // could make things simplier and do "vendored/lygia/", but it makes more sense
-                        // when writing glsl to have #include "lygia/draw/whatver.glsl"
-                        std::string vendoredpath = "vendored/" + include_path;
-
-                        std::string filecontent = load_file(vendoredpath.c_str());
-                        if( filecontent.empty() ) {
-                            printf("[util::replace_includes_rec] failed to open include file '%s'\n", vendoredpath.c_str());
-                        }
-
-                        std::string inlined = replace_includes_rec(filecontent.c_str(), seen);
-                        lines_out << inlined << "\n";
-                    }
-
-                    continue;
-                }
-            }
-
-            lines_out << line << "\n";
-        }
-
-        //printf("util::replace_includes] called. dumping output:\n<begin>\n%s\n<end>\n", lines_out.str().c_str());
-
-        return lines_out.str();
-    }
-    inline std::string replace_includes(const char* sourcecode)
-    {
-        std::unordered_set<std::string> seen;
-        std::string codeREPLACED = replace_includes_rec(sourcecode, seen);
-
-        return codeREPLACED;
-    }
-    */
 
     inline std::string replace_includes_rec(const std::string &fullpath, std::unordered_set<std::string> &seen)
     {

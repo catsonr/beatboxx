@@ -3,7 +3,7 @@
 
 /*
    NanoVG requires some #define gl_implementation in some .cpp once and only once,
-   so we do it here
+   so i do it here, as well as function definitions
 */
 #include <glad/glad.h>
 #ifdef __EMSCRIPTEN__

@@ -5,11 +5,6 @@
     SDL_mixer's Mix_OpenAudio()
     SDL_mixer can manage playback of one music channel along with eight channels of
     16-bit stereo audio
-    
-    Track handles loading and playing music, so long as Mix_AudioOpen() is successfully called
-    
-    NOTES:
-        midi soundfonts can be set with either FluidSynth or Timidity
 */
 
 #ifndef AUDIOSTATE_H
@@ -28,15 +23,16 @@
 struct AudioState
 {
     /* PUBLIC MEMBERS */
-    Mix_Chunk *channels[MIX_DEFAULT_CHANNELS] {}; // the eight audio channels provided by SDL_mixer
+    Mix_Chunk* channels[MIX_DEFAULT_CHANNELS] {}; // the eight audio channels provided by SDL_mixer
+    Mix_Music* bgm { nullptr };
+
     bool audio_open { false };
     int audio_volume { MIX_MAX_VOLUME };
-
-    SDL_AudioSpec spec;
 
     /* PUBLIC METHODS */
     bool init()
     {
+        SDL_AudioSpec spec;
         spec.freq = MIX_DEFAULT_FREQUENCY;
         spec.format = MIX_DEFAULT_FORMAT;
         spec.channels = MIX_DEFAULT_CHANNELS;
