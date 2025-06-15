@@ -41,11 +41,12 @@ private:
     InputState inputstate;
     AudioState audiostate;
     WindowState windowstate;
-    
+
     GLState glstate;
-    ImguiState imguistate;
-    
     NanoVGState nanovgstate;
+    
+    ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate };
+    ImguiState imguistate { imguistatedrawargs };
     
     std::stack<Screen> screens;
     

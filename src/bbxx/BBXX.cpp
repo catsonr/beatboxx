@@ -52,7 +52,6 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
         return SDL_APP_FAILURE;
     }
-    audiostate.bgm_play();
     
     if( !windowstate.init(window, &gl) ) {
         SDL_Log("[BBXX::init] failed to initialize window state!\n");
@@ -94,7 +93,7 @@ void BBXX::draw()
 {
     glstate.draw();
     nanovgstate.draw();
-    imguistate.draw(&fpscounter, &glstate);
+    imguistate.draw();
 
     SDL_GL_SwapWindow(window);
 }

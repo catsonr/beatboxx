@@ -11,20 +11,31 @@
 #include "WindowState.h"
 #include "GLState.h"
 
+// bbxx::imgui
+#include "imgui/imguiFPSCounter.h"
+#include "imgui/imguiAudioState.h"
+
+struct ImguiStateDrawArgs
+{
+    FPSCounter& fpscounter;
+    AudioState& audiostate;
+    
+    ImguiStateDrawArgs(FPSCounter& fpscounter, AudioState& audiostate) :
+        fpscounter(fpscounter),
+        audiostate(audiostate)
+    {}
+};
+
 struct ImguiState
 {
+    ImguiState(const ImguiStateDrawArgs& draw_args) : draw_args(draw_args) {}
     bool show = true;
 
     WindowState* windowstate;
+    const ImguiStateDrawArgs& draw_args;
     
     float padding = 10.f;
     
-    static float pace_beats_getter(void* data, int idx)
-    {
-        auto beats = static_cast<std::vector<double>*>(data);
-        return (float)(*beats)[idx];
-    }
-
     bool init(WindowState* windowstate)
     {
         this->windowstate = windowstate;
@@ -107,7 +118,7 @@ struct ImguiState
         return true;
     }
 
-    void draw(FPSCounter *fpscounter, GLState *glstate)
+    void draw()
     {
         if( !show ) return;
 
@@ -118,11 +129,9 @@ struct ImguiState
         ImGui::SetNextWindowPos(
             ImVec2(padding, padding)
         );
-        ImGui::Begin("FPSCounter", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("fps: %.1f", fpscounter->fps);
-        ImGui::Text("ema_fps: %.1f", fpscounter->ema_fps);
-        ImGui::Text("time elapsed (s): %.1f", fpscounter->seconds);
-        ImGui::End(); // FPSCounter
+        imguiFPSCounter::draw(draw_args.fpscounter);
+        
+        imguiAudioState::draw(draw_args.audiostate);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -47,6 +47,7 @@ struct Track
 
 struct AudioState
 {
+    /* PUBLIC MEMBERS */
     ma_engine engine;
     
     Track hi_posi { "hi-posi.mp3" };
@@ -56,13 +57,19 @@ struct AudioState
     std::vector<Track*> tracks { &hi_posi, &kaede, &lamp };
     Track* ct { tracks[0] }; // current track
     
+    bool bgm_playing { false };
+    
+    /* PUBLIC METHODS */
     bool init();
 
-    void set_currentTrack(Track* track);
+    bool set_currentTrack(Track* track);
 
     bool bgm_load();
     void bgm_play();
     void bgm_pause();
+
+    uint64_t bgm_pos();
+
     void cleanup();
 }; // AudioState
 
