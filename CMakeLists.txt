@@ -26,6 +26,12 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
       ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen/artery-font-format
   )
   target_link_libraries(msdf-atlas-gen PUBLIC msdfgen::msdfgen freetype)
+else()
+  # miniaudio can use audio worklets (when compiled with emscripten), which require these flags to be set
+  add_compile_options(
+    -matomics
+    -mbulk-memory
+  )
 endif()
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
@@ -39,20 +45,20 @@ file(GLOB_RECURSE PROJECT_SOURCES
 add_executable(beatboxx ${PROJECT_SOURCES})
 
 if(EMSCRIPTEN)
-	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
-  
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMA_ENABLE_AUDIO_WORKLETS")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
-    -s USE_SDL=2 \
-    -s FULL_ES3=1 \
-    -s USE_WEBGL2=1 \
-    -s ALLOW_MEMORY_GROWTH=1 \
-    -s AUDIO_WORKLET=1 \
-    -s WASM_WORKERS=1 \
-    -s ASYNCIFY \
-  ")
-  
+  set_target_properties(beatboxx PROPERTIES SUFFIX ".html")
+
+  target_compile_definitions(beatboxx PRIVATE MA_ENABLE_AUDIO_WORKLETS)
+
   target_link_options(beatboxx PRIVATE
+    -sUSE_SDL=2
+    -sFULL_ES3=1
+    -sUSE_WEBGL2=1
+    -sALLOW_MEMORY_GROWTH=1
+    -sAUDIO_WORKLET=1
+    -sWASM_WORKERS=1
+    -sASYNCIFY
+    -sSHARED_MEMORY=1
+
     "--preload-file=${CMAKE_SOURCE_DIR}/assets@/assets"
     "--preload-file=${CMAKE_SOURCE_DIR}/vendored/lygia@/vendored/lygia"
   )
