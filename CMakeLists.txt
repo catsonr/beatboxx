@@ -29,7 +29,6 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 endif()
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
 
 file(GLOB_RECURSE PROJECT_SOURCES
@@ -41,7 +40,18 @@ add_executable(beatboxx ${PROJECT_SOURCES})
 
 if(EMSCRIPTEN)
 	set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s FULL_ES3=1 -s USE_WEBGL2=1 -s ALLOW_MEMORY_GROWTH=1")
+  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMA_ENABLE_AUDIO_WORKLETS")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
+    -s USE_SDL=2 \
+    -s FULL_ES3=1 \
+    -s USE_WEBGL2=1 \
+    -s ALLOW_MEMORY_GROWTH=1 \
+    -s AUDIO_WORKLET=1 \
+    -s WASM_WORKERS=1 \
+    -s ASYNCIFY \
+  ")
+  
   target_link_options(beatboxx PRIVATE
     "--preload-file=${CMAKE_SOURCE_DIR}/assets@/assets"
     "--preload-file=${CMAKE_SOURCE_DIR}/vendored/lygia@/vendored/lygia"
@@ -103,11 +113,15 @@ target_link_libraries(nanovg
   glm::glm
 )
 
+# miniaudio
+target_include_directories(beatboxx PRIVATE
+  ${CMAKE_SOURCE_DIR}/miniaudio
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
     SDL3::SDL3
-    SDL3_mixer::SDL3_mixer
     glm::glm
 
     glad

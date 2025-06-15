@@ -52,6 +52,8 @@ SDL_AppResult BBXX::init()
         SDL_Log("[BBXX::init] failed to initialize audio state!\n");
         return SDL_APP_FAILURE;
     }
+    audiostate.bgm_load("hi-posi.mp3");
+    audiostate.bgm_play();
     
     if( !windowstate.init(window, &gl) ) {
         SDL_Log("[BBXX::init] failed to initialize window state!\n");
