@@ -19,3 +19,6 @@
 [submodule "vendored/nanovg"]
 	path = vendored/nanovg
 	url = https://github.com/memononen/nanovg.git
+[submodule "vendored/implot"]
+	path = vendored/implot
+	url = https://github.com/epezent/implot.git

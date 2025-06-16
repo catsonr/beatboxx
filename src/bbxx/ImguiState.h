@@ -6,6 +6,9 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
+// implot 
+#include <implot.h>
+
 // bbxx
 #include "FPSCounter.h"
 #include "WindowState.h"
@@ -114,6 +117,9 @@ struct ImguiState
         #else
             ImGui_ImplOpenGL3_Init("#version 300 es");
         #endif
+            
+        // implot init
+        ImPlot::CreateContext();
 
         return true;
     }
@@ -132,10 +138,21 @@ struct ImguiState
         imguiFPSCounter::draw(draw_args.fpscounter);
         
         imguiAudioState::draw(draw_args.audiostate);
+        
+        //ImGui::ShowDemoWindow();
+        //ImPlot::ShowDemoWindow();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+    
+    /*
+    void cleanup()
+    {
+        ImGui::DestroyContext();
+        ImPlot::DestroyContext();
+    }
+    */
 }; // ImguiState
 
 #endif // IMGUISTATE_H

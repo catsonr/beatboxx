@@ -95,6 +95,23 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PRIVATE SDL3::SDL3)
 
+# implot
+file(GLOB IMPLOT_SOURCES
+  "${CMAKE_SOURCE_DIR}/vendored/implot/implot.cpp"
+  "${CMAKE_SOURCE_DIR}/vendored/implot/implot_items.cpp"
+  "${CMAKE_SOURCE_DIR}/vendored/implot/implot_demo.cpp"
+)
+
+add_library(implot STATIC ${IMPLOT_SOURCES})
+
+target_include_directories(implot PUBLIC
+  "${CMAKE_SOURCE_DIR}/vendored/implot"
+)
+
+target_link_libraries(implot
+  PRIVATE imgui
+)
+
 # nlohmann/json
 add_library(json INTERFACE)
 
@@ -132,6 +149,7 @@ target_link_libraries(beatboxx
 
     glad
     imgui
+    implot
     json
     nanovg
 )

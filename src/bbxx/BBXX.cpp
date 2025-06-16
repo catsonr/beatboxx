@@ -133,7 +133,7 @@ SDL_AppResult BBXX::handle_event(const SDL_Event* event)
 void BBXX::quit()
 {
     printf("[BBXX::quit] cleaning up ...\n");
-
+    
     if( gl )
         SDL_GL_DestroyContext(gl);
 
