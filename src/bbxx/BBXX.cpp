@@ -16,7 +16,6 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
 
-
     window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_WIDTH_INITIAL, WINDOW_HEIGHT_INITIAL, windowflags);
     if( !window ) {
         SDL_Log("[BBXX::init] failed to create window: %s", SDL_GetError());

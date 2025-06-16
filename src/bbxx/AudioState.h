@@ -23,6 +23,8 @@ struct Meter
     
     std::filesystem::path json_path;
     
+    const static int dumpvalue = 2; // -1 for no space, 2 for indentation
+    
     bool init(const char* full_path)
     {
         json_path = std::filesystem::path(full_path);
@@ -51,8 +53,25 @@ struct Meter
             return false;
         }
         
-        ofs << j.dump(/*2*/) << "\n";
+        ofs << j.dump(dumpvalue) << "\n";
         
+        return true;
+    }
+    
+    bool json_write() const
+    {
+        nlohmann::json j;
+        j["beats"] = beat_locations;
+
+        // Open the file for (over)writing
+        std::ofstream ofs(json_path, std::ios::binary);
+        if (!ofs) {
+            std::cerr << "[Meter::json_write] failed to open '"
+                      << json_path.string() << "'!\n";
+            return false;
+        }
+
+        ofs << j.dump(dumpvalue) << "\n";
         return true;
     }
     
@@ -135,6 +154,54 @@ struct Track
     }
 }; // Track
 
+struct Sfx
+{
+    ma_sound sound;
+    bool loaded { false };
+    
+    std::string fullPath;
+
+    // Construct with the filename relative to assets/sfx/
+    Sfx(const char* filename) {
+        std::string rel = std::string("assets/sfx/") + filename;
+        fullPath = util::get_fullPath(rel.c_str());
+    }
+    
+    bool init(ma_engine* engine)
+    {
+        if (ma_sound_init_from_file(
+                engine,
+                fullPath.c_str(),
+                MA_SOUND_FLAG_DECODE,  // decode to PCM for fast start
+                nullptr,               // no sound group
+                nullptr,               // no done-fence
+                &sound                 // pointer to your ma_sound
+            ) != MA_SUCCESS) {
+            return false;
+        }
+        ma_sound_set_looping(&sound, false);
+        ma_sound_set_volume(&sound, 1.0f);
+        loaded = true;
+        return true;
+    }
+    
+    void play()
+    {
+        if (!loaded) return;
+
+        ma_sound_seek_to_pcm_frame(&sound, 0);
+        ma_sound_start(&sound);
+    }
+
+    void cleanup()
+    {
+        if( loaded ) {
+            ma_sound_uninit(&sound);
+            loaded = false;
+        }
+    }
+}; // Sfx
+
 struct AudioState
 {
     /* PUBLIC MEMBERS */
@@ -147,6 +214,8 @@ struct AudioState
     std::vector<Track*> tracks { &hi_posi, &kaede, &lamp };
     Track* bgm { tracks[0] }; // current track
     
+    std::vector<Sfx> sfxs { {"click.wav"} };
+
     bool bgm_playing { false };
     
     float volume { 1.0f };

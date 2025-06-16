@@ -49,6 +49,23 @@ namespace imguiAudioState
         ImGui::SliderScalar("Position Slider", ImGuiDataType_U64, &seekPos, &seekMin, &maxFrames);
         if (seekPos != audiostate.bgm_get_pos() && ImGui::IsItemDeactivatedAfterEdit())
             audiostate.bgm_set_pos(seekPos);
+        
+        ImGui::Separator();
+        ImGui::Text("bgm->meter.beat_locations count : %i", (int)audiostate.bgm->meter.beat_locations.size());
+        if(ImGui::Button("clear beat_locations")) {
+            audiostate.bgm->meter.beat_locations.clear();
+        }
+        if(ImGui::Button("add beat!")) {
+            audiostate.bgm->meter.beat_locations.push_back(audiostate.bgm_get_pos());
+        }
+        if(ImGui::Button("Meter::json_write() !")) {
+            audiostate.bgm->meter.json_write();
+        }
+
+        ImGui::Separator();
+        if(ImGui::Button("play sfx!")) {
+            audiostate.sfxs[0].play();
+        }
 
         ImGui::End();
     }

@@ -12,6 +12,12 @@ bool AudioState::init()
         return false;
     }
     
+    for(Sfx& sfx : sfxs)
+    {
+        if( !sfx.loaded )
+            sfx.init(&engine);
+    }
+    
     return bgm_load();
 }
 
@@ -110,6 +116,10 @@ void AudioState::cleanup()
     for( Track* track : tracks )
     {
         track->cleanup();
+    }
+    for( Sfx& sfx : sfxs )
+    {
+        sfx.cleanup();
     }
     ma_engine_uninit(&engine);
 }
