@@ -49,27 +49,27 @@ SDL_AppResult BBXX::init()
     }
 
     if( !audiostate.init() ) {
-        SDL_Log("[BBXX::init] failed to initialize audio state!\n");
+        printf("[BBXX::init] failed to initialize audio state!\n");
         return SDL_APP_FAILURE;
     }
     
     if( !windowstate.init(window, &gl) ) {
-        SDL_Log("[BBXX::init] failed to initialize window state!\n");
+        printf("[BBXX::init] failed to initialize window state!\n");
         return SDL_APP_FAILURE;
     }
     
     if( !glstate.init(&windowstate) ) {
-        SDL_Log("[BBXX::init] failed to initialize gl state!\n");
+        printf("[BBXX::init] failed to initialize gl state!\n");
         return SDL_APP_FAILURE;
     }
     
     if( !imguistate.init(&windowstate) ) {
-        SDL_Log("[BBXX::init] failed to initialize imgui state!\n");
+        printf("[BBXX::init] failed to initialize imgui state!\n");
         return SDL_APP_FAILURE;
     }
     
     if( !nanovgstate.init(&windowstate) ) {
-        SDL_Log("[BBXX::init] failed to initialize nanovg state!\n");
+        printf("[BBXX::init] failed to initialize nanovg state!\n");
         return SDL_APP_FAILURE;
     }
     

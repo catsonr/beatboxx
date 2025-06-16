@@ -20,10 +20,9 @@ namespace imguiAudioState
         for (auto* t : audiostate.tracks)
             names.push_back(t->path);
 
-        // find current index
         int current = 0;
         for (int i = 0; i < (int)audiostate.tracks.size(); ++i)
-            if (audiostate.tracks[i] == audiostate.ct)
+            if (audiostate.tracks[i] == audiostate.bgm)
                 current = i;
 
         if (ImGui::Combo("current track", &current, names.data(), (int)names.size()))
@@ -31,7 +30,6 @@ namespace imguiAudioState
             audiostate.set_currentTrack(audiostate.tracks[current]);
         }
 
-        // --- BGM status & controls ---
         ImGui::Separator();
         ImGui::Text("track: %s", audiostate.bgm_playing ? "playing" : "paused");
 
@@ -40,9 +38,18 @@ namespace imguiAudioState
         ImGui::SameLine();
         if (ImGui::Button("Pause"))
             audiostate.bgm_pause();
+
+        ImGui::Separator();
+        float percent = audiostate.bgm_get_pos() / (float)audiostate.bgm->length_frames;
+        ImGui::Text("track pos: %llu / %llu frames (%.1f%%)", audiostate.bgm_get_pos(), audiostate.bgm->length_frames, percent * 100);
         
-        ImGui::Text("track pos: %llu", audiostate.bgm_pos());
-        
+        uint64_t maxFrames = audiostate.bgm->length_frames;
+        static uint64_t seekPos = 0;
+        static uint64_t seekMin = 0;
+        ImGui::SliderScalar("Position Slider", ImGuiDataType_U64, &seekPos, &seekMin, &maxFrames);
+        if (seekPos != audiostate.bgm_get_pos() && ImGui::IsItemDeactivatedAfterEdit())
+            audiostate.bgm_set_pos(seekPos);
+
         ImGui::End();
     }
 }; // imguiAudioState
