@@ -7,6 +7,7 @@
 bool AudioState::init()
 {
     ma_engine_config config = ma_engine_config_init();
+    config.periodSizeInFrames = periodsizeinframes;
     if( ma_engine_init(&config, &engine) != MA_SUCCESS ) {
         printf("[AudioState::init] failed to initialize mini audio engine!\n");
         return false;
@@ -19,6 +20,18 @@ bool AudioState::init()
     }
     
     return bgm_load();
+}
+
+void AudioState::iterate()
+{
+    if( bgm->meter.current_beat >= bgm->meter.beat_locations.size() ) return;
+
+    int offset = periodsizeinframes * periodcount;
+    if( bgm_get_pos() + offset >= bgm->meter.beat_locations[bgm->meter.current_beat] )
+    {
+        bgm->meter.current_beat++;
+        sfxs[0].play();
+    }
 }
 
 bool AudioState::set_currentTrack(Track* track)

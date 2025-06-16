@@ -25,6 +25,8 @@ struct Meter
     
     const static int dumpvalue = 2; // -1 for no space, 2 for indentation
     
+    int current_beat { 0 };
+
     bool init(const char* full_path)
     {
         json_path = std::filesystem::path(full_path);
@@ -72,6 +74,8 @@ struct Meter
         }
 
         ofs << j.dump(dumpvalue) << "\n";
+        
+        printf("[Meter::json_write] wrote %i beats to '%s'!\n", (int)beat_locations.size(), json_path.c_str());
         return true;
     }
     
@@ -220,8 +224,13 @@ struct AudioState
     
     float volume { 1.0f };
     
+    int periodsizeinframes { 256 };
+    int periodcount { 3 };
+    
     /* PUBLIC METHODS */
     bool init();
+    
+    void iterate();
 
     bool set_currentTrack(Track* track);
     void set_volume(float volume_new);

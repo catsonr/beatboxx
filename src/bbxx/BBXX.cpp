@@ -82,6 +82,8 @@ void BBXX::iterate()
 {
     fpscounter.iterate();
     
+    audiostate.iterate();
+    
     glstate.iterate(fpscounter.seconds, fpscounter.dt, &inputstate);
 }
 

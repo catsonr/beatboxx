@@ -52,6 +52,7 @@ namespace imguiAudioState
         
         ImGui::Separator();
         ImGui::Text("bgm->meter.beat_locations count : %i", (int)audiostate.bgm->meter.beat_locations.size());
+        ImGui::Text("bgm->meter.current_beat : %i", audiostate.bgm->meter.current_beat);
         if(ImGui::Button("clear beat_locations")) {
             audiostate.bgm->meter.beat_locations.clear();
         }
