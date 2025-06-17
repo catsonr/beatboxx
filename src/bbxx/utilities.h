@@ -60,6 +60,13 @@ namespace util
         }
     }; // Color
 
+    template<typename T>
+    constexpr const T& clamp(const T& value, const T& min, const T& max) {
+        return (value < min) ? min
+             : (max < value) ? max
+             : value;
+    }
+
     static uint32_t RNG_SEED = std::random_device{}();
     static std::mt19937 rng(/*RNG_SEED*/ 0);
     

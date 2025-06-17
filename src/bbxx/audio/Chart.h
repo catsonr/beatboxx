@@ -10,11 +10,19 @@
 
 struct Note
 {
-    int beat; // which beat of the chart the note lies
-    int beat_subdivision; // the level of beat subdivision (1=none, 2=half beat, 3=triplet beat)
-    int beat_subdivision_count; // which of the subdivisions the actual note lies on (starting at 0)
-    uint64_t frame; // the exact frame the note is to occur
-    uint64_t frame_quantized; // the frame of the nearest beat or subdivision
+    /*
+        which beat of the chart the note lies
+    */
+    int beat;
+
+    /*
+        where in the beat the note lies 
+            e.g. (assume 4/4):
+                0.0 -> lies on beat
+                0.5 -> lies on upbeat
+                0.66 -> lies on 'li' of quarter note triplet
+    */
+    float beat_pos;
 }; // Note
 
 struct Chart
@@ -22,15 +30,15 @@ struct Chart
     Meter meter;
     std::vector<Note> notes;
     
-    // TEMP FUNCTION!
     void add_note(uint64_t frame)
     {
         Note note;
+
         note.beat = meter.current_beat;
-        note.beat_subdivision = 1;
-        note.beat_subdivision_count = 0;
-        note.frame = frame;
-        note.frame_quantized = meter.beat_locations[meter.current_beat];
+
+        uint64_t dFrames = meter.get_dFrames(meter.current_beat);
+        uint64_t current_beat_location = meter.beat_locations[meter.current_beat];
+        note.beat_pos = (float)(current_beat_location - frame) / dFrames;
         
         notes.push_back(note);
     }

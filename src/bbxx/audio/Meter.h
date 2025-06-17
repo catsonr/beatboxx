@@ -23,6 +23,25 @@ struct Meter
     const static int dumpvalue = 2; // -1 for no space, 2 for indentation
     
     int current_beat { 0 };
+    
+    uint64_t get_nextBeatLocation(int beat_index) const
+    {
+        assert(beat_index >= 0); // TO-DO: remove assert()
+
+        int beat_count = (int)beat_locations.size();
+
+        // if we're at the last beat there is no next beat, so return the last beat's location
+        if( beat_index >= beat_count ) return beat_locations[beat_count - 1];
+        
+        return beat_locations[beat_index + 1];
+    }
+    
+    uint64_t get_dFrames(int beat_index) const
+    {
+        assert(beat_index >= 0); // TO-DO: remove assert()
+        
+        return get_nextBeatLocation(beat_index) - beat_locations[beat_index];
+    }
 
     bool init(const char* full_path)
     {

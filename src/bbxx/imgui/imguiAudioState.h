@@ -10,12 +10,14 @@
 #include <implot.h>
 
 // beatboxx
+#include "../utilities.h"
 #include "../AudioState.h"
 
 namespace imguiAudioState
 {
     inline void draw(AudioState& audiostate)
     {
+        // AudioState
         ImGui::Begin("AudioState", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         
         std::vector<const char*> names;
@@ -52,38 +54,69 @@ namespace imguiAudioState
 
         ImGui::End(); // AudioState
 
-        ImGui::Begin("Chart", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        // Chart
+        Chart& chart = audiostate.bgm->chart;
+        ImGui::Begin("Chart", nullptr, ImGuiWindowFlags_None);
+        
+        ImGui::Text("chart.meter.current_beat = %d", chart.meter.current_beat);
+        
+        if(ImPlot::BeginPlot("note positions"))
+        {
+            ImPlot::SetupAxes("frame", "note position");
+            
+            int window_width = 4;
+            int window_start = chart.meter.current_beat - window_width;
+            int window_end   = chart.meter.current_beat + window_width;
+            
+            if(window_start < 0) window_start = 0;
+            if(window_end > chart.meter.beat_locations.size()) window_end = chart.meter.beat_locations.size();
+            
+            std::vector<double> beat_frames;
+            for (size_t i = window_start; i < window_end; ++i)
+                beat_frames.push_back((double)chart.meter.beat_locations[i]);
+            
+            double window_start_frame = beat_frames.front();
+            double window_end_frame   = beat_frames.back();
+            double window_padding = 10000.0;
+            ImPlot::SetupAxisLimits(ImAxis_X1, window_start_frame - window_padding, window_end_frame + window_padding, ImGuiCond_Always);
+            ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, 1.0, ImGuiCond_Always);
+            
+            //ImPlot::SetupAxisTicks();
+
+            ImPlot::PlotInfLines("beat",
+                beat_frames.data(),
+                (int)beat_frames.size()
+            );
+            
+            ImPlot::EndPlot();
+        }
         
         if( ImGui::Button("Chart::add_note() !") ) {
             audiostate.bgm->chart.add_note(audiostate.bgm_get_pos());
         }
 
         std::vector<Note>& notes = audiostate.bgm->chart.notes;
-        
-        if (ImGui::BeginTable("NotesTable", 5,
-        ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
-{
-    // setup headers
-    ImGui::TableSetupColumn("beat");
-    ImGui::TableSetupColumn("subdiv");
-    ImGui::TableSetupColumn("subdiv pos");
-    ImGui::TableSetupColumn("frame");
-    ImGui::TableSetupColumn("frame quantized");
-    ImGui::TableHeadersRow();
 
-    // one row per note
-    for (int i = 0; i < (int)notes.size(); ++i) {
-        const auto& n = notes[i];
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("%d",    n.beat);
-        ImGui::TableSetColumnIndex(1); ImGui::Text("%d",    n.beat_subdivision);
-        ImGui::TableSetColumnIndex(2); ImGui::Text("%d",    n.beat_subdivision_count);
-        ImGui::TableSetColumnIndex(3); ImGui::Text("%llu",  n.frame);
-        ImGui::TableSetColumnIndex(4); ImGui::Text("%llu",  n.frame_quantized);
-    }
+        if (ImGui::BeginTable("NotesTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
+        {
+            // setup headers
+            ImGui::TableSetupColumn("beat");
+            ImGui::TableSetupColumn("beat pos");
+            ImGui::TableHeadersRow();
 
-    ImGui::EndTable();
-}
+            // one row per note
+            for (int i = 0; i < (int)notes.size(); ++i)
+            {
+                const auto &n = notes[i];
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::Text("%d", n.beat);
+                ImGui::TableSetColumnIndex(1);
+                ImGui::Text("%.3f", n.beat_pos);
+            }
+
+            ImGui::EndTable();
+        }
 
         ImGui::End(); // Chart
     }
