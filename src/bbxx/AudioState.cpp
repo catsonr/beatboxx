@@ -1,8 +1,8 @@
 #define MINIAUDIO_IMPLEMENTATION
 #define MA_ENABLE_AUDIO_WORKLETS
 
-#include "miniaudio.h"
 #include "AudioState.h"
+#include "miniaudio.h"
 
 bool AudioState::init()
 {
@@ -24,12 +24,12 @@ bool AudioState::init()
 
 void AudioState::iterate()
 {
-    if( bgm->meter.current_beat >= bgm->meter.beat_locations.size() ) return;
+    if( bgm->chart.meter.current_beat >= bgm->chart.meter.beat_locations.size() ) return;
 
     int offset = periodsizeinframes * periodcount;
-    if( bgm_get_pos() + offset >= bgm->meter.beat_locations[bgm->meter.current_beat] )
+    if( bgm_get_pos() + offset >= bgm->chart.meter.beat_locations[bgm->chart.meter.current_beat] )
     {
-        bgm->meter.current_beat++;
+        bgm->chart.meter.current_beat++;
         sfxs[0].play();
     }
 }
@@ -74,14 +74,13 @@ bool AudioState::bgm_load()
         printf("[AudioState::bgm_load] failed to init load file '%s'!\n", bgm->path);
     }
     
-    if( !bgm->meter.init(bgm->full_path.c_str()) ) {
+    if( !bgm->chart.meter.init(bgm->full_path.c_str()) ) {
         printf("[AudioState::bgm_load] failed to initialize current bgm's meter!\n");
         return false;
     }
 
     bgm->loaded = true;
     ma_sound_get_length_in_pcm_frames(&bgm->sound, &bgm->length_frames);
-    
 
     printf("[AudioState::bgm_load] loaded '%s'!\n", bgm->path);
     

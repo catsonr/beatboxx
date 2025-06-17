@@ -6,6 +6,9 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
+// implot
+#include <implot.h>
+
 // beatboxx
 #include "../AudioState.h"
 
@@ -33,42 +36,56 @@ namespace imguiAudioState
         ImGui::Separator();
         ImGui::Text("track: %s", audiostate.bgm_playing ? "playing" : "paused");
 
+        // play/pause buttons
         if (ImGui::Button("Play"))
             audiostate.bgm_play();
         ImGui::SameLine();
         if (ImGui::Button("Pause"))
             audiostate.bgm_pause();
 
-        ImGui::Separator();
+        // track progress
         float percent = audiostate.bgm_get_pos() / (float)audiostate.bgm->length_frames;
-        ImGui::Text("track pos: %llu / %llu frames (%.1f%%)", audiostate.bgm_get_pos(), audiostate.bgm->length_frames, percent * 100);
+        char overlay[64];
+        snprintf(overlay, sizeof(overlay), "%llu / %llu frames (%.1f%%)",
+        audiostate.bgm_get_pos(), audiostate.bgm->length_frames, percent * 100.0f);
+        ImGui::ProgressBar(percent, ImVec2(-1, 0), overlay);
+
+        ImGui::End(); // AudioState
+
+        ImGui::Begin("Chart", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         
-        uint64_t maxFrames = audiostate.bgm->length_frames;
-        static uint64_t seekPos = 0;
-        static uint64_t seekMin = 0;
-        ImGui::SliderScalar("Position Slider", ImGuiDataType_U64, &seekPos, &seekMin, &maxFrames);
-        if (seekPos != audiostate.bgm_get_pos() && ImGui::IsItemDeactivatedAfterEdit())
-            audiostate.bgm_set_pos(seekPos);
-        
-        ImGui::Separator();
-        ImGui::Text("bgm->meter.beat_locations count : %i", (int)audiostate.bgm->meter.beat_locations.size());
-        ImGui::Text("bgm->meter.current_beat : %i", audiostate.bgm->meter.current_beat);
-        if(ImGui::Button("clear beat_locations")) {
-            audiostate.bgm->meter.beat_locations.clear();
-        }
-        if(ImGui::Button("add beat!")) {
-            audiostate.bgm->meter.beat_locations.push_back(audiostate.bgm_get_pos());
-        }
-        if(ImGui::Button("Meter::json_write() !")) {
-            audiostate.bgm->meter.json_write();
+        if( ImGui::Button("Chart::add_note() !") ) {
+            audiostate.bgm->chart.add_note(audiostate.bgm_get_pos());
         }
 
-        ImGui::Separator();
-        if(ImGui::Button("play sfx!")) {
-            audiostate.sfxs[0].play();
-        }
+        std::vector<Note>& notes = audiostate.bgm->chart.notes;
+        
+        if (ImGui::BeginTable("NotesTable", 5,
+        ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
+{
+    // setup headers
+    ImGui::TableSetupColumn("beat");
+    ImGui::TableSetupColumn("subdiv");
+    ImGui::TableSetupColumn("subdiv pos");
+    ImGui::TableSetupColumn("frame");
+    ImGui::TableSetupColumn("frame quantized");
+    ImGui::TableHeadersRow();
 
-        ImGui::End();
+    // one row per note
+    for (int i = 0; i < (int)notes.size(); ++i) {
+        const auto& n = notes[i];
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0); ImGui::Text("%d",    n.beat);
+        ImGui::TableSetColumnIndex(1); ImGui::Text("%d",    n.beat_subdivision);
+        ImGui::TableSetColumnIndex(2); ImGui::Text("%d",    n.beat_subdivision_count);
+        ImGui::TableSetColumnIndex(3); ImGui::Text("%llu",  n.frame);
+        ImGui::TableSetColumnIndex(4); ImGui::Text("%llu",  n.frame_quantized);
+    }
+
+    ImGui::EndTable();
+}
+
+        ImGui::End(); // Chart
     }
 }; // imguiAudioState
 

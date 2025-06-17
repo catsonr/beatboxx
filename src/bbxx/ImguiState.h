@@ -12,7 +12,6 @@
 // bbxx
 #include "FPSCounter.h"
 #include "WindowState.h"
-#include "GLState.h"
 
 // bbxx::imgui
 #include "imgui/imguiFPSCounter.h"
@@ -126,22 +125,26 @@ struct ImguiState
 
     void draw()
     {
+        // prepare draw call
         if( !show ) return;
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
+        // draw fps counter
         ImGui::SetNextWindowPos(
             ImVec2(padding, padding)
         );
         imguiFPSCounter::draw(draw_args.fpscounter);
         
+        // draw audio state
         imguiAudioState::draw(draw_args.audiostate);
         
+        // draw demo window(s)
         //ImGui::ShowDemoWindow();
         //ImPlot::ShowDemoWindow();
 
+        // present
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

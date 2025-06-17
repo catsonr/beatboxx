@@ -1,5 +1,5 @@
-#ifndef imguiFPSCOUNTER_H
-#define imguiFPSCOUNTER_H
+#ifndef IMGUIFPSCOUNTER_H
+#define IMGUIFPSCOUNTER_H
 
 // imgui
 #include <imgui.h>
@@ -21,4 +21,4 @@ namespace imguiFPSCounter
     }
 }; // imguiFPSCounter
 
-#endif // imguiFPSCOUNTER_H
+#endif // IMGUIFPSCOUNTER_H
