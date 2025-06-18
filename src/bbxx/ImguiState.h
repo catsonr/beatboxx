@@ -142,7 +142,7 @@ struct ImguiState
         
         // draw demo window(s)
         //ImGui::ShowDemoWindow();
-        ImPlot::ShowDemoWindow();
+        //ImPlot::ShowDemoWindow();
 
         // present
         ImGui::Render();

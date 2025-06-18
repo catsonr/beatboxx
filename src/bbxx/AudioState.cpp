@@ -24,12 +24,7 @@ bool AudioState::init()
 
 void AudioState::iterate()
 {
-    if( bgm->chart.meter.current_beat >= bgm->chart.meter.beat_locations.size() ) return;
-
-    int offset = periodsizeinframes * periodcount;
-    if( bgm_get_pos() + offset >= bgm->chart.meter.beat_locations[bgm->chart.meter.current_beat] )
-    {
-        bgm->chart.meter.current_beat++;
+    if( bgm->chart.meter.iterate(bgm_get_pos()) ) {
         sfxs[0].play();
     }
 }

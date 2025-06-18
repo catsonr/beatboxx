@@ -60,28 +60,41 @@ namespace imguiAudioState
         
         ImGui::Text("chart.meter.current_beat = %d", chart.meter.current_beat);
         
-        if(ImPlot::BeginPlot("note positions"))
+        if((int)chart.meter.beat_locations.size() > 0 && ImPlot::BeginPlot("note positions"))
         {
-            ImPlot::SetupAxes("frame", "note position");
+            ImPlot::SetupAxes("beat", "note position");
             
-            int window_width = 4;
+            int window_width = 2;
             int window_start = chart.meter.current_beat - window_width;
             int window_end   = chart.meter.current_beat + window_width;
             
             if(window_start < 0) window_start = 0;
             if(window_end > chart.meter.beat_locations.size()) window_end = chart.meter.beat_locations.size();
             
+            std::vector<std::string> beat_labels;
             std::vector<double> beat_frames;
-            for (size_t i = window_start; i < window_end; ++i)
+            for (size_t i = window_start; i < window_end; ++i) {
                 beat_frames.push_back((double)chart.meter.beat_locations[i]);
-            
+                beat_labels.push_back(std::to_string(i));
+            }
+            std::vector<const char*> beat_labels_c;
+            beat_labels_c.reserve(beat_labels_c.size());
+            for (auto &s : beat_labels)
+                beat_labels_c.push_back(s.c_str());
+
             double window_start_frame = beat_frames.front();
             double window_end_frame   = beat_frames.back();
             double window_padding = 10000.0;
             ImPlot::SetupAxisLimits(ImAxis_X1, window_start_frame - window_padding, window_end_frame + window_padding, ImGuiCond_Always);
             ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, 1.0, ImGuiCond_Always);
             
-            //ImPlot::SetupAxisTicks();
+            ImPlot::SetupAxisTicks(
+                ImAxis_X1,
+                beat_frames.data(),
+                (int)beat_frames.size(),
+                beat_labels_c.data(),
+                false
+            );
 
             ImPlot::PlotInfLines("beat",
                 beat_frames.data(),

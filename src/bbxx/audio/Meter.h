@@ -14,6 +14,8 @@
 // json
 #include <nlohmann/json.hpp>
 
+#define METER_BEFORE_BEAT -1
+
 struct Meter
 {
     std::vector<uint64_t> beat_locations;
@@ -22,7 +24,29 @@ struct Meter
     
     const static int dumpvalue = 2; // -1 for no space, 2 for indentation
     
-    int current_beat { 0 };
+    int current_beat { METER_BEFORE_BEAT };
+    
+    bool iterate(uint64_t current_frame)
+    {
+        // before first beat
+        if( beat_locations.size() == 0 || current_frame < beat_locations.front()) {
+            return false;
+        }
+        
+        // first beat happens
+        else if(current_beat == METER_BEFORE_BEAT) {
+            current_beat = 0;
+            return true;
+        }
+        
+        // beat passed
+        if( current_frame > get_nextBeatLocation(current_beat) && current_beat < (int)beat_locations.size()) {
+            current_beat++;
+            return true;
+        }
+        
+        return false;
+    }
     
     uint64_t get_nextBeatLocation(int beat_index) const
     {
