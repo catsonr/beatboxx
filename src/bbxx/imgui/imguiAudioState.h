@@ -66,7 +66,7 @@ namespace imguiAudioState
             
             int window_width = 2;
             int window_start = chart.meter.current_beat - window_width;
-            int window_end   = chart.meter.current_beat + window_width;
+            int window_end   = chart.meter.current_beat + window_width + 1;
             
             if(window_start < 0) window_start = 0;
             if(window_end > chart.meter.beat_locations.size()) window_end = chart.meter.beat_locations.size();
@@ -75,7 +75,10 @@ namespace imguiAudioState
             std::vector<double> beat_frames;
             for (size_t i = window_start; i < window_end; ++i) {
                 beat_frames.push_back((double)chart.meter.beat_locations[i]);
-                beat_labels.push_back(std::to_string(i));
+                if( i != chart.meter.current_beat)
+                    beat_labels.push_back(std::to_string(i));
+                else
+                    beat_labels.push_back(std::to_string(i) + std::string(" current"));
             }
             std::vector<const char*> beat_labels_c;
             beat_labels_c.reserve(beat_labels_c.size());
@@ -92,8 +95,7 @@ namespace imguiAudioState
                 ImAxis_X1,
                 beat_frames.data(),
                 (int)beat_frames.size(),
-                beat_labels_c.data(),
-                false
+                beat_labels_c.data()
             );
 
             ImPlot::PlotInfLines("beat",
@@ -112,12 +114,10 @@ namespace imguiAudioState
 
         if (ImGui::BeginTable("NotesTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
         {
-            // setup headers
             ImGui::TableSetupColumn("beat");
             ImGui::TableSetupColumn("beat pos");
             ImGui::TableHeadersRow();
 
-            // one row per note
             for (int i = 0; i < (int)notes.size(); ++i)
             {
                 const auto &n = notes[i];
@@ -125,12 +125,26 @@ namespace imguiAudioState
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%d", n.beat);
                 ImGui::TableSetColumnIndex(1);
-                ImGui::Text("%.3f", n.beat_pos);
+                ImGui::Text("%.3f", n.pos);
             }
 
             ImGui::EndTable();
         }
 
+        ImGui::End(); // Chart
+        
+        ImGui::Begin("Meter", nullptr, ImGuiWindowFlags_None);
+        Meter& meter = audiostate.bgm->chart.meter;
+        ImGui::Text("beats loaded = %d", (int)meter.beat_locations.size());
+        if(ImGui::Button("beat_locations.clear()")) {
+            meter.beat_locations.clear();
+        }
+        if(ImGui::Button("add beat @ current pos")) {
+            meter.beat_locations.push_back(audiostate.bgm_get_pos());
+        }
+        if(ImGui::Button("json_write() !")) {
+            meter.json_write();
+        }
         ImGui::End(); // Chart
     }
 }; // imguiAudioState
