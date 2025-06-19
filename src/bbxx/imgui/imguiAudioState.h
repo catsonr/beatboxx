@@ -58,27 +58,28 @@ namespace imguiAudioState
         Chart& chart = audiostate.bgm->chart;
         ImGui::Begin("Chart", nullptr, ImGuiWindowFlags_None);
         
-        ImGui::Text("chart.meter.current_beat = %d", chart.meter.current_beat);
+        ImGui::Text("chart.current_beat = %d", chart.current_beat);
         
-        if((int)chart.meter.beat_locations.size() > 0 && ImPlot::BeginPlot("note positions"))
+        if((int)chart.beats.size() > 0 && ImPlot::BeginPlot("note positions"))
         {
             ImPlot::SetupAxes("beat", "note position");
             
             int window_width = 2;
-            int window_start = chart.meter.current_beat - window_width;
-            int window_end   = chart.meter.current_beat + window_width + 1;
+            int window_start = chart.current_beat - window_width;
+            int window_end   = chart.current_beat + window_width + 1;
             
             if(window_start < 0) window_start = 0;
-            if(window_end > chart.meter.beat_locations.size()) window_end = chart.meter.beat_locations.size();
+            if(window_end > chart.beats.size()) window_end = chart.beats.size();
             
             std::vector<std::string> beat_labels;
             std::vector<double> beat_frames;
-            for (size_t i = window_start; i < window_end; ++i) {
-                beat_frames.push_back((double)chart.meter.beat_locations[i]);
-                if( i != chart.meter.current_beat)
+            for (size_t i = window_start; i < window_end; ++i)
+            {
+                beat_frames.push_back((double)chart.beats[i]);
+                if( i != chart.current_beat)
                     beat_labels.push_back(std::to_string(i));
                 else
-                    beat_labels.push_back(std::to_string(i) + std::string(" current"));
+                    beat_labels.push_back(std::string("current beat"));
             }
             std::vector<const char*> beat_labels_c;
             beat_labels_c.reserve(beat_labels_c.size());
@@ -106,8 +107,11 @@ namespace imguiAudioState
             ImPlot::EndPlot();
         }
         
+        if( ImGui::Button("Chart::json_write() !") ) {
+            chart.json_write();
+        }
         if( ImGui::Button("Chart::add_note() !") ) {
-            audiostate.bgm->chart.add_note(audiostate.bgm_get_pos());
+            chart.add_note(audiostate.bgm_get_pos());
         }
 
         std::vector<Note>& notes = audiostate.bgm->chart.notes;
@@ -131,20 +135,6 @@ namespace imguiAudioState
             ImGui::EndTable();
         }
 
-        ImGui::End(); // Chart
-        
-        ImGui::Begin("Meter", nullptr, ImGuiWindowFlags_None);
-        Meter& meter = audiostate.bgm->chart.meter;
-        ImGui::Text("beats loaded = %d", (int)meter.beat_locations.size());
-        if(ImGui::Button("beat_locations.clear()")) {
-            meter.beat_locations.clear();
-        }
-        if(ImGui::Button("add beat @ current pos")) {
-            meter.beat_locations.push_back(audiostate.bgm_get_pos());
-        }
-        if(ImGui::Button("json_write() !")) {
-            meter.json_write();
-        }
         ImGui::End(); // Chart
     }
 }; // imguiAudioState

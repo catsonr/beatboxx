@@ -24,7 +24,7 @@ bool AudioState::init()
 
 void AudioState::iterate()
 {
-    if( bgm->chart.meter.iterate(bgm_get_pos()) ) {
+    if( bgm->chart.iterate(bgm_get_pos()) ) {
         sfxs[0].play();
     }
 }
@@ -69,7 +69,7 @@ bool AudioState::bgm_load()
         printf("[AudioState::bgm_load] failed to init load file '%s'!\n", bgm->path);
     }
     
-    if( !bgm->chart.meter.init(bgm->full_path.c_str()) ) {
+    if( !bgm->chart.init(bgm->full_path.c_str()) ) {
         printf("[AudioState::bgm_load] failed to initialize current bgm's meter!\n");
         return false;
     }
