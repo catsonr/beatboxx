@@ -64,30 +64,49 @@ namespace imguiAudioState
         {
             ImPlot::SetupAxes("beat", "note position");
             
-            int window_width = 2;
+            int window_width = 10;
             int window_start = chart.current_beat - window_width;
             int window_end   = chart.current_beat + window_width + 1;
             
             if(window_start < 0) window_start = 0;
             if(window_end > chart.beats.size()) window_end = chart.beats.size();
             
-            std::vector<std::string> beat_labels;
             std::vector<double> beat_frames;
+            std::vector<std::string> beat_labels;
+
+            std::vector<double> note_frames;
+            std::vector<std::string> note_labels;
             for (size_t i = window_start; i < window_end; ++i)
             {
+                // grab beats in window
                 beat_frames.push_back((double)chart.beats[i]);
                 if( i != chart.current_beat)
                     beat_labels.push_back(std::to_string(i));
                 else
                     beat_labels.push_back(std::string("current beat"));
+                
+                // grab notes in window 
+                std::vector<Note> current_notes = chart.get_beat_notes(i);
+                for(const Note& note : current_notes)
+                {
+                    note_frames.push_back(chart.beats[i] + note.pos * chart.get_dFrames(i));
+                }
             }
             std::vector<const char*> beat_labels_c;
             beat_labels_c.reserve(beat_labels_c.size());
             for (auto &s : beat_labels)
                 beat_labels_c.push_back(s.c_str());
+            
+            std::vector<const char*> note_labels_c;
+            note_labels_c.reserve(note_labels_c.size());
+            for (auto &s : note_labels)
+                note_labels_c.push_back(s.substr(0, 2).c_str());
 
-            double window_start_frame = beat_frames.front();
-            double window_end_frame   = beat_frames.back();
+            // set window as plot limits 
+            double window_center_frame = audiostate.bgm_get_pos();
+            double window_radius = 100000.0;
+            double window_start_frame = window_center_frame - window_radius;
+            double window_end_frame   = window_center_frame + window_radius;
             double window_padding = 10000.0;
             ImPlot::SetupAxisLimits(ImAxis_X1, window_start_frame - window_padding, window_end_frame + window_padding, ImGuiCond_Always);
             ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, 1.0, ImGuiCond_Always);
@@ -98,10 +117,23 @@ namespace imguiAudioState
                 (int)beat_frames.size(),
                 beat_labels_c.data()
             );
+            
+            // set beat colors
+            ImPlot::SetNextLineStyle(ImVec4(1.0, 0.5, 0.25, 1.0), 1.0f);
 
+            // plot beats
             ImPlot::PlotInfLines("beat",
                 beat_frames.data(),
                 (int)beat_frames.size()
+            );
+
+            // set note colors
+            ImPlot::SetNextLineStyle(ImVec4(0.0, 0.5, 1.00, 1.0), 1.0f);
+
+            // plot notes
+            ImPlot::PlotInfLines("beat",
+                note_frames.data(),
+                (int)note_frames.size()
             );
             
             ImPlot::EndPlot();
@@ -110,12 +142,14 @@ namespace imguiAudioState
         if( ImGui::Button("Chart::json_write() !") ) {
             chart.json_write();
         }
+        if( ImGui::Button("add beat @ audiostate,bgm_get_pos() ") ) {
+            chart.beats.push_back(audiostate.bgm_get_pos());
+        }
         if( ImGui::Button("Chart::add_note() !") ) {
             chart.add_note(audiostate.bgm_get_pos());
         }
 
-        std::vector<Note>& notes = audiostate.bgm->chart.notes;
-
+        /*
         if (ImGui::BeginTable("NotesTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
         {
             ImGui::TableSetupColumn("beat");
@@ -134,6 +168,7 @@ namespace imguiAudioState
 
             ImGui::EndTable();
         }
+        */
 
         ImGui::End(); // Chart
     }

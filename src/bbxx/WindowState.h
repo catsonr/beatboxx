@@ -89,6 +89,11 @@ struct WindowState
             )
             {
                 printf("[WindowState::handle_event] window focus grab\n");
+                
+                if( !fullscreen(true) )
+                    printf("[WindowState::handle_event] unable to enter fullscreen!\n");
+                else
+                    printf("[WindowState::handle_event] entered fullscreen\n");
 
                 focused = true;
 
@@ -101,6 +106,11 @@ struct WindowState
             {
                 printf("[WindowState::handle_event] window focus release\n");
 
+                if( !fullscreen(false) )
+                    printf("[WindowState::handle_event] unable to enter fullscreen!\n");
+                else
+                    printf("[WindowState::handle_event] entered fullscreen\n");
+
                 focused = false;
 
                 SDL_ShowCursor();
@@ -108,6 +118,11 @@ struct WindowState
                 SDL_SetWindowMouseGrab(window, false);
             }
         }
+    }
+    
+    bool fullscreen(bool request_open=true)
+    {
+        return SDL_SetWindowFullscreen(window, request_open);
     }
 }; // WindowState
 

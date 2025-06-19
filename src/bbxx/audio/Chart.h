@@ -30,13 +30,19 @@ struct Note
 
 struct Chart
 {
-    std::vector<Note> notes;
+    /* PUBLIC MEMBERS */
+    // all beats in chart
     std::vector<uint64_t> beats;
+    // all notes in chart
+    std::vector<Note> notes;
+
+    // the current beat of playback
     int current_beat { -1 };
 
     std::filesystem::path json_path;
-    const int json_dump_spacing { 2 }; // -1 for no space
+    const int json_dump_spacing { 2 }; // -1 for no whitespace 
     
+    /* PUBLIC METHODS */
     bool init(const char* full_path)
     {
         json_path = std::filesystem::path(full_path);
@@ -50,7 +56,6 @@ struct Chart
         return true;
     }
 
-    /* updates current_beat */
     bool iterate(uint64_t current_frame)
     {
         // before first beat
@@ -71,6 +76,20 @@ struct Chart
         }
         
         return false;
+    }
+    
+    std::vector<Note> get_beat_notes(int beat) const
+    {
+        std::vector<Note> result;
+        for(const Note& note : notes)
+        {
+            if( note.beat < beat ) continue;
+            if( note.beat > beat ) break;
+            
+            result.push_back(note);
+        }
+        
+        return result;
     }
     
     // JSON 

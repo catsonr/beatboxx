@@ -15,7 +15,7 @@
 #include "GLState.h"
 #include "ImguiState.h"
 #include "NanoVGState.h"
-#include "screen/Screen.h"
+//#include "screen/Screen.h"
 
 class BBXX
 {
@@ -48,7 +48,7 @@ private:
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate };
     ImguiState imguistate { imguistatedrawargs };
     
-    std::stack<Screen> screens;
+    //std::stack<Screen> screens;
     
 public:
     /* PUBLIC MEMBERS */
