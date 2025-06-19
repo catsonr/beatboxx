@@ -42,7 +42,8 @@ struct Track
             this will stall beatboxx until loading is done
         */
 #ifndef __EMSCRIPTEN__
-        ma_uint32 flags = MA_SOUND_FLAG_STREAM;
+        //ma_uint32 flags = MA_SOUND_FLAG_STREAM;
+        ma_uint32 flags = MA_SOUND_FLAG_DECODE;
 #else
         ma_uint32 flags = MA_SOUND_FLAG_DECODE;
 #endif
@@ -105,6 +106,7 @@ struct Track
     void set_frame(uint64_t frame)
     {
         ma_sound_seek_to_pcm_frame(&sound, frame);
+        chart.seek_frame(frame);
     }
     
     void on_sound_end()

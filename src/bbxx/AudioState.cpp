@@ -24,7 +24,7 @@ bool AudioState::init()
 
 void AudioState::iterate()
 {
-    if( bgm->iterate() ) {
+    if( bgm->iterate() && bgm->playing ) {
         sfxs[0].play();
     }
 }

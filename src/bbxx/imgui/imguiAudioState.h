@@ -18,7 +18,7 @@ namespace imguiAudioState
     inline void draw(AudioState& audiostate)
     {
         // AudioState
-        ImGui::Begin("AudioState", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin("AudioState & Track", nullptr, ImGuiWindowFlags_None);
         Track* bgm = audiostate.bgm;
         
         std::vector<const char*> names;
@@ -58,8 +58,21 @@ namespace imguiAudioState
         if( ImGui::SliderFloat("master volume", &volume, 0.0f, 1.0f, "%.2f")) {
             audiostate.set_volume(volume);
         }
+        
+        static uint64_t frame_slider = bgm->get_frame();
+        const uint64_t frame_slider_min = 0;
+        const uint64_t frame_slider_max = bgm->length_frames;
+        if( ImGui::SliderScalar("track frame",
+                                ImGuiDataType_U64,
+                                &frame_slider,
+                                &frame_slider_min,
+                                &frame_slider_max,
+                                "%" SDL_PRIu64
+        )) {
+            bgm->set_frame(frame_slider);
+        }
 
-        ImGui::End(); // AudioState
+        ImGui::End(); // AudioState & Track
 
         // Chart
         Chart& chart = audiostate.bgm->chart;

@@ -37,7 +37,8 @@ struct Chart
     std::vector<Note> notes;
 
     // the current beat of playback
-    int current_beat { -1 };
+    const int BEAT_BEFORE_FIRST { -1 };
+    int current_beat { BEAT_BEFORE_FIRST };
 
     std::filesystem::path json_path;
     const int json_dump_spacing { 2 }; // -1 for no whitespace 
@@ -76,6 +77,17 @@ struct Chart
         }
         
         return false;
+    }
+    
+    /*
+        sets current_beat to what it would be at given frame
+    */
+    void seek_frame(uint64_t frame)
+    {
+        current_beat = BEAT_BEFORE_FIRST;
+        while(beats[current_beat++] < frame);
+        current_beat--;
+        current_beat--;
     }
     
     std::vector<Note> get_beat_notes(int beat) const
