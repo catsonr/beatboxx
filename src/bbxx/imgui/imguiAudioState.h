@@ -19,6 +19,7 @@ namespace imguiAudioState
     {
         // AudioState
         ImGui::Begin("AudioState", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        Track* bgm = audiostate.bgm;
         
         std::vector<const char*> names;
         names.reserve(audiostate.tracks.size());
@@ -27,7 +28,7 @@ namespace imguiAudioState
 
         int current = 0;
         for (int i = 0; i < (int)audiostate.tracks.size(); ++i)
-            if (audiostate.tracks[i] == audiostate.bgm)
+            if (audiostate.tracks[i] == bgm)
                 current = i;
 
         if (ImGui::Combo("current track", &current, names.data(), (int)names.size()))
@@ -36,27 +37,44 @@ namespace imguiAudioState
         }
 
         ImGui::Separator();
-        ImGui::Text("track: %s", audiostate.bgm_playing ? "playing" : "paused");
+        ImGui::Text("track: %s", bgm->playing ? "playing" : "paused");
 
         // play/pause buttons
         if (ImGui::Button("Play"))
-            audiostate.bgm_play();
+            bgm->play();
         ImGui::SameLine();
         if (ImGui::Button("Pause"))
-            audiostate.bgm_pause();
+            bgm->pause();
 
         // track progress
-        float percent = audiostate.bgm_get_pos() / (float)audiostate.bgm->length_frames;
+        float percent = bgm->get_frame() / (float)bgm->length_frames;
         char overlay[64];
         snprintf(overlay, sizeof(overlay), "%llu / %llu frames (%.1f%%)",
-        audiostate.bgm_get_pos(), audiostate.bgm->length_frames, percent * 100.0f);
+        bgm->get_frame(), bgm->length_frames, percent * 100.0f);
         ImGui::ProgressBar(percent, ImVec2(-1, 0), overlay);
+        
+        // volume slider
+        static float volume = 1.0f;
+        if( ImGui::SliderFloat("master volume", &volume, 0.0f, 1.0f, "%.2f")) {
+            audiostate.set_volume(volume);
+        }
 
         ImGui::End(); // AudioState
 
         // Chart
         Chart& chart = audiostate.bgm->chart;
         ImGui::Begin("Chart", nullptr, ImGuiWindowFlags_None);
+        
+        if( ImGui::Button("Chart::add_beat() !") ) {
+            chart.add_beat(bgm->get_frame());
+        }
+        if( ImGui::Button("Chart::add_note() !") ) {
+            chart.add_note(bgm->get_frame());
+        }
+        ImGui::Separator();
+        if( ImGui::Button("Chart::json_write() !") ) {
+            chart.json_write();
+        }
         
         ImGui::Text("chart.current_beat = %d", chart.current_beat);
         
@@ -103,7 +121,7 @@ namespace imguiAudioState
                 note_labels_c.push_back(s.substr(0, 2).c_str());
 
             // set window as plot limits 
-            double window_center_frame = audiostate.bgm_get_pos();
+            double window_center_frame = bgm->get_frame();
             double window_radius = 100000.0;
             double window_start_frame = window_center_frame - window_radius;
             double window_end_frame   = window_center_frame + window_radius;
@@ -118,11 +136,22 @@ namespace imguiAudioState
                 beat_labels_c.data()
             );
             
+            // set now colors
+            ImPlot::SetNextLineStyle(ImVec4(0.1, 0.2, 0.3, 1.0), 1.0f);
+            
+            // plot now
+            std::vector<double> now_frames;
+            now_frames.push_back(bgm->get_frame());
+            ImPlot::PlotInfLines("now",
+                    now_frames.data(),
+                    (int)now_frames.size()
+            );
+            
             // set beat colors
             ImPlot::SetNextLineStyle(ImVec4(1.0, 0.5, 0.25, 1.0), 1.0f);
 
             // plot beats
-            ImPlot::PlotInfLines("beat",
+            ImPlot::PlotInfLines("beats",
                 beat_frames.data(),
                 (int)beat_frames.size()
             );
@@ -131,34 +160,23 @@ namespace imguiAudioState
             ImPlot::SetNextLineStyle(ImVec4(0.0, 0.5, 1.00, 1.0), 1.0f);
 
             // plot notes
-            ImPlot::PlotInfLines("beat",
+            ImPlot::PlotInfLines("notes",
                 note_frames.data(),
                 (int)note_frames.size()
             );
             
             ImPlot::EndPlot();
         }
-        
-        if( ImGui::Button("Chart::json_write() !") ) {
-            chart.json_write();
-        }
-        if( ImGui::Button("add beat @ audiostate,bgm_get_pos() ") ) {
-            chart.beats.push_back(audiostate.bgm_get_pos());
-        }
-        if( ImGui::Button("Chart::add_note() !") ) {
-            chart.add_note(audiostate.bgm_get_pos());
-        }
 
-        /*
         if (ImGui::BeginTable("NotesTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
         {
             ImGui::TableSetupColumn("beat");
             ImGui::TableSetupColumn("beat pos");
             ImGui::TableHeadersRow();
 
-            for (int i = 0; i < (int)notes.size(); ++i)
+            for (int i = 0; i < (int)chart.notes.size(); ++i)
             {
-                const auto &n = notes[i];
+                const auto &n = chart.notes[i];
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%d", n.beat);
@@ -168,7 +186,6 @@ namespace imguiAudioState
 
             ImGui::EndTable();
         }
-        */
 
         ImGui::End(); // Chart
     }

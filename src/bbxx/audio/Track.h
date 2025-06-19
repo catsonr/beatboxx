@@ -20,8 +20,10 @@ struct Track
 
     const float playbackspeed { 1.0f };
 
-    bool loaded = { false };
+    bool loaded { false };
     uint64_t length_frames { 0 };
+    
+    bool playing { false };
     
     Track(const char* path_from_assets_slash_tracks) :
         path(path_from_assets_slash_tracks)
@@ -31,6 +33,88 @@ struct Track
         
     }
     
+    bool init(ma_engine& engine)
+    {
+        /*
+            for some reason sound streaming doesnt work on web, so for now it will simply be loaded
+            entirely into memory
+
+            this will stall beatboxx until loading is done
+        */
+#ifndef __EMSCRIPTEN__
+        ma_uint32 flags = MA_SOUND_FLAG_STREAM;
+#else
+        ma_uint32 flags = MA_SOUND_FLAG_DECODE;
+#endif
+        if( ma_sound_init_from_file(&engine, full_path.c_str(), flags, NULL, NULL, &sound) != MA_SUCCESS ) {
+            printf("[Track::load] failed to load file '%s'!\n", path);
+        }
+        
+        if( !chart.init(full_path.c_str()) ) {
+            printf("[Track::load] failed to initialize chart for '%s'!\n", path);
+            return false;
+        }
+
+        loaded = true;
+        ma_sound_get_length_in_pcm_frames(&sound, &length_frames);
+
+        printf("[Track::init] loaded track '%s'!\n", path);
+        
+        return true;
+    }
+    
+    bool iterate()
+    {
+        // song ended
+        if( ma_sound_at_end(&sound) ) {
+            on_sound_end();
+            return false;
+        }
+        return chart.iterate(get_frame());
+    }
+    
+    void play()
+    {
+        if( playing ) return;
+
+        ma_sound_set_pitch(&sound, playbackspeed);
+        ma_sound_start(&sound);
+        
+        //printf("[Track::play] playing current bgm ...\n");
+        playing = true;
+    }
+    
+    void pause()
+    {
+        if( !playing ) return;
+
+        ma_sound_stop(&sound);
+         
+        printf("[AudioState::bgm_pause] paused current bgm ...\n");
+        playing = false;
+    }
+
+    uint64_t get_frame()
+    {
+        ma_uint64 cursor_frames;
+        ma_sound_get_cursor_in_pcm_frames(&sound, &cursor_frames);
+
+        return static_cast<uint64_t>(cursor_frames);
+    }
+    
+    void set_frame(uint64_t frame)
+    {
+        ma_sound_seek_to_pcm_frame(&sound, frame);
+    }
+    
+    void on_sound_end()
+    {
+        if( playing ) {
+            playing = false;
+            printf("[Track::on_sound_end] song '%s' ended!\n", path);
+        }
+    }
+    
     bool cleanup()
     {
         if( loaded ) {
@@ -38,9 +122,11 @@ struct Track
             
             loaded = false;
             
-            printf("[Track::cleanup] freed track '%s'!\n", path);
+            //printf("[Track::cleanup] freed track '%s'!\n", path);
             return true;
         }
+
+        chart.cleanup();
         
         return false;
     }

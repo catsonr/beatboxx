@@ -23,15 +23,17 @@ struct AudioState
     Track hi_posi { "hi-posi.mp3" };
     Track kaede { "kaede.mp3" };
     Track lamp { "lamp.mp3" };
+    Track mid_air_thief { "mid-air thief.mp3" };
     
     // tracks
-    std::vector<Track*> tracks { &hi_posi, &kaede, &lamp };
-    Track* bgm { tracks[0] }; // current track
+    std::vector<Track*> tracks {
+        &hi_posi, &kaede, &lamp, &mid_air_thief
+    };
+    Track* bgm { tracks[2] }; // current track
     
     // sound effects
     std::vector<Sfx> sfxs { {"click.wav"} };
 
-    bool bgm_playing { false };
     float volume { 1.0f };
     
     int periodsizeinframes { 256 };
@@ -45,12 +47,12 @@ struct AudioState
     bool set_currentTrack(Track* track);
     void set_volume(float volume_new);
 
-    bool bgm_load();
-    void bgm_play();
-    void bgm_pause();
+    //bool bgm_load();
+    //void bgm_play();
+    //void bgm_pause();
 
-    uint64_t bgm_get_pos();
-    void bgm_set_pos(uint64_t frame);
+    //uint64_t bgm_get_pos();
+    //void bgm_set_pos(uint64_t frame);
 
     void cleanup();
 }; // AudioState

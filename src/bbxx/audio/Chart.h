@@ -199,6 +199,11 @@ struct Chart
     }
     
     // METER CREATION
+    void add_beat(uint64_t frame)
+    {
+        beats.push_back(frame);
+    }
+
     // returns the frame of the next beat
     uint64_t get_nextBeatLocation(int beat_index) const
     {
@@ -235,36 +240,52 @@ struct Chart
         
         notes.push_back(note);
     }
-    
+
+    // where, within a beat, the note lies
     const std::vector<float> quantize_positions {
         0.0,
-        0.25,
-        0.5,
-        0.75,
+        //0.25,
+        0.3333333,
+        //0.5,
+        0.6666666,
+        //0.75,
         1.0
     };
-    const float epsilon = 0.20;
     bool quantize(Note* note)
     {
-        for(float quant : quantize_positions)
+        bool changed = false;
+
+        float best_distance = 1.0;
+        float best_position = note->pos;
+        for(float position : quantize_positions)
         {
-            if( fabs(note->pos - quant) <= epsilon )
+            if( fabs(note->pos - position) < best_distance )
             {
-                if(quant == 1.0)
-                {
-                    note->beat++;
-                    note->pos = 0.0;
-                    return true;
-                }
-                else 
-                {
-                    note->pos = quant;
-                    return true;
-                }
+                best_distance = fabs(note->pos - position);
+                best_position = position;
+                changed = true;
             }
         }
         
-        return false;
+        if( changed)
+        {
+            note->pos = best_position;
+            
+            // if it was closest to 1.0, save it as 0.0 of next beat
+            if( note->pos == 1.0 ) {
+                note->beat++;
+                note->pos = 0.0;
+            }
+        }
+        
+        return changed;
+    }
+
+    void cleanup()
+    {
+        beats.clear();
+        notes.clear();
+        current_beat = -1;
     }
 }; // Chart
 
