@@ -39,7 +39,7 @@ struct Track
             for some reason sound streaming doesnt work on web, so for now it will simply be loaded
             entirely into memory
 
-            this will stall beatboxx until loading is done
+            this will stall beatboxx on ma_sound_init_from_file() until loading is done
         */
 #ifndef __EMSCRIPTEN__
         //ma_uint32 flags = MA_SOUND_FLAG_STREAM;
@@ -47,6 +47,8 @@ struct Track
 #else
         ma_uint32 flags = MA_SOUND_FLAG_DECODE;
 #endif
+        
+        printf("[Track::init] loading '%s'... (this may take a while)\n", path);
         if( ma_sound_init_from_file(&engine, full_path.c_str(), flags, NULL, NULL, &sound) != MA_SUCCESS ) {
             printf("[Track::load] failed to load file '%s'!\n", path);
         }

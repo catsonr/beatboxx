@@ -1,8 +1,12 @@
 #ifndef SFX_H
 #define SFX_H
 
+#include <string>
+
 // miniaudio 
 #include "miniaudio.h"
+
+#include "../utilities.h"
 
 struct Sfx
 {
@@ -37,7 +41,7 @@ struct Sfx
     
     void play()
     {
-        if (!loaded) return;
+        if (!loaded || ma_sound_is_playing(&sound)) return;
 
         ma_sound_seek_to_pcm_frame(&sound, 0);
         ma_sound_start(&sound);

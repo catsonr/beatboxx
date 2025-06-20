@@ -32,7 +32,7 @@ struct AudioState
     Track* bgm { tracks[2] }; // current track
     
     // sound effects
-    std::vector<Sfx> sfxs { {"click.wav"} };
+    std::vector<Sfx> sfxs { {"click.wav"}, {"note.wav"} };
 
     float volume { 1.0f };
     

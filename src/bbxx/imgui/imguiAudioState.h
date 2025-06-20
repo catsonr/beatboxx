@@ -160,6 +160,12 @@ namespace imguiAudioState
                     (int)now_frames.size()
             );
             
+            for(const float note : note_frames)
+            {
+                if( fabs(bgm->get_frame() - note) <= 400 )
+                    audiostate.sfxs[1].play();
+            }
+            
             // set beat colors
             ImPlot::SetNextLineStyle(ImVec4(1.0, 0.5, 0.25, 1.0), 1.0f);
 
