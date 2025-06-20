@@ -150,7 +150,7 @@ namespace imguiAudioState
             );
             
             // set now colors
-            ImPlot::SetNextLineStyle(ImVec4(0.1, 0.2, 0.3, 1.0), 1.0f);
+            ImPlot::SetNextLineStyle(ImVec4(0.5, 0.5, 0.5, 0.5), 1.0f);
             
             // plot now
             std::vector<double> now_frames;

@@ -93,7 +93,7 @@ void BBXX::iterate()
 void BBXX::draw()
 {
     glstate.draw();
-    nanovgstate.draw();
+    nanovgstate.draw(&audiostate);
     imguistate.draw();
 
     SDL_GL_SwapWindow(window);

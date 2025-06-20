@@ -3,7 +3,9 @@
 
 #include <nanovg.h>
 
+#include "utilities.h"
 #include "WindowState.h"
+#include "AudioState.h"
 
 struct NanoVGState
 {
@@ -11,7 +13,7 @@ struct NanoVGState
     WindowState* windowstate;
 
     bool init(WindowState* windowstate);
-    void draw();
+    void draw(AudioState* audiostate);
     void cleanup();
 }; // NanoVGState
 
