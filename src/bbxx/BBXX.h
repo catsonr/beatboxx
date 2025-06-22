@@ -32,7 +32,7 @@ private:
     const int WINDOW_WIDTH_MIN { 800 };
     const int WINDOW_HEIGHT_MIN { 600 };
     const char* WINDOW_TITLE { "beatboxx 🎵" };
-    const char* BBXX_VERSION { "pre-alpha 0.1"};
+    const char* BBXX_VERSION { "pre-alpha 1.0"};
 
     SDL_WindowFlags windowflags =
         //SDL_WINDOW_FULLSCREEN |

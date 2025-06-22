@@ -33,8 +33,11 @@ struct Chart
     /* PUBLIC MEMBERS */
     // all beats in chart
     std::vector<uint64_t> beats;
+    int beat_count;
+
     // all notes in chart
     std::vector<Note> notes;
+    int note_count;
 
     // the current beat of playback
     const int BEAT_BEFORE_FIRST { -1 };

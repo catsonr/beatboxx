@@ -31,7 +31,7 @@ struct ImguiStateDrawArgs
 struct ImguiState
 {
     ImguiState(const ImguiStateDrawArgs& draw_args) : draw_args(draw_args) {}
-    bool show = true;
+    bool show { false };
 
     WindowState* windowstate;
     const ImguiStateDrawArgs& draw_args;
@@ -132,6 +132,7 @@ struct ImguiState
 
     void draw_end()
     {
+        if( !show ) return;
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

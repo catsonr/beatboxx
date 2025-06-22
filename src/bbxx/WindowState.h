@@ -33,10 +33,12 @@ struct WindowState
     float ds;
     
     // if bbxx will try to grab focus of the mouse
-    bool grab_focus { false };
+    bool grab_focus { true };
 
     // if the mouse is focused to the window
     bool focused { false };
+    
+    bool fullscreened { false };
     
     // common, shared colors
     util::Color color_highlight { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -104,9 +106,9 @@ struct WindowState
 
                 focused = true;
 
-                SDL_HideCursor();
+                //SDL_HideCursor();
                 //SDL_SetWindowRelativeMouseMode(window, true);
-                SDL_SetWindowMouseGrab(window, true);
+                //SDL_SetWindowMouseGrab(window, true);
             }
 
             else if ( focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE)
@@ -120,16 +122,24 @@ struct WindowState
 
                 focused = false;
 
-                SDL_ShowCursor();
+                //SDL_ShowCursor();
                 //SDL_SetWindowRelativeMouseMode(window, false);
-                SDL_SetWindowMouseGrab(window, false);
+                //SDL_SetWindowMouseGrab(window, false);
             }
         }
     }
     
     bool fullscreen(bool request_open=true)
     {
-        return SDL_SetWindowFullscreen(window, request_open);
+        if( !SDL_SetWindowFullscreen(window, request_open) )
+        {
+            printf("[WindowState::fullscreen] unable to %s fullscreen!\n", (request_open) ? "enter" : "exit");
+            return false;
+        } else
+        {
+            fullscreened = request_open;
+            return true;
+        }
     }
 }; // WindowState
 

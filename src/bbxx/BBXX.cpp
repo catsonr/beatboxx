@@ -74,7 +74,7 @@ SDL_AppResult BBXX::init()
     
     //screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
     screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate) );
-    screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate) );
+    screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
     
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
@@ -135,6 +135,9 @@ SDL_AppResult BBXX::handle_event(const SDL_Event* event)
     inputstate.handle_event(event);
     windowstate.handle_event(event);
     //glstate.handle_event(event);
+
+    for(const auto& screen : screens)
+        screen->handles_event(event);
 
     ImGui_ImplSDL3_ProcessEvent(event);
 
