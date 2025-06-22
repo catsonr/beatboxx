@@ -20,6 +20,7 @@
 #include <memory> // for smart pointers
 #include "screen/Screen.h"
 #include "screen/MainMenu.h"
+#include "screen/DebugGUI.h"
 
 class BBXX
 {

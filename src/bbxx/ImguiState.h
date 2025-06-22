@@ -36,7 +36,6 @@ struct ImguiState
     WindowState* windowstate;
     const ImguiStateDrawArgs& draw_args;
     
-    float padding = 10.f;
     
     bool init(WindowState* windowstate)
     {
@@ -122,33 +121,21 @@ struct ImguiState
 
         return true;
     }
-
-    void draw()
+    
+    void draw_begin()
     {
-        // prepare draw call
         if( !show ) return;
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
+    }
 
-        // draw fps counter
-        ImGui::SetNextWindowPos(
-            ImVec2(padding, padding)
-        );
-        imguiFPSCounter::draw(draw_args.fpscounter);
-        
-        // draw audio state
-        imguiAudioState::draw(draw_args.audiostate);
-        
-        // draw demo window(s)
-        //ImGui::ShowDemoWindow();
-        //ImPlot::ShowDemoWindow();
-
-        // present
+    void draw_end()
+    {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
-    
+
     /*
     void cleanup()
     {

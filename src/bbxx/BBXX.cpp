@@ -73,6 +73,7 @@ SDL_AppResult BBXX::init()
     }
     
     screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
+    screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate) );
     
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
@@ -88,8 +89,9 @@ void BBXX::iterate()
     for(const auto& screen : screens)
         screen->iterate();
     
-    // begin nvg frame
+    // prepare for draw()
     nanovgstate.draw_begin();
+    imguistate.draw_begin();
 }
 
 /*
@@ -100,8 +102,8 @@ void BBXX::draw()
     for(const auto& screen : screens)
         screen->draw();
     
-    // end nvg frame
     nanovgstate.draw_end();
+    imguistate.draw_end();
     
     // present result
     SDL_GL_SwapWindow(window);
