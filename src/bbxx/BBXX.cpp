@@ -72,7 +72,8 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
+    //screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
+    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate) );
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate) );
     
     printf("[BBXX::init] initialization complete!\n");
@@ -86,12 +87,8 @@ void BBXX::iterate()
     fpscounter.iterate();
     audiostate.iterate();
 
-    for(const auto& screen : screens)
+    for(auto& screen : screens)
         screen->iterate();
-    
-    // prepare for draw()
-    nanovgstate.draw_begin();
-    imguistate.draw_begin();
 }
 
 /*
@@ -99,13 +96,17 @@ void BBXX::iterate()
 */
 void BBXX::draw()
 {
+    glstate.draw_begin();
+    nanovgstate.draw_begin();
+    imguistate.draw_begin();
+
     for(const auto& screen : screens)
         screen->draw();
     
     nanovgstate.draw_end();
     imguistate.draw_end();
     
-    // present result
+    // present result (basically glstate.draw_end())
     SDL_GL_SwapWindow(window);
 }
 
@@ -133,7 +134,7 @@ SDL_AppResult BBXX::handle_event(const SDL_Event* event)
 
     inputstate.handle_event(event);
     windowstate.handle_event(event);
-    glstate.handle_event(event);
+    //glstate.handle_event(event);
 
     ImGui_ImplSDL3_ProcessEvent(event);
 

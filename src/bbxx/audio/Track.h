@@ -134,6 +134,12 @@ struct Track
         
         return false;
     }
+    
+    /* converts frame to position in track, where 0.0 is start and 1.0 is end */
+    double frame_to_pos(uint64_t frame) const
+    {
+        return static_cast<double>(frame) / static_cast<double>(length_frames);
+    }
 }; // Track
 
 #endif // TRACK_H

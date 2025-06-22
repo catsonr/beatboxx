@@ -47,13 +47,6 @@ struct AudioState
     bool set_currentTrack(Track* track);
     void set_volume(float volume_new);
 
-    //bool bgm_load();
-    //void bgm_play();
-    //void bgm_pause();
-
-    //uint64_t bgm_get_pos();
-    //void bgm_set_pos(uint64_t frame);
-
     void cleanup();
 }; // AudioState
 

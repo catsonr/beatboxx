@@ -12,7 +12,7 @@
 #include <SDL3/SDL.h>
 
 // bbxx
-#include <bbxx/WindowState.h>
+#include "../WindowState.h"
 
 class Screen
 {
@@ -25,9 +25,11 @@ public:
     {}
 
     virtual void draw() = 0;
-    virtual void iterate() {};
-    virtual void handle_event(SDL_Event* event) {};
-    virtual void cleanup() {};
+    
+    virtual bool init() { return true; }
+    virtual void iterate() {}
+    virtual void handle_event(SDL_Event* event) {}
+    virtual void cleanup() {}
     
     virtual ~Screen() = default;
 }; // Screen

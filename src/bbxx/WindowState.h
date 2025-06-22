@@ -40,7 +40,7 @@ struct WindowState
     
     // common, shared colors
     util::Color color_highlight { 1.0f, 1.0f, 1.0f, 1.0f };
-    util::Color color_midtone { 0.5f, 0.5f, 0.5f, 0.5f };
+    util::Color color_midtone { 0.5f, 0.5f, 0.5f, 1.0f };
     util::Color color_shadow { 1.0f, 1.0f, 1.0f, 1.0f };
     
     bool init(SDL_Window *window, SDL_GLContext* gl)

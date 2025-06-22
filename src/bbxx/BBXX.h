@@ -18,9 +18,10 @@
 
 // bbxx screens
 #include <memory> // for smart pointers
-#include "screen/Screen.h"
-#include "screen/MainMenu.h"
 #include "screen/DebugGUI.h"
+#include "screen/MainMenu.h"
+#include "screen/NowPlaying.h"
+#include "screen/Screen.h"
 
 class BBXX
 {
@@ -31,6 +32,7 @@ private:
     const int WINDOW_WIDTH_MIN { 800 };
     const int WINDOW_HEIGHT_MIN { 600 };
     const char* WINDOW_TITLE { "beatboxx 🎵" };
+    const char* BBXX_VERSION { "pre-alpha 0.1"};
 
     SDL_WindowFlags windowflags =
         //SDL_WINDOW_FULLSCREEN |

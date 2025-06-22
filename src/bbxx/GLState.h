@@ -173,15 +173,8 @@ struct GLState
     
     void draw()
     {
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glViewport(0, 0, windowstate->w, windowstate->h);
+        draw_begin();
 
-        glClearColor(0.1, 0.1, 0.1, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        // opaque
         bg_img.draw();
         //threeD.draw();
 
@@ -190,11 +183,25 @@ struct GLState
         //glCullFace(GL_BACK);
         //glFrontFace(GL_CW);
         //glDisable(GL_DEPTH_TEST);
-        //shader.draw();
+        shader.draw();
         
         //msdfstate.draw();
-        
-        // once end of draw() is reached, all rendering should be complete and ready for imgui
+    }
+    
+    void draw_begin()
+    {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glViewport(0, 0, windowstate->w, windowstate->h);
+
+        glClearColor(0.1, 0.1, 0.1, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+    
+    void draw_end()
+    {
+
     }
 }; // GLState
 
