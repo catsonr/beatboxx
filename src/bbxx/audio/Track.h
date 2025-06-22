@@ -42,8 +42,8 @@ struct Track
             this will stall beatboxx on ma_sound_init_from_file() until loading is done
         */
 #ifndef __EMSCRIPTEN__
-        //ma_uint32 flags = MA_SOUND_FLAG_STREAM;
-        ma_uint32 flags = MA_SOUND_FLAG_DECODE;
+        ma_uint32 flags = MA_SOUND_FLAG_STREAM;
+        //ma_uint32 flags = MA_SOUND_FLAG_DECODE;
 #else
         ma_uint32 flags = MA_SOUND_FLAG_DECODE;
 #endif

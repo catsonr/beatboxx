@@ -16,16 +16,20 @@
 
 class Screen
 {
-private:
-    WindowState* windowstate;
+protected:
+    WindowState& windowstate;
 
 public:
-    Screen(WindowState* windowstate) :
+    Screen(WindowState& windowstate) :
         windowstate(windowstate)
     {}
 
     virtual void draw() = 0;
+    virtual void iterate() {};
     virtual void handle_event(SDL_Event* event) {};
+    virtual void cleanup() {};
+    
+    virtual ~Screen() = default;
 }; // Screen
 
 #endif // SCREEN_H

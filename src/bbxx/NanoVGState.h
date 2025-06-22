@@ -9,12 +9,19 @@
 
 struct NanoVGState
 {
+    NanoVGState(WindowState& windowstate) :
+        windowstate(windowstate)
+    {}
+    /* PUBLIC MEMBERS */
     NVGcontext* vg { nullptr };
-    WindowState* windowstate;
+    WindowState& windowstate;
 
-    bool init(WindowState* windowstate);
-    void draw(AudioState* audiostate);
+    /* PUBLIC METHODS */
+    bool init();
+    //void draw(AudioState* audiostate);
     void cleanup();
+    void draw_begin();
+    void draw_end();
 }; // NanoVGState
 
 #endif // NANOVGSTATE_H

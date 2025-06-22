@@ -10,13 +10,20 @@
 // glad
 #include <glad/glad.h>
 
+// nanovg
+#include <nanovg.h>
+
 // bbxx
 #include "utilities.h"
 
 struct WindowState
 {
     SDL_Window* window;
+
+    // the global opengl context
     SDL_GLContext* gl;
+    // the global nanovg context
+    NVGcontext* vg { nullptr };
     
     // the width and height of the screen, in PHYSICAL pixels
     int w, h;

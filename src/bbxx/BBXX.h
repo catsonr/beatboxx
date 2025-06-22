@@ -15,7 +15,11 @@
 #include "GLState.h"
 #include "ImguiState.h"
 #include "NanoVGState.h"
-//#include "screen/Screen.h"
+
+// bbxx screens
+#include <memory> // for smart pointers
+#include "screen/Screen.h"
+#include "screen/MainMenu.h"
 
 class BBXX
 {
@@ -43,12 +47,13 @@ private:
     WindowState windowstate;
 
     GLState glstate;
-    NanoVGState nanovgstate;
+    NanoVGState nanovgstate { windowstate };
     
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate };
     ImguiState imguistate { imguistatedrawargs };
     
-    //std::stack<Screen> screens;
+    MainMenu mainmenu { windowstate };
+    std::vector< std::unique_ptr<Screen> > screens;
     
 public:
     /* PUBLIC MEMBERS */

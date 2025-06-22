@@ -2,7 +2,7 @@
 
 /*
    NanoVG requires some #define gl_implementation in some .cpp once and only once,
-   so i do it here, as well as function definitions
+   so i do it here, as well as (old) draw()
 */
 #include <glad/glad.h>
 #ifdef __EMSCRIPTEN__
@@ -13,8 +13,9 @@
 #include <nanovg.h>
 #include <nanovg_gl.h>
 
-bool NanoVGState::init(WindowState* windowstate)
+bool NanoVGState::init()
 {
+    // create nanovg instance
 #ifdef __EMSCRIPTEN__
     vg = nvgCreateGLES3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 #else
@@ -31,15 +32,12 @@ bool NanoVGState::init(WindowState* windowstate)
         return false;
     }
     
-    if( !windowstate ) {
-        printf("[NanoVGState::init] cannot init with null windowstate!\n");
-        return false;
-    }
-    this->windowstate = windowstate;
+    windowstate.vg = vg;
     
     return true;
 }
 
+/*
 void NanoVGState::draw(AudioState* audiostate)
 {
     if( !audiostate ) {
@@ -48,12 +46,12 @@ void NanoVGState::draw(AudioState* audiostate)
     
     const Chart& chart = audiostate->bgm->chart;
 
-    int w = windowstate->w;
-    int h = windowstate->h;
-    nvgBeginFrame(vg, w, h, windowstate->ds);
+    int w = windowstate.w;
+    int h = windowstate.h;
+    nvgBeginFrame(vg, w, h, windowstate.ds);
     
     // draw now line
-    float now_x = w * 0.2f;
+    float now_x = w * 0.5f;
     nvgBeginPath(vg);
     nvgMoveTo(vg, now_x, 0);
     nvgLineTo(vg, now_x, h);
@@ -117,6 +115,7 @@ void NanoVGState::draw(AudioState* audiostate)
 
     nvgEndFrame(vg);
 }
+*/
 
 void NanoVGState::cleanup()
 {
@@ -128,4 +127,13 @@ void NanoVGState::cleanup()
 #endif
         vg = nullptr;
     }
+}
+
+void NanoVGState::draw_begin()
+{
+    nvgBeginFrame(vg, windowstate.w, windowstate.h, windowstate.ds);
+}
+void NanoVGState::draw_end()
+{
+    nvgEndFrame(vg);
 }

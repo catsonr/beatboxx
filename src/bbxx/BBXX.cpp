@@ -67,10 +67,12 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    if( !nanovgstate.init(&windowstate) ) {
+    if( !nanovgstate.init() ) {
         printf("[BBXX::init] failed to initialize nanovg state!\n");
         return SDL_APP_FAILURE;
     }
+    
+    screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
     
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
@@ -81,10 +83,13 @@ SDL_AppResult BBXX::init()
 void BBXX::iterate()
 {
     fpscounter.iterate();
-    
     audiostate.iterate();
+
+    for(const auto& screen : screens)
+        screen->iterate();
     
-    glstate.iterate(fpscounter.seconds, fpscounter.dt, &inputstate);
+    // begin nvg frame
+    nanovgstate.draw_begin();
 }
 
 /*
@@ -92,10 +97,13 @@ void BBXX::iterate()
 */
 void BBXX::draw()
 {
-    glstate.draw();
-    nanovgstate.draw(&audiostate);
-    imguistate.draw();
-
+    for(const auto& screen : screens)
+        screen->draw();
+    
+    // end nvg frame
+    nanovgstate.draw_end();
+    
+    // present result
     SDL_GL_SwapWindow(window);
 }
 
