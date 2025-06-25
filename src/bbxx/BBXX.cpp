@@ -78,7 +78,7 @@ SDL_AppResult BBXX::init()
     }
     
     //screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
-    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
+    //screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
     screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
     
@@ -146,7 +146,7 @@ SDL_AppResult BBXX::handle_event(const SDL_Event* event)
 
     inputstate.handle_event(event);
     windowstate.handle_event(event);
-    //glstate.handle_event(event);
+    glstate.handle_event(event);
 
     for(const auto& screen : screens)
         screen->handles_event(event);

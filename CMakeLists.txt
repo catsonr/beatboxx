@@ -147,6 +147,11 @@ target_include_directories(Polyline2D INTERFACE
   ${CMAKE_SOURCE_DIR}/vendored/Polyline2D/include
 )
 
+# fastnoiselite
+target_include_directories(beatboxx PRIVATE
+  ${CMAKE_SOURCE_DIR}/FastNoiseLite
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE

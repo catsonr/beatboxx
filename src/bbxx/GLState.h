@@ -41,7 +41,7 @@ struct GLState
     
     // camera stuff
     float mouse_sensitivity { 0.002 };
-    float camera_movementSpeed { 0.0000008 };
+    float camera_movementSpeed { 1.0 };
     float pitch { 0 }, yaw { M_PI_2 };
 
     glm::vec3 camera_pos { 0, 0, -4 };
@@ -67,8 +67,6 @@ struct GLState
     {
         if( !windowstate->focused ) return;
         
-        printf("camera moving\n");
-
         glm::vec3 forward = glm::normalize(camera_target - camera_pos);
         glm::vec3 right = glm::normalize( glm::cross(forward, camera_up) );
         

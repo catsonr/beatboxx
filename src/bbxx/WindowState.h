@@ -106,9 +106,9 @@ struct WindowState
 
                 focused = true;
 
-                //SDL_HideCursor();
-                //SDL_SetWindowRelativeMouseMode(window, true);
-                //SDL_SetWindowMouseGrab(window, true);
+                SDL_HideCursor();
+                SDL_SetWindowRelativeMouseMode(window, true);
+                SDL_SetWindowMouseGrab(window, true);
             }
 
             else if ( focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE)
@@ -122,9 +122,9 @@ struct WindowState
 
                 focused = false;
 
-                //SDL_ShowCursor();
-                //SDL_SetWindowRelativeMouseMode(window, false);
-                //SDL_SetWindowMouseGrab(window, false);
+                SDL_ShowCursor();
+                SDL_SetWindowRelativeMouseMode(window, false);
+                SDL_SetWindowMouseGrab(window, false);
             }
         }
     }
