@@ -72,9 +72,15 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
+    if( !polyline2dstate.init() ) {
+        printf("[BBXX::init] failed to initialize polyline2d state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
     //screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
-    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate) );
+    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
+    screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
     
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();
@@ -86,6 +92,9 @@ void BBXX::iterate()
 {
     fpscounter.iterate();
     audiostate.iterate();
+
+    // needs to be called for glstate to display anything
+    glstate.iterate();
 
     for(auto& screen : screens)
         screen->iterate();
@@ -100,8 +109,11 @@ void BBXX::draw()
     nanovgstate.draw_begin();
     imguistate.draw_begin();
 
+    // glstate.draw() calls glstate.draw_begin(), erasing everything before it
     for(const auto& screen : screens)
         screen->draw();
+    
+    //glstate.draw();
     
     nanovgstate.draw_end();
     imguistate.draw_end();

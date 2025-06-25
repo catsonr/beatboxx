@@ -50,7 +50,7 @@ if(EMSCRIPTEN)
   target_compile_definitions(beatboxx PRIVATE MA_ENABLE_AUDIO_WORKLETS)
 
   target_link_options(beatboxx PRIVATE
-    -sUSE_SDL=2
+    -sUSE_SDL=3
     -sFULL_ES3=1
     -sUSE_WEBGL2=1
     -sALLOW_MEMORY_GROWTH=1
@@ -141,6 +141,12 @@ target_include_directories(beatboxx PRIVATE
   ${CMAKE_SOURCE_DIR}/miniaudio
 )
 
+# polyline2d
+add_library(Polyline2D INTERFACE)
+target_include_directories(Polyline2D INTERFACE
+  ${CMAKE_SOURCE_DIR}/vendored/Polyline2D/include
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
@@ -152,6 +158,7 @@ target_link_libraries(beatboxx
     implot
     json
     nanovg
+    Polyline2D
 )
 
 # msdfgen and msdf-atlas-gen only included if on native build

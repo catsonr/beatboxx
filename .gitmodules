@@ -22,3 +22,6 @@
 [submodule "vendored/implot"]
 	path = vendored/implot
 	url = https://github.com/epezent/implot.git
+[submodule "vendored/Polyline2D"]
+	path = vendored/Polyline2D
+	url = https://github.com/CrushedPixel/Polyline2D

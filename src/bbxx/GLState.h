@@ -23,6 +23,7 @@
 
 struct GLState
 {
+    bool DRAW_HAS_BEGUN { false };
     std::vector<float> unitsquare_vertices { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f, -0.5f, -0.5f, 0.0f };
     std::vector<float> unitcube_vertices { -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,  0.5f, 0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, 0.5f,  0.5f, -0.5f, 0.5f,  0.5f,  0.5f, 0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f };
 
@@ -153,9 +154,9 @@ struct GLState
     }
     
     // these are being passed temporarily -- there really shouldn't be anything passed to iterate()
-    void iterate(float t, float dt, InputState* inputstate)
+    void iterate( /*float t, float dt, InputState* inputstate*/ )
     {
-        camera_move(inputstate, dt);
+        //camera_move(inputstate, dt);
 
         // vertex shader uniforms
         bg_img.set_uniform("u_mVP", m_VP);
@@ -164,18 +165,26 @@ struct GLState
         //msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
 
         // fragment shader uniforms 
+        static float t = 0.0;
+        t += 1.0f / 60.0f;
         bg_img.set_uniform("u_t", t);
-        
-        glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds / windowstate->w, inputstate->mouse_y * windowstate->ds / windowstate->h, windowstate->w, windowstate->h );
-        //shader.set_uniform("u_mouse", mouse);
         shader.set_uniform("u_t", t);
+        
+        //glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds / windowstate->w, inputstate->mouse_y * windowstate->ds / windowstate->h, windowstate->w, windowstate->h );
+        //shader.set_uniform("u_mouse", mouse);
+        
+        DRAW_HAS_BEGUN = false;
     }
     
+    /* can only be called once per frame!!!!!!!!!! */
     void draw()
     {
-        draw_begin();
+        if(! DRAW_HAS_BEGUN ) {
+            printf("[GLState::draw] call to GLState::draw() before GLState::begin_draw() !!!!!!\n");
+            assert( DRAW_HAS_BEGUN );
+        }
 
-        bg_img.draw();
+        //bg_img.draw();
         //threeD.draw();
 
         // transparent
@@ -190,6 +199,10 @@ struct GLState
     
     void draw_begin()
     {
+        if( DRAW_HAS_BEGUN ) {
+            printf("[GLState::draw_begin] draw_begin() has already been called this frame. ignoring!\n");
+        }
+
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -197,11 +210,8 @@ struct GLState
 
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-    
-    void draw_end()
-    {
 
+        DRAW_HAS_BEGUN = true;
     }
 }; // GLState
 

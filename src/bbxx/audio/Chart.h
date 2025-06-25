@@ -28,6 +28,18 @@ struct Note
     float pos;
 }; // Note
 
+struct Run
+{
+    /* the number of notes hit correctly in a row */
+    int combo { 0 };
+    /* the highest combo achieved */
+    int combo_highest { 0 };
+
+    int score { 0 };
+    /* the value added to score if a note is hit perfectly in time */
+    static const int SCORE_PERFECT_HIT { 100 };
+}; // Run
+
 struct Chart
 {
     /* PUBLIC MEMBERS */
@@ -60,6 +72,7 @@ struct Chart
         return true;
     }
 
+    /* returns true if beat passed this frame */
     bool iterate(uint64_t current_frame)
     {
         // before first beat

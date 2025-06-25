@@ -4,15 +4,18 @@
 #include <nanovg.h>
 
 #include "../AudioState.h"
+#include "../InputState.h"
 #include "Screen.h"
 
 struct NowPlaying : Screen
 {
     AudioState& audiostate;
+    InputState& inputstate;
 
-    NowPlaying(WindowState& windowstate, AudioState& audiostate) :
+    NowPlaying(WindowState& windowstate, AudioState& audiostate, InputState& inputstate) :
         Screen(windowstate),
-        audiostate(audiostate)
+        audiostate(audiostate),
+        inputstate(inputstate)
     {}
     
     void draw()
@@ -37,6 +40,16 @@ struct NowPlaying : Screen
         nvgStrokeWidth(vg, 1.0f);
         nvgStrokeColor(vg, nvgRGBAf(1.0, 1.0, 1.0, 1.0));
         nvgStroke(vg);
+        
+        /*
+        // draw mouse_y line
+        nvgBeginPath(vg);
+        nvgMoveTo(vg, 0, inputstate.mouse_y * windowstate.ds);
+        nvgLineTo(vg, w, inputstate.mouse_y * windowstate.ds);
+        nvgStrokeWidth(vg, 1.0f);
+        nvgStrokeColor(vg, nvgRGBAf(1.0, 1.0, 1.0, 1.0));
+        nvgStroke(vg);
+        */
         
         // draw beat lines
         const float speed = 120.0f; // speed of 1.0 -> entire chart is on screen
