@@ -94,7 +94,7 @@ void BBXX::iterate()
     audiostate.iterate();
 
     // needs to be called for glstate to display anything
-    glstate.iterate();
+    glstate.iterate(fpscounter.seconds, fpscounter.d_seconds, &inputstate);
 
     for(auto& screen : screens)
         screen->iterate();

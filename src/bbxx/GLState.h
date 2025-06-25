@@ -66,6 +66,8 @@ struct GLState
     void camera_move(InputState* inputstate, float dt)
     {
         if( !windowstate->focused ) return;
+        
+        printf("camera moving\n");
 
         glm::vec3 forward = glm::normalize(camera_target - camera_pos);
         glm::vec3 right = glm::normalize( glm::cross(forward, camera_up) );
@@ -154,9 +156,9 @@ struct GLState
     }
     
     // these are being passed temporarily -- there really shouldn't be anything passed to iterate()
-    void iterate( /*float t, float dt, InputState* inputstate*/ )
+    void iterate( float t, float dt, InputState* inputstate )
     {
-        //camera_move(inputstate, dt);
+        camera_move(inputstate, dt);
 
         // vertex shader uniforms
         bg_img.set_uniform("u_mVP", m_VP);
@@ -165,8 +167,8 @@ struct GLState
         //msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
 
         // fragment shader uniforms 
-        static float t = 0.0;
-        t += 1.0f / 60.0f;
+        //static float t = 0.0;
+        //t += 1.0f / 60.0f;
         bg_img.set_uniform("u_t", t);
         shader.set_uniform("u_t", t);
         

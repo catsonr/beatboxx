@@ -147,6 +147,32 @@ public:
         glBindVertexArray(0);
     }
     
+    bool set_vbo(std::vector<float>& vbo_data)
+    {
+        /*if( (int)vbo_data.size() != vbo_length ) {
+            printf("[ShaderProgram::set_vbo] new vbo has length %i, needs length %i!\n", (int)vbo_data.size(), vbo_length);
+            return false;
+        }
+        */
+
+        glBindVertexArray(vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            vbo_data.size() * sizeof(float),
+            vbo_data.data(),
+            GL_DYNAMIC_DRAW // assumes dynamic is wanted
+        );
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        
+        vbo_length = (int)vbo_data.size();
+
+        return true;
+    }
+    
     bool set_uniform(const char* name, int value) const
     {
         glUseProgram(program);

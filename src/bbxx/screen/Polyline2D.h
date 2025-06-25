@@ -19,7 +19,7 @@ struct Poly : Screen
     void draw()
     {
         polyline2dstate.draw(glstate);
-        glstate.draw();
+        //glstate.draw();
     }
 }; // Poly
 
