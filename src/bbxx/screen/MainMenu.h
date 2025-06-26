@@ -17,10 +17,6 @@ struct MainMenu : Screen
 
     void draw() override
     {
-        NVGcontext* vg = windowstate.vg;
-        float w = (float)windowstate.w;
-        float h = (float)windowstate.h;
-
 
     }
 }; // MainMenu

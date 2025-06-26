@@ -100,7 +100,7 @@ struct WindowState
 
             if ( event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_RIGHTBRACKET )
             {
-                if( fullscreen(false) ) {
+                if( !fullscreen(false) ) {
                     printf("[WindowState::handle_event] failed to exit fullscreen!\n");
                 }
             }

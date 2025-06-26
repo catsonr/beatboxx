@@ -26,7 +26,7 @@ struct DebugGUI : Screen
     
     void handle_event(const SDL_Event* event) override
     {
-        if( inputstate.key_down(SDL_SCANCODE_GRAVE) )
+        if( inputstate.key_pressed(SDL_SCANCODE_GRAVE) )
             imguistate.show = !imguistate.show;
     }
 

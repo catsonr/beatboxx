@@ -58,9 +58,11 @@ struct NoteResult
 struct Run
 {
     /* CONSTRUCTORS */
+
     Run(const Chart& chart) : chart(chart) {}
 
     /* PUBLIC MEMBERS */
+
     const Chart& chart;
 
     /* the number of notes hit correctly in a row */
@@ -76,10 +78,15 @@ struct Run
     /* health, run ends if you reach 0 */
     double gauge { 1.0f };
     
+    /* the list of possible notes, with thier status */
     std::vector<NoteResult> noteresults;
+    /* the index of the current note in Run */
     int noteresults_index { 0 };
     
+    bool space_down { false };
+    
     /* PUBLIC METHODS */
+
     void init()
     {
         noteresults.reserve(chart.notes.size());
@@ -119,6 +126,8 @@ struct Run
     /* finds the nearest note at the time of the button press */
     void button_pressed(uint64_t frame, buttons button)
     {
+        if( button == buttons::space ) space_down = true;
+
         const std::vector<Note>& notes_curr = chart.get_beat_notes(chart.current_beat);
         const std::vector<Note>& notes_next = chart.get_beat_notes(chart.current_beat + 1);
         
@@ -156,6 +165,7 @@ struct Run
     
     void button_released(uint64_t frame, buttons button)
     {
+        if( button == buttons::space ) space_down = false;
         // handle hold notes
     }
 }; // Run

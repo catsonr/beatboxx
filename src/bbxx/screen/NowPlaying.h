@@ -44,18 +44,9 @@ struct NowPlaying : Screen
                 audiostate.bgm->play();
             }
         }
-
-        else if( inputstate.key_pressed(SDL_SCANCODE_A) ) run.button_pressed(current_track->get_frame(), buttons::divaL1);
-        else if( inputstate.key_pressed(SDL_SCANCODE_S) ) run.button_pressed(current_track->get_frame(), buttons::divaL2);
-        else if( inputstate.key_pressed(SDL_SCANCODE_D) ) run.button_pressed(current_track->get_frame(), buttons::divaL3);
-        else if( inputstate.key_pressed(SDL_SCANCODE_F) ) run.button_pressed(current_track->get_frame(), buttons::divaL4);
-
-        else if( inputstate.key_pressed(SDL_SCANCODE_J) ) run.button_pressed(current_track->get_frame(), buttons::divaR1);
-        else if( inputstate.key_pressed(SDL_SCANCODE_K) ) run.button_pressed(current_track->get_frame(), buttons::divaR2);
-        else if( inputstate.key_pressed(SDL_SCANCODE_L) ) run.button_pressed(current_track->get_frame(), buttons::divaR3);
-        else if( inputstate.key_pressed(SDL_SCANCODE_SEMICOLON) ) run.button_pressed(current_track->get_frame(), buttons::divaR4);
-
         else if( inputstate.key_pressed(SDL_SCANCODE_SPACE) ) run.button_pressed(current_track->get_frame(), buttons::space);
+
+        else if( inputstate.key_released(SDL_SCANCODE_SPACE) ) run.button_released(current_track->get_frame(), buttons::space);
     }
     
     void draw() override
@@ -77,7 +68,10 @@ struct NowPlaying : Screen
         nvgBeginPath(vg);
         nvgMoveTo(vg, now_x, 0);
         nvgLineTo(vg, now_x, h);
-        nvgStrokeWidth(vg, 1.0f);
+        if( inputstate.key_down(SDL_SCANCODE_SPACE) )
+            nvgStrokeWidth(vg, 5.0f);
+        else
+            nvgStrokeWidth(vg, 1.0f);
         nvgStrokeColor(vg, nvgRGBAf(1.0, 1.0, 1.0, 1.0));
         nvgStroke(vg);
         
@@ -117,12 +111,14 @@ struct NowPlaying : Screen
             
             const NVGcolor beatcolor = nvgRGBf(0.8, 0.8, 0.8);
             const NVGcolor notecolor = nvgRGBf(0.2, 0.6, 0.9);
+            const NVGcolor note_hitcolor = nvgRGBf(0.2, 0.6, 0.2);
             
             drawline(one_x, beatcolor, 1.0);
             drawline(ti_x, beatcolor, 0.25 / 2);
             drawline(te_x, beatcolor, 0.50 / 2);
             drawline(ta_x, beatcolor, 0.25 / 2);
             
+            // drar note lines
             for(const Note& note : chart.get_beat_notes(i))
             {
                 float note_x = now_x + float((beat_pos + note.pos*d_pos) * rightside_space*speed);
