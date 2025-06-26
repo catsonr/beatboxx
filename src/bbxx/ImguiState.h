@@ -16,15 +16,18 @@
 // bbxx::imgui
 #include "imgui/imguiFPSCounter.h"
 #include "imgui/imguiAudioState.h"
+#include "imgui/imguiPolyline2DState.h"
 
 struct ImguiStateDrawArgs
 {
     FPSCounter& fpscounter;
     AudioState& audiostate;
+    Polyline2DState& polyline2dstate;
     
-    ImguiStateDrawArgs(FPSCounter& fpscounter, AudioState& audiostate) :
+    ImguiStateDrawArgs(FPSCounter& fpscounter, AudioState& audiostate, Polyline2DState& polyline2dstate) :
         fpscounter(fpscounter),
-        audiostate(audiostate)
+        audiostate(audiostate),
+        polyline2dstate(polyline2dstate)
     {}
 };
 
@@ -35,7 +38,6 @@ struct ImguiState
 
     WindowState* windowstate;
     const ImguiStateDrawArgs& draw_args;
-    
     
     bool init(WindowState* windowstate)
     {

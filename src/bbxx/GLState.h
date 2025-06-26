@@ -41,7 +41,7 @@ struct GLState
     
     // camera stuff
     float mouse_sensitivity { 0.002 };
-    float camera_movementSpeed { 1.0 };
+    float camera_movementSpeed { 10.0 };
     float pitch { 0 }, yaw { M_PI_2 };
 
     glm::vec3 camera_pos { 0, 0, -4 };

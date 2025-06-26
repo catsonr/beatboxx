@@ -9,6 +9,7 @@
 // bbxx::imgui
 #include "../imgui/imguiFPSCounter.h"
 #include "../imgui/imguiAudioState.h"
+#include "../imgui/imguiPolyline2DState.h"
 
 struct DebugGUI : Screen
 {
@@ -34,14 +35,13 @@ struct DebugGUI : Screen
         if( !imguistate.show ) return;
 
         const float padding = 10.f;
-        // draw fps counter
+        // fix fps counter to (10, 10)
         ImGui::SetNextWindowPos(
             ImVec2(padding, padding)
         );
         imguiFPSCounter::draw(imguistate.draw_args.fpscounter);
-        
-        // draw audio state
         imguiAudioState::draw(imguistate.draw_args.audiostate);
+        //imguiPolyline2DState::draw(imguistate.draw_args.polyline2dstate);
     }
 }; // DebugGUI
 

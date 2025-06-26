@@ -55,10 +55,11 @@ private:
     GLState glstate;
     NanoVGState nanovgstate { windowstate };
     
-    ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate };
+    Polyline2DState polyline2dstate { glstate, windowstate };
+
+    ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
     
-    Polyline2DState polyline2dstate;
     
     MainMenu mainmenu { windowstate };
     std::vector< std::unique_ptr<Screen> > screens;

@@ -7,18 +7,51 @@
 #include "../InputState.h"
 #include "Screen.h"
 
+#include "../audio/Run.h"
+
 struct NowPlaying : Screen
 {
     AudioState& audiostate;
     InputState& inputstate;
+    
+    /* NowPlaying only tracks the run of the first loaded track!!!!! switching tracks w/ imguiAudioState wont do anything */
+    Run run { audiostate.bgm->chart };
+    
+    uint64_t latest_click { 0 };
 
     NowPlaying(WindowState& windowstate, AudioState& audiostate, InputState& inputstate) :
         Screen(windowstate),
         audiostate(audiostate),
         inputstate(inputstate)
     {}
+
+    void handle_event(const SDL_Event* event) override
+    {
+        Track* current_track = audiostate.bgm;
+
+        if( inputstate.key_down(SDL_SCANCODE_P) ) {
+            if( current_track->playing ) {
+                audiostate.bgm->pause();
+            }
+            else {
+                audiostate.bgm->play();
+            }
+        }
+
+        else if( inputstate.key_down(SDL_SCANCODE_A) ) run.button_pressed(current_track->get_frame(), buttons::divaL1);
+        else if( inputstate.key_down(SDL_SCANCODE_S) ) run.button_pressed(current_track->get_frame(), buttons::divaL2);
+        else if( inputstate.key_down(SDL_SCANCODE_D) ) run.button_pressed(current_track->get_frame(), buttons::divaL3);
+        else if( inputstate.key_down(SDL_SCANCODE_F) ) run.button_pressed(current_track->get_frame(), buttons::divaL4);
+
+        else if( inputstate.key_down(SDL_SCANCODE_J) ) run.button_pressed(current_track->get_frame(), buttons::divaR1);
+        else if( inputstate.key_down(SDL_SCANCODE_K) ) run.button_pressed(current_track->get_frame(), buttons::divaR2);
+        else if( inputstate.key_down(SDL_SCANCODE_L) ) run.button_pressed(current_track->get_frame(), buttons::divaR3);
+        else if( inputstate.key_down(SDL_SCANCODE_SEMICOLON) ) run.button_pressed(current_track->get_frame(), buttons::divaR4);
+
+        else if( inputstate.key_down(SDL_SCANCODE_SPACE) ) run.button_pressed(current_track->get_frame(), buttons::space);
+    }
     
-    void draw()
+    void draw() override
     {
         // constants 
         NVGcontext* vg = windowstate.vg;

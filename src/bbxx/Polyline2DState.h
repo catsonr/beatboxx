@@ -8,46 +8,57 @@
 #include "ShaderProgram.h"
 #include "GLState.h"
 
+#include "utilities.h"
+
 using namespace crushedpixel;
 
 struct Polyline2DState
 {
+    GLState& glstate;
+    WindowState& windowstate;
+    
+    Polyline2DState(GLState& glstate, WindowState& windowstate) :
+        glstate(glstate),
+        windowstate(windowstate)
+    {}
+
+    ShaderProgram program;
+    glm::mat4 model { glm::mat4(1.0f) }; // the model matrix used to transform the line
+    glm::mat4 model_identity { glm::mat4(1.0f) }; // the model matrix passed to opengl
+    float thickness { 0.001 };
+
+    std::vector<Vec2> points;
+    std::vector<Vec2> vertices;
+    std::vector<float> vertices_float;
+
     FastNoiseLite noise;
-
-    std::vector<Vec2> get_path3d(const GLState& glstate, float t = 0.0f)
+    
+    float t { 0.0f };
+    
+    /* PUBLIC METHODS */
+    std::vector<Vec2> get_path3d(float t = 0.0f)
     {
-        const int iterations = 100;
-        const float step = 2.0f * M_PI / iterations;
-        const float scale = 4.0f;
-
         std::vector<glm::vec3> path;
-        //path.reserve(iterations + 1);
-        /*
-        for(int i = 0; i <= iterations; ++i) {
-            float x = cos(i*step + t) * scale;
-            float y = sin(i*step*4 + t) - cos(i*step*8 + t);
-            float z = scale + sin(i*step + t) * scale;
-            path.emplace_back(x, y, z);
-        }
-        */
-        
-        
-        const int w = 20;
+
+        const int w = 40;
+        const float scale = 1.0f / w;
 
         path.reserve(w*w);
         int j = -1;
-        const float scale2 = 0.5;
         for(int i = 0; i < w; i++)
         {
             for(int _j = 0; _j < w; _j++)
             {
                 int j = (i % 2 == 0) ? _j : (w - 1 - _j);
                 
-                float x = i;
-                float y = noise.GetNoise((float)i, (float)j);
-                float z = j;
+                float x = (float)i * scale;
+                float y = (float)j * scale;
+                
+                float x_ = i;
+                float y_ = noise.GetNoise((float)i, (float)j) + 10*t*util::sinc2d_dropoff(i - w/2, j - w/2);
+                float z_ = j;
 
-                path.emplace_back(x*scale2, y*scale2, z*scale2);
+                path.emplace_back(x_, y_, z_);
             }
         }
 
@@ -68,17 +79,6 @@ struct Polyline2DState
         return projected;
     }
 
-    /* GL STUFF */
-    ShaderProgram program;
-    glm::mat4 model { glm::mat4(1.0f) }; // the model matrix used to transform the line
-    glm::mat4 model_identity { glm::mat4(1.0f) }; // the model matrix passed to opengl
-    float thickness { 0.01f };
-    std::vector<Vec2> points;
-    std::vector<Vec2> vertices;
-    std::vector<float> vertices_float;
-    
-    /* PUBLIC METHODS */
-    // makes vector of vec2 work with triangle.vert
     std::vector<float> Vec2_to_float(std::vector<Vec2>& points)
     {
         std::vector<float> out;
@@ -98,19 +98,17 @@ struct Polyline2DState
         program.init("assets/shaders/triangle.vert", "assets/shaders/solidcolor.frag", vertices_float, 3);
         
         noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+        noise.SetSeed(0);
         noise.SetFrequency(0.1);
         
         return true;
     }
     
-    void draw(GLState& glstate)
+    void draw()
     {
-        static float t = 0.0f;
-        t += 0.01;
-        
         //model = glm::rotate(model, glm::radians(0.1f), glm::vec3(0, 1, 0));
         
-        points = get_path3d(glstate, t);
+        points = get_path3d(t);
         vertices = Polyline2D::create(points, thickness, Polyline2D::JointStyle::ROUND, Polyline2D::EndCapStyle::ROUND);
         vertices_float = Vec2_to_float( vertices );
         program.set_vbo(vertices_float);

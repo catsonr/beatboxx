@@ -298,6 +298,31 @@ namespace util
 
         return program;
     }
+    
+    inline float sinc(float x)
+    {
+        if( fabs(x) <= 1e-4) return 1;
+        
+        return sin(x) / x;
+    }
+    
+    inline float sinc2d(float x, float y)
+    {
+        float r = sqrt(x*x + y*y);
+        
+        return sinc(r);
+    }
+    
+    inline float sinc2d_dropoff(float x, float y, float dropoff=10.0)
+    {
+        float r = sqrt(x*x + y*y);
+        
+        if( r >= dropoff ) return 0;
+        
+        float s = (dropoff - r) / dropoff;
+        
+        return sinc(r) * s;
+    }
 } // util
 
 #endif // UTILITIES_H

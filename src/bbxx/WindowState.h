@@ -90,6 +90,21 @@ struct WindowState
         
         else if( grab_focus )
         {
+            // if '[' pressed
+            if ( event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_LEFTBRACKET )
+            {
+                if( !fullscreen(true) ) {
+                    printf("[WindowState::handle_event] failed to enter fullscreen!\n");
+                }
+            }
+
+            if ( event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_RIGHTBRACKET )
+            {
+                if( fullscreen(false) ) {
+                    printf("[WindowState::handle_event] failed to exit fullscreen!\n");
+                }
+            }
+
             // if ctrl + left click
             if ( !focused &&
                 event->type == SDL_EVENT_MOUSE_BUTTON_DOWN &&
@@ -99,10 +114,12 @@ struct WindowState
             {
                 printf("[WindowState::handle_event] window focus grab\n");
                 
+                /*
                 if( !fullscreen(true) )
                     printf("[WindowState::handle_event] unable to enter fullscreen!\n");
                 else
                     printf("[WindowState::handle_event] entered fullscreen\n");
+                */
 
                 focused = true;
 
@@ -115,10 +132,12 @@ struct WindowState
             {
                 printf("[WindowState::handle_event] window focus release\n");
 
+                /*
                 if( !fullscreen(false) )
                     printf("[WindowState::handle_event] unable to enter fullscreen!\n");
                 else
                     printf("[WindowState::handle_event] entered fullscreen\n");
+                */
 
                 focused = false;
 

@@ -13,32 +13,17 @@
 
 struct Note
 {
-    /*
-        which beat of the chart the note lies
-    */
+    /* which beat of the chart the note lies */
     int beat;
-
     /*
         where in the beat the note lies 
-            e.g. (assume 4/4):
-                0.0 -> lies on beat
-                0.5 -> lies on upbeat
-                0.66 -> lies on 'li' of quarter note triplet
+        e.g. (assume 4/4):
+            0.0 -> lies on beat
+            0.5 -> lies on upbeat
+            0.66 -> lies on 'li' of quarter note triplet
     */
     float pos;
 }; // Note
-
-struct Run
-{
-    /* the number of notes hit correctly in a row */
-    int combo { 0 };
-    /* the highest combo achieved */
-    int combo_highest { 0 };
-
-    int score { 0 };
-    /* the value added to score if a note is hit perfectly in time */
-    static const int SCORE_PERFECT_HIT { 100 };
-}; // Run
 
 struct Chart
 {
@@ -295,7 +280,7 @@ struct Chart
             }
         }
         
-        if( changed)
+        if( changed )
         {
             note->pos = best_position;
             
