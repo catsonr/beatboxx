@@ -110,8 +110,10 @@ struct NowPlaying : Screen
             };
             
             const NVGcolor beatcolor = nvgRGBf(0.8, 0.8, 0.8);
+
             const NVGcolor notecolor = nvgRGBf(0.2, 0.6, 0.9);
-            const NVGcolor note_hitcolor = nvgRGBf(0.2, 0.6, 0.2);
+            const NVGcolor notehitcolor = nvgRGBf(0.6, 0.8, 0.5);
+            const NVGcolor notemisscolor = nvgRGBf(0.6, 0.2, 0.2);
             
             drawline(one_x, beatcolor, 1.0);
             drawline(ti_x, beatcolor, 0.25 / 2);
@@ -122,7 +124,18 @@ struct NowPlaying : Screen
             for(const Note& note : chart.get_beat_notes(i))
             {
                 float note_x = now_x + float((beat_pos + note.pos*d_pos) * rightside_space*speed);
-                drawline(note_x, notecolor, 1.0, 4.0);
+
+                // note not passed
+                if( !run.noteresults[note.index].passed )
+                    drawline(note_x, notecolor, 1.0, 4.0);
+                else {
+                    // note passed, hit
+                    if( run.noteresults[note.index].judgement != judgements::MISS )
+                        drawline(note_x, notehitcolor, 1.0, 4.0);
+                    // note passed, missed
+                    else
+                        drawline(note_x, notemisscolor, 1.0, 4.0);
+                }
             }
         }
     }

@@ -14,7 +14,7 @@
 struct Note
 {
     /* which beat of the chart the note lies */
-    int beat;
+    int beat { -1 };
     /*
         where in the beat the note lies 
         e.g. (assume 4/4):
@@ -23,6 +23,9 @@ struct Note
             0.66 -> lies on 'li' of quarter note triplet
     */
     float pos;
+    
+    /* which beat of the chart this is (starting at 0) */
+    int index { -1 };
 }; // Note
 
 struct Chart
@@ -34,7 +37,6 @@ struct Chart
 
     // all notes in chart
     std::vector<Note> notes;
-    int note_count;
 
     // the current beat of playback
     const int BEAT_BEFORE_FIRST { -1 };
@@ -189,6 +191,7 @@ struct Chart
             
             // load notes
             notes.clear();
+            int note_index = 0;
             if( j.contains("notes") && j["notes"].is_array() )
             {
                 for( const auto& e : j["notes"] )
@@ -196,6 +199,7 @@ struct Chart
                     Note note;
                     note.beat = e.at("beat").get<int>();
                     note.pos  = e.at("pos").get<float>();
+                    note.index = note_index++;
 
                     notes.push_back(note);
                 }

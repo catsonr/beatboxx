@@ -68,7 +68,7 @@ struct Run
     /* the number of notes hit correctly in a row */
     int combo { 0 };
     /* the highest combo achieved */
-    int combo_highest { 0 };
+    int combo_max { 0 };
 
     /* the current score of the run */
     int score { 0 };
@@ -98,7 +98,7 @@ struct Run
     
     void iterate(uint64_t frame)
     {
-        // if next unhit note passes miss threshold 
+        // if next unhit note passes miss threshold (if current note is missed)
         if( !noteresults[noteresults_index].passed && noteresults[noteresults_index].frame + static_cast<uint64_t>(judgements::MISS) < frame)
         {
             noteresults[noteresults_index].judgement = judgements::MISS;
@@ -108,7 +108,8 @@ struct Run
             
             noteresults_index++;
             
-            assert( 1 == 0 ); // temporarily crash if note missed
+            if( combo_max < combo ) combo_max = combo;
+            combo = 0;
         }
     }
     
@@ -117,10 +118,12 @@ struct Run
     {
         noteresults[noteresults_index].passed = true;
         noteresults[noteresults_index].judgement = judgements::COOL;
+
         
         printf("note %i hit\n", noteresults_index);
         
         noteresults_index++;
+        combo++;
     }
 
     /* finds the nearest note at the time of the button press */
