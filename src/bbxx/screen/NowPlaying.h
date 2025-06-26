@@ -23,7 +23,14 @@ struct NowPlaying : Screen
         Screen(windowstate),
         audiostate(audiostate),
         inputstate(inputstate)
-    {}
+    {
+        run.init();
+    }
+    
+    void iterate() override
+    {
+        run.iterate(audiostate.bgm->get_frame());
+    }
 
     void handle_event(const SDL_Event* event) override
     {

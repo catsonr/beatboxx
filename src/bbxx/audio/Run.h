@@ -3,10 +3,24 @@
 
 #include "Chart.h"
 
-enum class type : uint8_t {
-    tap = 0,
+enum class judgements : uint64_t {
+    PERFECT = 1000,
+    COOL    = 2000,
+    SAFE    = 6000,
+    MISS    = 7000,
+}; // judgements
+
+static constexpr std::array<judgements, 4> judgements_container {
+    judgements::PERFECT,
+    judgements::COOL,
+    judgements::SAFE,
+    judgements::MISS,
+}; // judgements_container
+
+enum class types : uint8_t {
+    tap  = 0,
     hold = 1,
-}; // type
+}; // types
 
 enum class buttons : uint8_t {
     divaL1 = 0,
@@ -23,60 +37,121 @@ enum class buttons : uint8_t {
     tkR = 9,
         
     space = 10,
-}; // button
+}; // buttons
+
+struct NoteResult
+{
+    const Note& note;
+    
+    uint64_t frame;
+    
+    NoteResult(const Chart& chart, const Note& note) : note(note)
+    {
+        frame = chart.get_note_frame(note);
+    }
+    
+    judgements judgement;
+    
+    bool passed { false };
+}; // NoteResult
 
 struct Run
 {
-    const Chart& chart;
-    const uint64_t safe_window { 10000 };
-
+    /* CONSTRUCTORS */
     Run(const Chart& chart) : chart(chart) {}
+
+    /* PUBLIC MEMBERS */
+    const Chart& chart;
 
     /* the number of notes hit correctly in a row */
     int combo { 0 };
     /* the highest combo achieved */
     int combo_highest { 0 };
 
+    /* the current score of the run */
     int score { 0 };
     /* the value added to score if a note is hit perfectly in time */
     static const int SCORE_PERFECT_HIT { 100 };
     
+    /* health, run ends if you reach 0 */
+    double gauge { 1.0f };
+    
+    std::vector<NoteResult> noteresults;
+    int noteresults_index { 0 };
+    
+    /* PUBLIC METHODS */
+    void init()
+    {
+        noteresults.reserve(chart.notes.size());
+        for(const Note& note : chart.notes)
+        {
+            noteresults.emplace_back(chart, note);
+        }
+    }
+    
+    void iterate(uint64_t frame)
+    {
+        // if next unhit note passes miss threshold 
+        if( !noteresults[noteresults_index].passed && noteresults[noteresults_index].frame + static_cast<uint64_t>(judgements::MISS) < frame)
+        {
+            noteresults[noteresults_index].judgement = judgements::MISS;
+            noteresults[noteresults_index].passed = true;
+            
+            printf("note %i missed!\n", noteresults_index);
+            
+            noteresults_index++;
+            
+            assert( 1 == 0 ); // temporarily crash if note missed
+        }
+    }
+    
+    /* sets note has hit */
+    void handle_note_hit()
+    {
+        noteresults[noteresults_index].passed = true;
+        noteresults[noteresults_index].judgement = judgements::COOL;
+        
+        printf("note %i hit\n", noteresults_index);
+        
+        noteresults_index++;
+    }
+
+    /* finds the nearest note at the time of the button press */
     void button_pressed(uint64_t frame, buttons button)
     {
-        printf("button pressed @ %llu\n", frame);
-
-        uint64_t current_beat_frame = chart.beats.front();
-        if( chart.current_beat >= 0 )
-            current_beat_frame = chart.beats[chart.current_beat];
-
-        uint64_t next_beat_frame = chart.beats.back();
-        if( chart.current_beat + 1 < chart.beats.size() )
-            next_beat_frame = chart.beats[chart.current_beat + 1];
+        const std::vector<Note>& notes_curr = chart.get_beat_notes(chart.current_beat);
+        const std::vector<Note>& notes_next = chart.get_beat_notes(chart.current_beat + 1);
         
-        printf("\tcurrent beat @ %llu | next beat @ %llu\n", current_beat_frame, next_beat_frame);
+        // vector of both current beat's and next beat's notes
+        std::vector<Note> notes_all;
+        notes_all.reserve(notes_curr.size() + notes_next.size());
+        notes_all.insert(notes_all.end(), notes_curr.begin(), notes_curr.end());
+        notes_all.insert(notes_all.end(), notes_next.begin(), notes_next.end());
         
-        /* how far from the nearest beat (in frames) the button press is */
-        uint64_t dt;
-        int closest_beat_index = 0;
-        /* whether or not the button press happened BEFORE the current beat or AFTER the current beat */
-        bool before = false;
-        if( chart.current_beat < 0 ) { // if first beat hasn't happened yet (which would mean current_beat_frame and next_beat_frame both point at beat 0)
-            dt = current_beat_frame - frame;
-        }
-        else {
-            dt = frame - current_beat_frame;
-            uint64_t dt2 = next_beat_frame - frame;
+        int closest_index = 0;
+        uint64_t closest_dist = UINT64_MAX;
+        
+        int i = 0;
+        for(const Note& note : notes_all)
+        {
+            uint64_t note_frame = chart.get_note_frame(note);
             
-            if( dt2 < dt ) {
-                before = true;
-                closest_beat_index = chart.current_beat + 1;
-                dt = dt2;
+            uint64_t dt;
+            if( frame >= note_frame)
+                dt = frame - note_frame;
+            else
+                dt = note_frame - frame;
+
+            if( dt < closest_dist ) {
+                closest_dist = dt;
+                closest_index = i;
             }
-            else closest_beat_index = chart.current_beat;
+            
+            i++;
         }
         
-        printf("\tclosest beat is beat %i\n", closest_beat_index);
-        printf("\tbutton %llu frames %s beat!\n", dt, before ? "before" : "after");
+        if( closest_dist < static_cast<uint64_t>(judgements::MISS) )
+            handle_note_hit();
     }
     
     void button_released(uint64_t frame, buttons button)

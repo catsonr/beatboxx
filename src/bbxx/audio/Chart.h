@@ -91,6 +91,7 @@ struct Chart
         current_beat--;
     }
     
+    /* returns a vector of all notes in specified beat--returns empty vector if none are found */
     std::vector<Note> get_beat_notes(int beat) const
     {
         std::vector<Note> result;
@@ -292,6 +293,14 @@ struct Chart
         }
         
         return changed;
+    }
+    
+    uint64_t get_note_frame(const Note& note) const
+    {
+        uint64_t beat_frame = beats[note.beat];
+        double offset = static_cast<double>(get_dFrames(note.beat)) * static_cast<double>(note.pos);
+        
+        return beat_frame + static_cast<uint64_t>(std::floor(offset + 0.5));
     }
 
     void cleanup()
