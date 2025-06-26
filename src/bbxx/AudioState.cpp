@@ -13,6 +13,8 @@ bool AudioState::init()
         return false;
     }
     
+    set_volume(volume);
+    
     for(Sfx& sfx : sfxs)
     {
         if( !sfx.loaded )

@@ -93,7 +93,7 @@ struct Track
 
         ma_sound_stop(&sound);
          
-        printf("[AudioState::bgm_pause] paused current bgm ...\n");
+        //printf("[Track::pause] paused current bgm ...\n");
         playing = false;
     }
 

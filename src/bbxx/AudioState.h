@@ -34,7 +34,7 @@ struct AudioState
     // sound effects
     std::vector<Sfx> sfxs { {"click.wav"}, {"note.wav"} };
 
-    float volume { 1.0f };
+    float volume { 0.5f };
     
     int periodsizeinframes { 256 };
     int periodcount { 3 };

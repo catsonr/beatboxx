@@ -1,9 +1,9 @@
 #include <bbxx/BBXX.h>
 
 /*
-    does all necessary SDL initialization
+    does all necessary SDL and beatboxx initialization
     returns SDL_APP_CONTINUE if successful
-    returns SDL_APP_FAILURE if errors 
+    returns SDL_APP_FAILURE if there are errors 
 */
 SDL_AppResult BBXX::init()
 {
@@ -91,6 +91,7 @@ SDL_AppResult BBXX::init()
 void BBXX::iterate()
 {
     fpscounter.iterate();
+    inputstate.iterate();
     audiostate.iterate();
 
     // needs to be called for glstate to display anything
@@ -100,16 +101,13 @@ void BBXX::iterate()
         screen->iterate();
 }
 
-/*
-    does all drawing for beatboxx
-*/
+/* does all drawing for beatboxx */
 void BBXX::draw()
 {
     glstate.draw_begin();
     nanovgstate.draw_begin();
     imguistate.draw_begin();
 
-    // glstate.draw() calls glstate.draw_begin(), erasing everything before it
     for(const auto& screen : screens)
         screen->draw();
     
