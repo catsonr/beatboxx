@@ -108,7 +108,7 @@ struct Run
             
             noteresults_index++;
             
-            if( combo_max < combo ) combo_max = combo;
+            if( combo > combo_max ) combo_max = combo;
             combo = 0;
         }
     }
@@ -118,7 +118,6 @@ struct Run
     {
         noteresults[noteresults_index].passed = true;
         noteresults[noteresults_index].judgement = judgements::COOL;
-
         
         printf("note %i hit\n", noteresults_index);
         

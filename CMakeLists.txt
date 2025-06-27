@@ -152,6 +152,11 @@ target_include_directories(beatboxx PRIVATE
   ${CMAKE_SOURCE_DIR}/FastNoiseLite
 )
 
+# stb
+target_include_directories(beatboxx PRIVATE
+  ${CMAKE_SOURCE_DIR}/stb
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE

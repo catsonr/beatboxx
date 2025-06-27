@@ -18,6 +18,8 @@
 
 #include "Polyline2DState.h"
 
+#include "Stb_imgState.h"
+
 // bbxx screens
 #include <memory> // for smart pointers
 #include "screen/DebugGUI.h"
@@ -56,10 +58,11 @@ private:
     NanoVGState nanovgstate { windowstate };
     
     Polyline2DState polyline2dstate { glstate, windowstate };
+    
+    Stb_imgState stb_imgstate;
 
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
-    
     
     MainMenu mainmenu { windowstate };
     std::vector< std::unique_ptr<Screen> > screens;

@@ -77,8 +77,13 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    //screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
-    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
+    if( !stb_imgstate.init() ) {
+        printf("[BBXX::init] failed to initialize stb_img state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
+    screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
+    //screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
     //screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
 
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
