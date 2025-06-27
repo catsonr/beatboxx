@@ -27,6 +27,7 @@
 #include "screen/NowPlaying.h"
 #include "screen/Polyline2D.h"
 #include "screen/Screen.h"
+#include "screen/Welcome.h"
 
 class BBXX
 {

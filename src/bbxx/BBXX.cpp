@@ -82,11 +82,18 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    screens.emplace_back(std::make_unique<MainMenu>(windowstate) );
+    screens.emplace_back(std::make_unique<Welcome>(windowstate, glstate) );
     //screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
     //screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
 
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
+    
+    for(auto& screen : screens) {
+        if( !screen->init() ) {
+            printf("[BBXX::init] failed to initialize a screen!\n");
+            return SDL_APP_FAILURE;
+        }
+    }
     
     printf("[BBXX::init] initialization complete!\n");
     fpscounter.start();

@@ -1,3 +1,9 @@
+/*
+    this is not actually neccessary, since nanovg comes with an instance of stb_img
+
+    if nanovg is ever removed, stb can simply be instantiated with #define STB_IMAGE_IMPLEMENTATION
+*/
+
 #ifndef STB_IMGSTATE_H
 #define STB_IMGSTATE_H
 

@@ -35,7 +35,7 @@ public:
     /* PUBLIC METHODS */
     virtual void draw() = 0;
     
-    //virtual bool init() { return true; }
+    virtual bool init() { return true; }
     virtual void iterate() {}
     virtual void handle_event(const SDL_Event* event) {} // should never be called by Screen child!
     virtual void cleanup() {}
