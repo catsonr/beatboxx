@@ -10,19 +10,9 @@
 
 struct Welcome : Screen
 {
-    std::vector<float> quad = {
-      // x,    y,    z,    u,   v
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-       0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-       0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-       0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-      -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-      -0.5f, -0.5f, 0.0f, 0.0f, 0.0f
-    };
-
     ShaderProgram program;
     GLState& glstate;
-    Texture diva;
+    Texture diva { 0.5, 0.5, true };
     
     glm::mat4 model { glm::mat4(1.0f) };
 
@@ -33,15 +23,22 @@ struct Welcome : Screen
 
     bool init() override
     {
-        if( !diva.init(util::get_fullPath("assets/textures/pkmn_font.png").c_str()) ) {
+        if( !diva.init(util::get_fullPath("assets/textures/pkmn_font.png").c_str(), true) ) {
             printf("[Welcome::init] failed to load texture!\n");
             return false;
         }
         
-        if( !program.init("assets/shaders/shaderprogram.vert", "assets/shaders/shaderprogram_texture.frag", quad, 3, 2) ) {
+        if( !program.init("assets/shaders/shaderprogram.vert", "assets/shaders/shaderprogram_texture.frag", diva.quad, 3, 2) ) {
             printf("[Welcome::init] failed to initialize shader program!\n");
             return false;
         }
+        
+        model = glm::scale(model, glm::vec3(4, 4, 1));
+
+        diva.bind();
+        program.set_uniform("u_texture", 0);
+        program.set_uniform("u_mModel", model);
+        program.set_uniform("u_mVP", glstate.m_VP);
 
         return true;
     }
@@ -53,14 +50,9 @@ struct Welcome : Screen
     
     void draw() override
     {
-        program.use();
-
-        diva.bind(0);
-        program.set_uniform("u_texture", 0);
-
         program.set_uniform("u_mModel", model);
         program.set_uniform("u_mVP", glstate.m_VP);
-        
+
         program.draw();
     }
 

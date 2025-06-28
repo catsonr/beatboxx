@@ -3,6 +3,7 @@
 
 // std
 #include <string>
+#include <vector>
 
 // glad
 #include <glad/glad.h>
@@ -14,15 +15,60 @@ struct Texture
 {
     GLuint id { 0 };
 
+    /* the width of the texture, in pixels */
     int w { 0 };
+    /* the height of the texture, in pixels */
     int h { 0 };
+    /* the number of color channels */
     int channels { 0 };
     
-    Texture() = default;
+    /* the percent of the width of the texture to render, from 0.0 to 1.0 */
+    float width;
+    /* the percent of the height of the texture to render, from 0.0 to 1.0 */
+    float height;
+    /* if the section of the texture is centered */
+    bool centered;
+    
+    std::vector<float> quad;
 
-    bool init(const char* full_path, bool flipY = true)
+    Texture(float width = 1.0, float height = 1.0, bool centered = false) :
+        width(width),
+        height(height),
+        centered(centered)
     {
-        stbi_set_flip_vertically_on_load(flipY);
+        quad.resize((3 + 2) * 5);
+        
+        if( !centered ) {
+            quad = {
+                // x, y, z, u, v
+                -0.5f, -0.5f, 0.0f, 1.0f*width, 1.0f - height,
+                 0.5f, -0.5f, 0.0f, 0.0f*width, 1.0f - height,
+                 0.5f,  0.5f, 0.0f, 0.0f*width, 1.0f,
+                 0.5f,  0.5f, 0.0f, 0.0f*width, 1.0f,
+                -0.5f,  0.5f, 0.0f, 1.0f*width, 1.0f,
+                -0.5f, -0.5f, 0.0f, 1.0f*width, 1.0f - height
+            };
+        } else {
+            float uMin = 0.5f - width * 0.5f;
+            float uMax = 0.5f + width * 0.5f;
+            float vMin = 0.5f - height * 0.5f;
+            float vMax = 0.5f + height * 0.5f;
+
+            quad = {
+                // x, y, z, u, v
+                -0.5f, -0.5f,  0.0f,  uMax,     vMin,
+                 0.5f, -0.5f,  0.0f,  uMin,     vMin,
+                 0.5f,  0.5f,  0.0f,  uMin,     vMax,
+                 0.5f,  0.5f,  0.0f,  uMin,     vMax,
+                -0.5f,  0.5f,  0.0f,  uMax,     vMax,
+                -0.5f, -0.5f,  0.0f,  uMax,     vMin
+            };
+        }
+    }
+
+    bool init(const char* full_path, bool pixelperfect)
+    {
+        stbi_set_flip_vertically_on_load(true);
         
         unsigned char* data = stbi_load(full_path, &w, &h, &channels, 0);
         if( !data ) {
@@ -36,10 +82,17 @@ struct Texture
         glBindTexture(GL_TEXTURE_2D, id);
         
         // filtering + wrapping flags
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        if( pixelperfect ) {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        } else {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
         
         // create mipmap
         glTexImage2D(
@@ -53,7 +106,8 @@ struct Texture
             GL_UNSIGNED_BYTE,
             data
         );
-        glGenerateMipmap(GL_TEXTURE_2D);
+
+        if( !pixelperfect ) glGenerateMipmap(GL_TEXTURE_2D);
         
         glBindTexture(GL_TEXTURE_2D, 0);
         stbi_image_free(data);
