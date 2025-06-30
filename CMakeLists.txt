@@ -50,6 +50,7 @@ if(EMSCRIPTEN)
   target_compile_definitions(beatboxx PRIVATE MA_ENABLE_AUDIO_WORKLETS)
 
   target_link_options(beatboxx PRIVATE
+    "--shell-file=${CMAKE_SOURCE_DIR}/src/neocities/index.html" # emscriptem use custom template
     -sUSE_SDL=3
     -sFULL_ES3=1
     -sUSE_WEBGL2=1
@@ -58,6 +59,8 @@ if(EMSCRIPTEN)
     -sWASM_WORKERS=1
     -sASYNCIFY
     -sSHARED_MEMORY=1
+    
+    #-sSINGLE_FILE=1
 
     "--preload-file=${CMAKE_SOURCE_DIR}/assets@/assets"
     "--preload-file=${CMAKE_SOURCE_DIR}/vendored/lygia@/vendored/lygia"
