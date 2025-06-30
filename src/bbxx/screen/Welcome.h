@@ -12,7 +12,7 @@ struct Welcome : Screen
 {
     ShaderProgram program;
     GLState& glstate;
-    Texture diva { 0.5, 0.5, true };
+    Texture diva {};
     
     glm::mat4 model { glm::mat4(1.0f) };
 

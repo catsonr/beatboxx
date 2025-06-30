@@ -82,9 +82,9 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    screens.emplace_back(std::make_unique<Welcome>(windowstate, glstate) );
-    //screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
-    //screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
+    //screens.emplace_back(std::make_unique<Welcome>(windowstate, glstate) );
+    screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
+    screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
 
     screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
     
