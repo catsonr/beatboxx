@@ -51,6 +51,7 @@ if(EMSCRIPTEN)
 
   target_link_options(beatboxx PRIVATE
     "--shell-file=${CMAKE_SOURCE_DIR}/src/neocities/index.html" # emscriptem use custom template
+
     -sUSE_SDL=3
     -sFULL_ES3=1
     -sUSE_WEBGL2=1
