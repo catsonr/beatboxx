@@ -27,8 +27,8 @@ bool NanoVGState::init()
         return false;
     }
     
-    if( nvgCreateFont(vg, "exile", util::get_fullPath("assets/fonts/Exile/Exile-Regular.ttf").c_str() ) == -1 ) {
-        printf("[NanoVGState::init] failed to load font!\n");
+    if( !init_fonts() ) {
+        printf("[NanoVGStte::init] failed to initalize fonts!\n");
         return false;
     }
     
@@ -37,85 +37,22 @@ bool NanoVGState::init()
     return true;
 }
 
-/*
-void NanoVGState::draw(AudioState* audiostate)
+bool NanoVGState::init_fonts()
 {
-    if( !audiostate ) {
-        printf("[NanoVGState::draw] cannot draw null audio state!\n");
+    if( nvgCreateFont(vg, "exile", util::get_fullPath("assets/fonts/Exile/Exile-Regular.ttf").c_str() ) == -1 ) {
+        printf("[NanoVGState::init] failed to load exile font!\n");
+        return false;
     }
-    
-    const Chart& chart = audiostate->bgm->chart;
+    fonts.push_back("exile");
 
-    int w = windowstate.w;
-    int h = windowstate.h;
-    nvgBeginFrame(vg, w, h, windowstate.ds);
-    
-    // draw now line
-    float now_x = w * 0.5f;
-    nvgBeginPath(vg);
-    nvgMoveTo(vg, now_x, 0);
-    nvgLineTo(vg, now_x, h);
-    nvgStrokeWidth(vg, 2.0f);
-    nvgStrokeColor(vg, nvgRGBAf(0.0, 0.0, 0.0, 1.0));  // opaque white
-    nvgStroke(vg);
-    
-    // draw circle
-    const int forward = 25;
-    const int behind  = 5;
-    const float speed = 30;
-
-    std::vector<float> beats;
-    std::vector<float> notes;
-    int start = chart.current_beat - behind >= 0 ? chart.current_beat - behind : 0;
-    int64_t now_frame = int64_t(audiostate->bgm->get_frame());
-    for(int i = start; i < chart.current_beat + forward && i < chart.beats.size(); i++)
-    {
-        // save on screen beats
-        int64_t beat_frame = int64_t(chart.beats[i]);
-        int64_t dFrame = beat_frame - now_frame;
-        float dist_from_now = float(dFrame) / float(audiostate->bgm->length_frames);
-
-        beats.push_back(dist_from_now * speed);
-        
-        // save on screen notes
-        for(const Note& note : chart.get_beat_notes(i)) {
-            float noteDist = ((float(chart.beats[i]) + note.pos * float(chart.get_dFrames(i)) - float(now_frame)) / float(audiostate->bgm->length_frames));
-
-            notes.push_back(noteDist * speed);
-        }
+    if( nvgCreateFont(vg, "doto", util::get_fullPath("assets/fonts/Doto/Doto-VariableFont_ROND,wght.ttf").c_str() ) == -1 ) {
+        printf("[NanoVGState::init] failed to load font!\n");
+        return false;
     }
-
-    // draw all beat lines
-    for(const float pos : beats)
-    {
-        float x = now_x + pos * w;
-        float y = h / 2;
-        
-        nvgBeginPath(vg);
-        nvgMoveTo(vg, x, 0);
-        nvgLineTo(vg, x, h);
-        nvgStrokeWidth(vg, 2.0f);
-        nvgStrokeColor(vg, nvgRGBAf(0.9, 0.2, 0.1, 1.0));  // opaque white
-        nvgStroke(vg);
-    }
+    fonts.push_back("doto");
     
-    // draw all notes
-    for(const float pos : notes)
-    {
-        float x = now_x + pos * w;
-        float y = h / 2;
-        
-        nvgBeginPath(vg);
-        nvgMoveTo(vg, x, 0);
-        nvgLineTo(vg, x, h);
-        nvgStrokeWidth(vg, 2.0f);
-        nvgStrokeColor(vg, nvgRGBAf(0.0, 0.2, 1.0, 1.0));  // opaque white
-        nvgStroke(vg);
-    }
-
-    nvgEndFrame(vg);
+    return true;
 }
-*/
 
 void NanoVGState::cleanup()
 {

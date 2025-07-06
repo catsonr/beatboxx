@@ -8,6 +8,11 @@
 // glad
 #include <glad/glad.h>
 
+// glm
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 // stb_img
 #include <stb/stb_image.h>
 
@@ -29,7 +34,11 @@ struct Texture
     /* if the section of the texture is centered */
     bool centered;
     
+    /* the vertices of the two triangles of the rendered quad */
     std::vector<float> quad;
+
+    /* the model matrix used to transform the quad */
+    glm::mat4 model { 1.0 };
 
     Texture(float width = 1.0, float height = 1.0, bool centered = false) :
         width(width),
