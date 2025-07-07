@@ -21,13 +21,7 @@
 #include "Stb_imgState.h"
 
 // bbxx screens
-#include <memory> // for smart pointers
-#include "screen/DebugGUI.h"
-#include "screen/MainMenu.h"
-#include "screen/NowPlaying.h"
-#include "screen/Polyline2D.h"
-#include "screen/Screen.h"
-#include "screen/Welcome.h"
+#include "screen/ScreenState.h"
 
 class BBXX
 {
@@ -65,8 +59,7 @@ private:
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
     
-    MainMenu mainmenu { windowstate };
-    std::vector< std::unique_ptr<Screen> > screens;
+    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate };
     
 public:
     /* PUBLIC MEMBERS */

@@ -82,17 +82,9 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
-    screens.emplace_back(std::make_unique<Welcome>(windowstate, inputstate, glstate, nanovgstate) );
-    //screens.emplace_back(std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
-    //screens.emplace_back(std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
-
-    screens.emplace_back(std::make_unique<DebugGUI>(windowstate, imguistate, inputstate) );
-    
-    for(auto& screen : screens) {
-        if( !screen->init() ) {
-            printf("[BBXX::init] failed to initialize a screen!\n");
-            return SDL_APP_FAILURE;
-        }
+    if( !screenstate.init() ) {
+        printf("[BBXX::init] failed to initialize screen state!\n");
+        return SDL_APP_FAILURE;
     }
     
     printf("[BBXX::init] initialization complete!\n");
@@ -110,8 +102,7 @@ void BBXX::iterate()
     // needs to be called for glstate to display anything
     glstate.iterate(fpscounter.seconds, fpscounter.d_seconds, &inputstate);
 
-    for(auto& screen : screens)
-        screen->iterate();
+    screenstate.iterate();
 }
 
 /* does all drawing for beatboxx */
@@ -121,10 +112,7 @@ void BBXX::draw()
     nanovgstate.draw_begin();
     imguistate.draw_begin();
 
-    for(const auto& screen : screens)
-        screen->draw();
-    
-    //glstate.draw();
+    screenstate.draw();
     
     nanovgstate.draw_end();
     imguistate.draw_end();
@@ -159,8 +147,7 @@ SDL_AppResult BBXX::handle_event(const SDL_Event* event)
     windowstate.handle_event(event);
     glstate.handle_event(event);
 
-    for(const auto& screen : screens)
-        screen->handles_event(event);
+    screenstate.handle_event(event);
 
     ImGui_ImplSDL3_ProcessEvent(event);
 

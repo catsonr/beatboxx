@@ -66,7 +66,6 @@ struct Welcome : Screen
 
     void iterate() override
     {
-
         wolf.model = glm::rotate(wolf.model, glm::radians(1.0f / 12), glm::vec3(0, 1, 0));
         wolf.model = glm::rotate(wolf.model, glm::radians(1.0f / 24), glm::vec3(0, 0, 1));
     }
@@ -99,7 +98,6 @@ struct Welcome : Screen
 
             nvgText(vg, 0, fontsize * i, welcomeoptions[i].text, nullptr);
         }
-        
 
         program.set_uniform("u_mModel", wolf.model);
         program.set_uniform("u_mVP", glstate.m_VP);
