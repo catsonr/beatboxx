@@ -1,5 +1,11 @@
 #define MINIAUDIO_IMPLEMENTATION
-#define MA_ENABLE_AUDIO_WORKLETS
+//#define MA_ENABLE_AUDIO_WORKLETS
+
+/*
+   audio worklets work correctly, however they require a cross origin isolated context, which
+   static sites like neocites don't serve, so for not audio worklets will not be used
+   this should be only a minor, unnoticable performance hit
+*/
 
 #include "AudioState.h"
 #include "miniaudio.h"

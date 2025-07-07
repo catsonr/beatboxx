@@ -47,7 +47,8 @@ add_executable(beatboxx ${PROJECT_SOURCES})
 if(EMSCRIPTEN)
   set_target_properties(beatboxx PROPERTIES SUFFIX ".html")
 
-  target_compile_definitions(beatboxx PRIVATE MA_ENABLE_AUDIO_WORKLETS)
+  # audio worklet flags
+  #target_compile_definitions(beatboxx PRIVATE MA_ENABLE_AUDIO_WORKLETS)
 
   target_link_options(beatboxx PRIVATE
     "--shell-file=${CMAKE_SOURCE_DIR}/src/neocities/index.html" # emscriptem use custom template
@@ -56,10 +57,12 @@ if(EMSCRIPTEN)
     -sFULL_ES3=1
     -sUSE_WEBGL2=1
     -sALLOW_MEMORY_GROWTH=1
-    -sAUDIO_WORKLET=1
-    -sWASM_WORKERS=1
-    -sASYNCIFY
-    -sSHARED_MEMORY=1
+    
+    # audio worklet flags
+    #-sAUDIO_WORKLET=1
+    #-sWASM_WORKERS=1
+    #-sASYNCIFY
+    #-sSHARED_MEMORY=1
     
     #-sSINGLE_FILE=1
 
