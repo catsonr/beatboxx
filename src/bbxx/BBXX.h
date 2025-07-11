@@ -59,7 +59,7 @@ private:
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
     
-    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate };
+    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate };
     
 public:
     /* PUBLIC MEMBERS */

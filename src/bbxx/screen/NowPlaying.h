@@ -27,12 +27,14 @@ struct NowPlaying : Screen
         run.init();
     }
     
-    void iterate() override
+    Command iterate() override
     {
         run.iterate(audiostate.bgm->get_frame());
+        
+        return {};
     }
 
-    void handle_event(const SDL_Event* event) override
+    Command handle_event(const SDL_Event* event) override
     {
         Track* current_track = audiostate.bgm;
 
@@ -47,6 +49,8 @@ struct NowPlaying : Screen
         else if( inputstate.key_pressed(SDL_SCANCODE_SPACE) ) run.button_pressed(current_track->get_frame(), buttons::space);
 
         else if( inputstate.key_released(SDL_SCANCODE_SPACE) ) run.button_released(current_track->get_frame(), buttons::space);
+        
+        return {};
     }
     
     void draw() override

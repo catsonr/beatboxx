@@ -103,6 +103,11 @@ void BBXX::iterate()
     glstate.iterate(fpscounter.seconds, fpscounter.d_seconds, &inputstate);
 
     screenstate.iterate();
+
+    if( !screenstate.handle_commands(this) ) {
+        printf("[BBXX::iterate] failed to handle screen state commands! calling BBXX::quit() !\n");
+        quit();
+    }
 }
 
 /* does all drawing for beatboxx */

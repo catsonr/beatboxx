@@ -24,10 +24,12 @@ struct DebugGUI : Screen
         focus_force = true;
     }
     
-    void handle_event(const SDL_Event* event) override
+    Command handle_event(const SDL_Event* event) override
     {
         if( inputstate.key_pressed(SDL_SCANCODE_GRAVE) )
             imguistate.show = !imguistate.show;
+        
+        return {};
     }
 
     void draw() override

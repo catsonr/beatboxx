@@ -9,12 +9,16 @@
 
 #include "Screen.h"
 
+class BBXX;
+
 struct WelcomeOption
 {
     const char* text;
+    Command command;
 
-    WelcomeOption(const char* text) :
-        text(text)
+    WelcomeOption(const char* text, Command command) :
+        text(text),
+        command(std::move(command))
     {}
 }; // WelcomeOption
 
@@ -27,19 +31,10 @@ struct Welcome : Screen
     Texture wolf {};
     
     int welcomeoptions_index { 0 };
-    std::vector<WelcomeOption> welcomeoptions {
-        "browse tracks",
-        "options",
-        "exit"
-    };
+    std::vector<WelcomeOption> welcomeoptions;
     float fontsize { 100.0f };
     
-    Welcome(WindowState& windowstate, InputState& inputstate, GLState& glstate, NanoVGState& nanovgstate) :
-        Screen(windowstate),
-        inputstate(inputstate),
-        glstate(glstate),
-        nanovgstate(nanovgstate)
-    {}
+    Welcome(WindowState& windowstate, InputState& inputstate, GLState& glstate, NanoVGState& nanovgstate);
 
     bool init() override
     {
@@ -64,13 +59,15 @@ struct Welcome : Screen
         return true;
     }
 
-    void iterate() override
+    Command iterate() override
     {
         wolf.model = glm::rotate(wolf.model, glm::radians(1.0f / 12), glm::vec3(0, 1, 0));
         wolf.model = glm::rotate(wolf.model, glm::radians(1.0f / 24), glm::vec3(0, 0, 1));
+        
+        return {};
     }
 
-    void handle_event(const SDL_Event* event) override
+    Command handle_event(const SDL_Event* event) override
     {
         if( inputstate.key_pressed(SDL_SCANCODE_DOWN) ) {
             welcomeoptions_index = (welcomeoptions_index + 1) % welcomeoptions.size();
@@ -78,6 +75,11 @@ struct Welcome : Screen
         else if( inputstate.key_pressed(SDL_SCANCODE_UP) ) {
             welcomeoptions_index = welcomeoptions_index == 0 ? welcomeoptions.size() - 1 : welcomeoptions_index - 1;
         }
+        else if( inputstate.key_pressed(SDL_SCANCODE_RETURN) ) {
+            return welcomeoptions[welcomeoptions_index].command;
+        }
+        
+        return {};
     }
     
     void draw() override
