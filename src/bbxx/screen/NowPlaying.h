@@ -19,10 +19,10 @@ struct NowPlaying : Screen
     
     uint64_t latest_click { 0 };
 
-    NowPlaying(WindowState& windowstate, AudioState& audiostate, InputState& inputstate) :
-        Screen(windowstate),
-        audiostate(audiostate),
-        inputstate(inputstate)
+    NowPlaying(ScreenContext& ctx) :
+        Screen(ctx),
+        audiostate(ctx.audiostate),
+        inputstate(ctx.inputstate)
     {
         run.init();
     }

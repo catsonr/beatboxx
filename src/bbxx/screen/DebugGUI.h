@@ -16,10 +16,10 @@ struct DebugGUI : Screen
     InputState& inputstate;
     ImguiState& imguistate;
 
-    DebugGUI(WindowState& windowstate, InputState& inputstate, ImguiState& imguistate) :
-        Screen(windowstate),
-        inputstate(inputstate),
-        imguistate(imguistate)
+    DebugGUI(ScreenContext& ctx) :
+        Screen(ctx),
+        inputstate(ctx.inputstate),
+        imguistate(ctx.imguistate)
     {
         focus_force = true;
     }

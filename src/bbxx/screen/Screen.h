@@ -1,8 +1,3 @@
-/*
-    a Screen represents a slice of the screen to render to
-    all Screens occupy the entirety of the window, and must only be opqaue where desired
-*/
-
 #ifndef SCREEN_H
 #define SCREEN_H
 
@@ -12,34 +7,40 @@
 // SDL
 #include <SDL3/SDL.h>
 
-// bbxx
+// beatboxx states
 #include "../WindowState.h"
-
+#include "../InputState.h"
+#include "../AudioState.h"
+#include "../GLState.h"
+#include "../NanoVGState.h"
+#include "../ImguiState.h"
+#include "../Polyline2DState.h"
 /*
-    an enum containing all available screen types
-        in alphabetical order
+    ScreenContext contains all the BBXX state classes that a Screen might need
 */
-enum struct ScreenTypes
+struct ScreenContext
 {
-    DebugGUI,
-    MainMenu,
-    NowPlaying,
-    Polyline2D,
-    Screen,
-    Tracklist,
-    Welcome,
-}; // ScreenTypes
+    WindowState& windowstate;
+    InputState& inputstate;
+    AudioState& audiostate;
+    
+    GLState& glstate;
+    NanoVGState& nanovgstate;
+    ImguiState& imguistate;
 
+    Polyline2DState& polyline2dstate;
+}; // ScreenContext
+
+#include <functional>
+class BBXX;
 /*
     a Screen rarely needs to talk to beatboxx, but when it does it can generate a Command
+    where a Command is merely a lambda function that BBXX will call
     Commands are executed after iterate() and before draw()
-        in other words, Commands have no effect until next frame
         
     this definition should probably be inside BBXX.h, or some Command.h, but right now Screen is the
     only class that can emit them, so for now it's fine here
 */
-#include <functional>
-class BBXX;
 struct Command
 {
     std::function<bool(BBXX*)> body;
@@ -55,15 +56,19 @@ struct Command
     bool execute(BBXX* bbxx) { return body(bbxx); }
 }; // Command
 
+/*
+    a Screen represents a slice of the screen to render to
+    all Screens occupy the entirety of the window, and must only be opqaue where desired
+*/
 class Screen
 {
 protected:
-    WindowState& windowstate;
+    ScreenContext& ctx;
 
 public:
     /* CONSTRUCTORS*/
-    Screen(WindowState& windowstate) :
-        windowstate(windowstate)
+    explicit Screen(ScreenContext& ctx) :
+        ctx(ctx)
     {}
     
     /* PUBLIC MEMBERS */

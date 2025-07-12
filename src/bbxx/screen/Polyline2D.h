@@ -10,10 +10,10 @@ struct Poly : Screen
     Polyline2DState& polyline2dstate;
     GLState& glstate;
 
-    Poly(WindowState& windowstate, Polyline2DState& polyline2dstate, GLState& glstate) :
-        Screen(windowstate),
-        polyline2dstate(polyline2dstate),
-        glstate(glstate)
+    Poly(ScreenContext& ctx) :
+        Screen(ctx),
+        polyline2dstate(ctx.polyline2dstate),
+        glstate(ctx.glstate)
     {}
     
     void draw()

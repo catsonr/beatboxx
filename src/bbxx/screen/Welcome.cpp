@@ -2,11 +2,11 @@
 
 #include "../BBXX.h"
 
-Welcome::Welcome(WindowState& windowstate, InputState& inputstate, GLState& glstate, NanoVGState& nanovgstate) :
-    Screen(windowstate),
-    inputstate(inputstate),
-    glstate(glstate),
-    nanovgstate(nanovgstate)
+Welcome::Welcome(ScreenContext& ctx) :
+    Screen(ctx),
+    inputstate(ctx.inputstate),
+    glstate(ctx.glstate),
+    nanovgstate(ctx.nanovgstate)
 {
     welcomeoptions = {
         {

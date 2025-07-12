@@ -34,7 +34,7 @@ struct Welcome : Screen
     std::vector<WelcomeOption> welcomeoptions;
     float fontsize { 100.0f };
     
-    Welcome(WindowState& windowstate, InputState& inputstate, GLState& glstate, NanoVGState& nanovgstate);
+    Welcome(ScreenContext& ctx);
 
     bool init() override
     {

@@ -1,11 +1,3 @@
-/*
-    ScreenState is a manager class for all the Screens of the game
-    the vector 'screens' hold the list of current Screens, which is both iterated and drawn in order
-
-    ScreenState also handles any Commands that a Screen may generate, which are lambdas that BBXX will call
-        Command definition is in Screen.h
-*/
-
 #ifndef SCREENSTATE_H
 #define SCREENSTATE_H
 
@@ -17,24 +9,20 @@
 #include "Screen.h"
 #include "Welcome.h"
 #include "DebugGUI.h"
-#include "Polyline2D.h"
-#include "NowPlaying.h"
 
+/*
+    ScreenState is a manager class for all the Screens of the game
+    the vector 'screens' hold the list of current Screens, which is both iterated and drawn in order
+
+    ScreenState also handles any Commands that a Screen may generate, which are lambdas that BBXX will call
+        Command definition is in Screen.h
+*/
 class ScreenState
 {
-    WindowState& windowstate;
-    InputState& inputstate;
-    AudioState& audiostate;
-    
-    GLState& glstate;
-    NanoVGState& nanovgstate;
-    
-    ImguiState& imguistate;
-    
-    Polyline2DState& polyline2dstate;
+    ScreenContext ctx;
 
 public:
-    // all the structs a screen might need
+    // all the structs required by ScreenContext
     ScreenState(WindowState& windowstate,
         InputState& inputstate,
         AudioState& audiostate,
@@ -42,31 +30,36 @@ public:
         NanoVGState& nanovgstate,
         ImguiState& imguistate,
         Polyline2DState& polyline2dstate
-    ) :
-        windowstate(windowstate),
-        inputstate(inputstate),
-        audiostate(audiostate),
-        glstate(glstate),
-        nanovgstate(nanovgstate),
-        imguistate(imguistate),
-        polyline2dstate(polyline2dstate)
+    ) : ctx { 
+        windowstate,
+        inputstate,
+        audiostate,
+        glstate,
+        nanovgstate,
+        imguistate,
+        polyline2dstate,
+    }
     {}
 
     std::vector< std::unique_ptr<Screen> > screens;
     std::stack<Command> commands;
+    
+    template<typename ScreenT>
+    /* add a new Screen */
+    void push()
+    {
+        static_assert(std::is_base_of_v<Screen, ScreenT>, "[ScreenState::push] given class is not of base class Screen!\n");
+        
+        screens.emplace_back( std::make_unique<ScreenT>(ctx) );
+    }
 
     bool init()
     {
         /* current screen */
-        screens.emplace_back( std::make_unique<Welcome>(windowstate, inputstate, glstate, nanovgstate) );
+        push<Welcome>();
 
         /* debug menu (off by default) */
-        screens.emplace_back( std::make_unique<DebugGUI>(windowstate, inputstate, imguistate) );
-
-        /* optional 
-        screens.emplace_back( std::make_unique<Poly>(windowstate, polyline2dstate, glstate) );
-        screens.emplace_back( std::make_unique<NowPlaying>(windowstate, audiostate, inputstate) );
-        */
+        push<DebugGUI>();
         
         for( auto& screen : screens ) {
             if( !screen->init() ) {

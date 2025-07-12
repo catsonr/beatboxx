@@ -11,10 +11,10 @@ struct TrackList : Screen
     InputState& inputstate;
     AudioState& audiostate;
 
-    TrackList(WindowState& windowstate, InputState& inputstate, AudioState& audiostate) :
-        Screen(windowstate),
-        inputstate(inputstate),
-        audiostate(audiostate)
+    TrackList(ScreenContext& ctx) :
+        Screen(ctx),
+        inputstate(ctx.inputstate),
+        audiostate(ctx.audiostate)
     {}
     
     bool init() override
@@ -24,7 +24,7 @@ struct TrackList : Screen
     
     void draw() override
     {
-        NVGcontext* vg = windowstate.vg;
+        NVGcontext* vg = ctx.windowstate.vg;
     }
 }; // TrackList
 
