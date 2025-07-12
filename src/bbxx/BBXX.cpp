@@ -105,8 +105,7 @@ void BBXX::iterate()
     screenstate.iterate();
 
     if( !screenstate.handle_commands(this) ) {
-        printf("[BBXX::iterate] failed to handle screen state commands! calling BBXX::quit() !\n");
-        quit();
+        printf("[BBXX::iterate] failed to handle screen state commands! ( ignoring ... ) \n");
     }
 }
 
@@ -168,4 +167,14 @@ void BBXX::quit()
 
     nanovgstate.cleanup();
     audiostate.cleanup();
+}
+
+void BBXX::request_quit()
+{
+    if( QUIT_REQUESTED ) {
+        printf("[BBXX::request_quit] BBXX has already been requested to quit. ignoring ...\n");
+        return;
+    }
+    
+    QUIT_REQUESTED = true;
 }

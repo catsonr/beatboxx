@@ -2,7 +2,8 @@
     ScreenState is a manager class for all the Screens of the game
     the vector 'screens' hold the list of current Screens, which is both iterated and drawn in order
 
-    ScreenState also handles Requests that a Screen may generate, which are commands for BBXX to handle
+    ScreenState also handles any Commands that a Screen may generate, which are lambdas that BBXX will call
+        Command definition is in Screen.h
 */
 
 #ifndef SCREENSTATE_H
@@ -80,12 +81,13 @@ public:
     void handle_event(const SDL_Event* event)
     {
         for( auto& screen : screens )
+        {
             if( screen->focused || screen->focus_force )
             {
                 Command command = screen->handles_event(event);
                 commands.push(std::move(command));
             }
-
+        }
     }
 
     bool handle_commands(BBXX* bbxx)
@@ -95,7 +97,7 @@ public:
             //printf("[ScreenState::handle_commands] handling %d commands ...\n", (int)commands.size());
 
             if( !commands.top().execute(bbxx) ) {
-                printf("[Screen::handle_commands] failed to handle a command! (ignoring ...)\n");
+                printf("[Screen::handle_commands] failed to handle a command!\n");
                 return false;
             }
             

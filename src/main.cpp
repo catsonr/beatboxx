@@ -20,6 +20,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+    if( bx.QUIT_REQUESTED ) return SDL_APP_SUCCESS;
+
     bx.iterate();
     bx.draw();
 

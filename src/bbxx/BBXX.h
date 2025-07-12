@@ -66,6 +66,12 @@ public:
     SDL_Window* window { nullptr };
     SDL_Renderer* renderer { nullptr };
     SDL_GLContext gl { nullptr };
+
+    /*
+       will be TRUE if BBXX::request_quit() is called
+       BBXX will quit on the next frame before any iterate() or draw()
+    */
+    bool QUIT_REQUESTED { false };
     
     /* PUBLIC METHODS */
     SDL_AppResult init();
@@ -73,6 +79,7 @@ public:
     void draw();
     SDL_AppResult handle_event(const SDL_Event *event);
     void quit();
+    void request_quit();
 }; // BBXX
 
 #endif // BBXX_H

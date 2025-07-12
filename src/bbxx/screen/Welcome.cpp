@@ -28,9 +28,7 @@ Welcome::Welcome(WindowState& windowstate, InputState& inputstate, GLState& glst
         {
             "exit",
             Command { [this](BBXX* bbxx) {
-                printf("exit!\n");
-                
-                bbxx->quit();
+                bbxx->request_quit();
                 
                 return true;
             }}
