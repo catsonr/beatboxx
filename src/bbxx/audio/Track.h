@@ -39,6 +39,11 @@ struct Track
     
     bool init(ma_engine& engine)
     {
+        if( loaded ) {
+            printf("[Track::init] track '%s' already loaded! ( skipping call ...)\n", path);
+            return true;
+        }
+
         /*
             for some reason sound streaming doesnt work on web, so for now it will simply be loaded
             entirely into memory

@@ -61,11 +61,11 @@ public:
 
     bool init()
     {
-        push<Welcome>();
+        //push<Welcome>();
         //push<Poly>();
         //push<Taiko>();
         //push<NowPlaying>();
-        //push<Browse>();
+        push<Browse>();
 
         push<DebugGUI>();
         

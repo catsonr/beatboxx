@@ -80,6 +80,11 @@ struct Texture
 
     bool init(const char* full_path, bool pixelperfect=false)
     {
+        if( loaded ) {
+            printf("[Texture::init] texture '%s' already loaded! ( skipping call ... )\n", full_path);
+            return true;
+        }
+
         stbi_set_flip_vertically_on_load(true);
         
         unsigned char* data = stbi_load(full_path, &w, &h, &channels, 0);

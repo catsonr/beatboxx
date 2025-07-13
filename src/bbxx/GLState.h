@@ -29,21 +29,13 @@ struct GLState
 
     WindowState* windowstate;
     
-    ShaderProgram bg_img;
-    ShaderProgram shader;
-    ShaderProgram threeD;
-    
     // projection matrix stuff
     glm::mat4 m_view, m_proj, m_VP;
-    
-    // quad and cube matrix stuff
-    glm::mat4 bg_img_mModel, shader_mModel, threeD_mModel;
     
     // camera stuff
     float mouse_sensitivity { 0.002 };
     float camera_movementSpeed { 10.0 };
     float pitch { 0 }, yaw { M_PI_2 };
-
     glm::vec3 camera_pos { 0, 0, -4 };
     glm::vec3 camera_target { 0, 0, 0 };
     glm::vec3 camera_up { 0, 1, 0 };
@@ -119,37 +111,6 @@ struct GLState
         
         set_mVP();
         
-        /* BG TRANSFORM */
-        bg_img_mModel = glm::mat4(1.0f); // identity
-        bg_img_mModel = glm::translate(bg_img_mModel, glm::vec3(0, 0, 10));
-        bg_img_mModel = glm::rotate(bg_img_mModel, glm::radians(6.0f), glm::vec3(0, 0, 1));
-        bg_img_mModel = glm::scale(bg_img_mModel, glm::vec3(100, 10, 1));
-
-        bg_img.init("assets/shaders/triangle.vert", "assets/shaders/triangle.frag", unitsquare_vertices, 3);
-        bg_img.set_uniform("u_mModel", bg_img_mModel);
-        
-        /* SHADER TRANSFORM */
-        shader_mModel = glm::mat4(1.0f);
-        shader_mModel = glm::translate(shader_mModel, glm::vec3(-2, 0, 2));
-        shader_mModel = glm::rotate(shader_mModel, glm::radians(-30.0f), glm::vec3(0, 1, 0));
-        shader_mModel = glm::rotate(shader_mModel, glm::radians(30.0f), glm::vec3(1, 0, 0));
-        float shader_size = 3.0;
-        shader_mModel = glm::scale(shader_mModel, glm::vec3(shader_size, shader_size, 1));
-
-        if( !shader.init("assets/shaders/triangle.vert", "assets/shaders/lygiatest.frag", unitsquare_vertices, 3) ) {
-            printf("[GlState::init] ShaderProgram 'shader' failed to initialize\n");
-            return false;
-        }
-        shader.set_uniform("u_mModel", shader_mModel);
-        
-        /* THREED TRANSFORM */
-        threeD_mModel = glm::mat4(1.0f);
-        threeD_mModel = glm::translate(threeD_mModel, glm::vec3(3, 3, 2));
-        threeD_mModel = glm::scale(threeD_mModel, glm::vec3(2, 2, 2));
-
-        threeD.init("assets/shaders/triangle.vert", "assets/shaders/cube.frag", unitcube_vertices, 3);
-        threeD.set_uniform("u_mModel", threeD_mModel);
-        
         return true;
     }
     
@@ -157,50 +118,15 @@ struct GLState
     void iterate( float t, float dt, InputState* inputstate )
     {
         camera_move(inputstate, dt);
-
-        // vertex shader uniforms
-        bg_img.set_uniform("u_mVP", m_VP);
-        shader.set_uniform("u_mVP", m_VP);
-        threeD.set_uniform("u_mVP", m_VP);
-        //msdfstate.msdfprogram.set_uniform("u_mVP", m_VP);
-
-        // fragment shader uniforms 
-        //static float t = 0.0;
-        //t += 1.0f / 60.0f;
-        bg_img.set_uniform("u_t", t);
-        shader.set_uniform("u_t", t);
-        
-        //glm::vec4 mouse = glm::vec4( inputstate->mouse_x * windowstate->ds / windowstate->w, inputstate->mouse_y * windowstate->ds / windowstate->h, windowstate->w, windowstate->h );
-        //shader.set_uniform("u_mouse", mouse);
         
         DRAW_HAS_BEGUN = false;
-    }
-    
-    /* can only be called once per frame!!!!!!!!!! */
-    void draw()
-    {
-        if(! DRAW_HAS_BEGUN ) {
-            printf("[GLState::draw] call to GLState::draw() before GLState::begin_draw() !!!!!!\n");
-            assert( DRAW_HAS_BEGUN );
-        }
-
-        //bg_img.draw();
-        //threeD.draw();
-
-        // transparent
-        //glEnable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
-        //glFrontFace(GL_CW);
-        //glDisable(GL_DEPTH_TEST);
-        shader.draw();
-        
-        //msdfstate.draw();
     }
     
     void draw_begin()
     {
         if( DRAW_HAS_BEGUN ) {
-            printf("[GLState::draw_begin] draw_begin() has already been called this frame. ignoring!\n");
+            printf("[GLState::draw_begin] draw_begin() has already been called this frame. skipping this call!\n");
+            return;
         }
 
         glEnable(GL_DEPTH_TEST);

@@ -20,17 +20,30 @@ struct Browse : Screen
             return false;
         }
         
+        int i = 0;
+        for( Track* track : ctx.audiostate.tracks )
+        {
+            track->init(ctx.audiostate.engine); // TEMP! initializes all tracks, so that their art is initialized
+            track->art.model = glm::translate(track->art.model, glm::vec3(i, i/2.0f, i/3.0f));
+            i++;
+        }
+        
         return true;
     }
     
     void draw() override
     {
-        Track* bgm = ctx.audiostate.bgm;
+        std::vector<Track*> tracks = ctx.audiostate.tracks;
         
-        program.set_uniform("u_mModel", bgm->art.model);
         program.set_uniform("u_mVP", ctx.glstate.m_VP);
-        bgm->art.bind();
-        program.draw();
+
+        for( Track* track : tracks )
+        {
+            program.set_uniform("u_mModel", track->art.model);
+            track->art.bind();
+            program.draw();
+        }
+        
     }
 }; // Browse
 
