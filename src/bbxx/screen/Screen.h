@@ -32,14 +32,13 @@ struct ScreenContext
 }; // ScreenContext
 
 #include <functional>
-class BBXX;
+class BBXX; // forward declare
 /*
-    a Screen rarely needs to talk to beatboxx, but when it does it can generate a Command
-    where a Command is merely a lambda function that BBXX will call
+    a Command is a lambda that BBXX will call
     Commands are executed after iterate() and before draw()
         
     this definition should probably be inside BBXX.h, or some Command.h, but right now Screen is the
-    only class that can emit them, so for now it's fine here
+    only class that can emit them, so it stays here
 */
 struct Command
 {
@@ -58,7 +57,7 @@ struct Command
 
 /*
     a Screen represents a slice of the screen to render to
-    all Screens occupy the entirety of the window, and must only be opqaue where desired
+    all Screens occupy the entirety of the window, and must only be opaque where desired
 */
 class Screen
 {
@@ -82,12 +81,12 @@ public:
     /* PUBLIC METHODS */
 
     virtual void draw() = 0;
-    
     virtual bool init() { return true; }
     virtual Command iterate() { return {}; };
     //virtual void cleanup() {}
-
+    /* this is the actual handle_event() function to override */
     virtual Command handle_event(const SDL_Event* event) { return {}; } // should never be called by Screen child!
+    /* this is what is called by BBXX instead of the overridden handle_event() */
     Command handles_event(const SDL_Event* event)
     {
         if( focused || focus_force )

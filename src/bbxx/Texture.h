@@ -19,6 +19,9 @@
 struct Texture
 {
     GLuint id { 0 };
+    
+    /* whether or not the Texture has actually been loaded */
+    bool loaded { false };
 
     /* the width of the texture, in pixels */
     int w { 0 };
@@ -75,7 +78,7 @@ struct Texture
         }
     }
 
-    bool init(const char* full_path, bool pixelperfect)
+    bool init(const char* full_path, bool pixelperfect=false)
     {
         stbi_set_flip_vertically_on_load(true);
         
@@ -120,6 +123,8 @@ struct Texture
         
         glBindTexture(GL_TEXTURE_2D, 0);
         stbi_image_free(data);
+        
+        loaded = true;
         
         return true;
     }

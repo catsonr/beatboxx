@@ -59,9 +59,11 @@ private:
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
     
-    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate };
     
 public:
+    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate };
+
+
     /* PUBLIC MEMBERS */
     SDL_Window* window { nullptr };
     SDL_Renderer* renderer { nullptr };

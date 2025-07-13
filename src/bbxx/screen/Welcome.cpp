@@ -11,8 +11,8 @@ Welcome::Welcome(ScreenContext& ctx) :
     welcomeoptions = {
         {
             "browse tracks",
-            Command { [this](BBXX*) {
-                printf("browse tracks!\n");
+            Command { [this](BBXX* bbxx) {
+                bbxx->screenstate.push<Browse>();
 
                 return true;
             }}

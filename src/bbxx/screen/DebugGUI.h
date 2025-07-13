@@ -43,7 +43,7 @@ struct DebugGUI : Screen
         );
         imguiFPSCounter::draw(imguistate.draw_args.fpscounter);
         imguiAudioState::draw(imguistate.draw_args.audiostate);
-        imguiPolyline2DState::draw(imguistate.draw_args.polyline2dstate);
+        //imguiPolyline2DState::draw(imguistate.draw_args.polyline2dstate);
     }
 }; // DebugGUI
 

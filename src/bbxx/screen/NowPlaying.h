@@ -56,10 +56,10 @@ struct NowPlaying : Screen
     void draw() override
     {
         // constants 
-        NVGcontext* vg = windowstate.vg;
+        NVGcontext* vg = ctx.windowstate.vg;
         const Chart& chart = audiostate.bgm->chart;
-        const float w = (float)windowstate.w;
-        const float h = (float)windowstate.h;
+        const float w = (float)ctx.windowstate.w;
+        const float h = (float)ctx.windowstate.h;
         
         Track* bgm = audiostate.bgm;
         if( !bgm ) return; // TODO: better error checking

@@ -1,17 +1,22 @@
 #ifndef TRACK_H
 #define TRACK_H
 
+#include <filesystem>
+
 // miniaudio
 #include "miniaudio.h"
 
 // bbxx
 #include "../utilities.h"
 #include "Chart.h"
+#include "../Texture.h"
 
 struct Track
 {
     Chart chart;
     ma_sound sound;
+    
+    Texture art;
 
     const static inline char* tracks_basepath { "assets/tracks/" }; // where all tracks are located
     
@@ -30,7 +35,6 @@ struct Track
     {
         std::string relative_path = std::string(tracks_basepath) + path;
         full_path = util::get_fullPath(relative_path.c_str());
-        
     }
     
     bool init(ma_engine& engine)
@@ -56,6 +60,20 @@ struct Track
         if( !chart.init(full_path.c_str()) ) {
             printf("[Track::load] failed to initialize chart for '%s'!\n", path);
             return false;
+        }
+        
+        // init texture here
+        namespace fs = std::filesystem;
+        fs::path art_path(full_path);
+        art_path.replace_extension(".jpg"); // for now, Track expects album art to be .jpg
+        
+        if( fs::exists(art_path) )
+        {
+            art.init(art_path.c_str());
+        }
+        else
+        {
+            printf("[Track::init] could not find album art '%s'! ( ignoring ... )\n", art_path.c_str());
         }
 
         loaded = true;

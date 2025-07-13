@@ -8,7 +8,11 @@
 // beatboxx
 #include "Screen.h"
 #include "Welcome.h"
+#include "NowPlaying.h"
 #include "DebugGUI.h"
+#include "Poly.h"
+#include "Taiko.h"
+#include "Browse.h"
 
 /*
     ScreenState is a manager class for all the Screens of the game
@@ -45,28 +49,25 @@ public:
     std::stack<Command> commands;
     
     template<typename ScreenT>
-    /* add a new Screen */
+    /* adds a new Screen (and init()'s it) */
     void push()
     {
         static_assert(std::is_base_of_v<Screen, ScreenT>, "[ScreenState::push] given class is not of base class Screen!\n");
         
         screens.emplace_back( std::make_unique<ScreenT>(ctx) );
+        
+        screens.back()->init();
     }
 
     bool init()
     {
-        /* current screen */
         push<Welcome>();
+        //push<Poly>();
+        //push<Taiko>();
+        //push<NowPlaying>();
+        //push<Browse>();
 
-        /* debug menu (off by default) */
         push<DebugGUI>();
-        
-        for( auto& screen : screens ) {
-            if( !screen->init() ) {
-                printf("[ScreenState::init] failed to initialize a screen!\n");
-                return false;
-            }
-        }
         
         return true;
     }

@@ -51,11 +51,6 @@ struct Welcome : Screen
         wolf.model = glm::scale(wolf.model, glm::vec3(1, 1, 1));
         wolf.model = glm::translate(wolf.model, glm::vec3(-5/3, -2/3, 0));
 
-        wolf.bind();
-        program.set_uniform("u_texture", 0);
-        program.set_uniform("u_mModel", wolf.model);
-        program.set_uniform("u_mVP", glstate.m_VP);
-
         return true;
     }
 

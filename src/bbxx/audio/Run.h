@@ -88,6 +88,7 @@ struct Run
     /* the index of the current note in Run */
     int noteresults_index { 0 };
     
+    /* if the space bar is pressed or not */
     bool space_down { false };
     
     /* PUBLIC METHODS */
