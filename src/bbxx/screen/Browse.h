@@ -5,9 +5,13 @@
 
 #include "Screen.h"
 
+#include "../audio/Track2.h"
+
 struct Browse : Screen
 {
     ShaderProgram program;
+    
+    Track2 test { "You Are My Music" };
 
     Browse(ScreenContext& ctx) :
         Screen(ctx)
@@ -27,6 +31,10 @@ struct Browse : Screen
         for( Track* track : tracks ) {
             track->init(ctx.audiostate.engine);
         }
+        
+        test.init();
+
+        printf("%s %s %s %i %s\n", test.info.artist.c_str(), test.info.album.c_str(), test.info.title.c_str(), test.info.release_year, test.info.is_explicit ? "yeah" : "nah");
         
         return true;
     }
