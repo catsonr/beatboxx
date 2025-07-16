@@ -8,7 +8,6 @@
 // beatboxx
 #include "Screen.h"
 #include "Welcome.h"
-#include "NowPlaying.h"
 #include "DebugGUI.h"
 #include "Poly.h"
 #include "Taiko.h"

@@ -5,16 +5,19 @@
 
 #include "Screen.h"
 
-#include "../audio/Track2.h"
+#include "../audio/Track.h"
 
 struct Browse : Screen
 {
     ShaderProgram program;
-    
-    Track2 test { "You Are My Music" };
 
+    std::vector<std::unique_ptr<Track>>& tracks;
+    ma_engine& engine;
+    
     Browse(ScreenContext& ctx) :
-        Screen(ctx)
+        Screen(ctx),
+        tracks(ctx.audiostate.tracks),
+        engine(ctx.audiostate.engine)
     {}
     
     /* the index of the currently selected track */
@@ -22,45 +25,39 @@ struct Browse : Screen
     
     bool init() override
     {
-        if( !program.init("assets/shaders/shaderprogram.vert", "assets/shaders/shaderprogram_texture.frag", ctx.audiostate.bgm->art.quad, 3, 2) ) {
+        if( !program.init("assets/shaders/shaderprogram.vert", "assets/shaders/shaderprogram_texture.frag", tracks.front()->art.quad, 3, 2) ) {
             printf("[Welcome::init] failed to initialize shader program!\n");
             return false;
         }
         
-        std::vector<Track*> tracks = ctx.audiostate.tracks;
-        for( Track* track : tracks ) {
-            track->init(ctx.audiostate.engine);
-        }
-        
-        test.init();
+        tracks[selected]->init_sound(engine);
 
-        printf("%s %s %s %i %s\n", test.info.artist.c_str(), test.info.album.c_str(), test.info.title.c_str(), test.info.release_year, test.info.is_explicit ? "yeah" : "nah");
-        
         return true;
     }
 
     Command handle_event(const SDL_Event *event) override
     {
         if( ctx.inputstate.key_pressed(SDL_SCANCODE_UP) ) {
-        ctx.audiostate.tracks[selected]->pause();
+            tracks[selected]->pause();
             selected++;
-            if( selected >= ctx.audiostate.tracks.size() ) selected = 0;
+            if( selected >= tracks.size() ) selected = 0;
         }
         else if( ctx.inputstate.key_pressed(SDL_SCANCODE_DOWN) ) {
-        ctx.audiostate.tracks[selected]->pause();
+            tracks[selected]->pause();
             selected--;
-            if( selected < 0) selected = ctx.audiostate.tracks.size() - 1;
+            if( selected < 0) selected = tracks.size() - 1;
         }
+        
+        tracks[selected]->init_sound(engine);
 
         return {};
     }
 
     void draw() override
     {
-        std::vector<Track*> tracks = ctx.audiostate.tracks;
         for(int i = 0; i < tracks.size(); i++)
         {
-            Track* track = tracks[i];
+            Track* track = tracks[i].get();
             
             track->art.model = glm::mat4(1.0f);
             track->art.model = glm::rotate(track->art.model, glm::radians(-10.0f), glm::vec3(0, 0, 1));
@@ -78,7 +75,7 @@ struct Browse : Screen
         
         program.set_uniform("u_mVP", ctx.glstate.m_VP);
 
-        for( Track* track : tracks )
+        for( auto& track : tracks )
         {
             program.set_uniform("u_mModel", track->art.model);
             track->art.bind();

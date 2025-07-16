@@ -97,7 +97,6 @@ void BBXX::iterate()
 {
     fpscounter.iterate();
     inputstate.iterate();
-    audiostate.iterate();
 
     // needs to be called for glstate to display anything
     glstate.iterate(fpscounter.seconds, fpscounter.d_seconds, &inputstate);

@@ -132,6 +132,7 @@ struct GLState
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // TODO: update MVP with new aspect ratio
         glViewport(0, 0, windowstate->w, windowstate->h);
 
         glClearColor(0.1, 0.1, 0.1, 1.0);

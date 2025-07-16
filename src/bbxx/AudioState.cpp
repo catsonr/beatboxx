@@ -27,28 +27,28 @@ bool AudioState::init()
             sfx.init(&engine);
     }
     
-    return bgm->init(engine);
+    source_tracks();
+    
+    return true;
 }
 
-void AudioState::iterate()
+bool AudioState::source_tracks()
 {
-    if( bgm->iterate() && bgm->playing ) {
-        sfxs[0].play();
-    }
-}
+    for( auto& folder : std::filesystem::directory_iterator( util::get_fullPath(Track::tracks_folder)) )
+    {
+        if( !folder.is_directory() ) continue;
 
-bool AudioState::set_currentTrack(Track* track)
-{
-    if( !track ) {
-        printf("[AudioState::set_currentTrack] cannot set null track!\n");
-        return false;
+        std::string folder_name = folder.path().filename().string();
+        std::unique_ptr<Track> track = std::make_unique<Track>(folder_name.c_str());
+        printf("[AudioState::source_tracks] found '%s'\n", folder_name.c_str());
+
+        if( !track->init() ) {
+            printf("[AudioState::source_tracks] failed to initialize track '%s'!\n", folder_name.c_str());
+            return false;
+        }
+        
+        tracks.push_back( std::move(track) );
     }
-    
-    bgm->pause();
-    bgm->cleanup();
-    bgm = track;
-    
-    bgm->init(engine);
     
     return true;
 }
@@ -62,7 +62,7 @@ void AudioState::set_volume(float volume_new)
 
 void AudioState::cleanup()
 {
-    for( Track* track : tracks )
+    for( auto& track : tracks )
     {
         track->cleanup();
     }

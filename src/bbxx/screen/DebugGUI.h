@@ -8,7 +8,6 @@
 
 // bbxx::imgui
 #include "../imgui/imguiFPSCounter.h"
-#include "../imgui/imguiAudioState.h"
 #include "../imgui/imguiPolyline2DState.h"
 
 struct DebugGUI : Screen
@@ -42,7 +41,7 @@ struct DebugGUI : Screen
             ImVec2(padding, padding)
         );
         imguiFPSCounter::draw(imguistate.draw_args.fpscounter);
-        imguiAudioState::draw(imguistate.draw_args.audiostate);
+        //imguiAudioState::draw(imguistate.draw_args.audiostate);
         //imguiPolyline2DState::draw(imguistate.draw_args.polyline2dstate);
     }
 }; // DebugGUI
