@@ -7,11 +7,10 @@
 
 // beatboxx
 #include "Screen.h"
-#include "Welcome.h"
-#include "DebugGUI.h"
-#include "Poly.h"
-#include "Taiko.h"
+
+#include "Background.h"
 #include "Browse.h"
+#include "DebugGUI.h"
 
 /*
     ScreenState is a manager class for all the Screens of the game
@@ -33,14 +32,15 @@ public:
         NanoVGState& nanovgstate,
         ImguiState& imguistate,
         Polyline2DState& polyline2dstate
-    ) : ctx { 
-        windowstate,
-        inputstate,
-        audiostate,
-        glstate,
-        nanovgstate,
-        imguistate,
-        polyline2dstate,
+    ) : 
+        ctx { 
+            windowstate,
+            inputstate,
+            audiostate,
+            glstate,
+            nanovgstate,
+            imguistate,
+            polyline2dstate,
     }
     {}
 
@@ -60,10 +60,7 @@ public:
 
     bool init()
     {
-        //push<Welcome>();
-        //push<Poly>();
-        //push<Taiko>();
-        //push<NowPlaying>();
+        push<Background>();
         push<Browse>();
 
         push<DebugGUI>();

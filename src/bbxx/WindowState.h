@@ -41,9 +41,9 @@ struct WindowState
     bool fullscreened { false };
     
     // common, shared colors
-    util::Color color_highlight { 1.0f, 1.0f, 1.0f, 1.0f };
-    util::Color color_midtone { 0.5f, 0.5f, 0.5f, 1.0f };
-    util::Color color_shadow { 1.0f, 1.0f, 1.0f, 1.0f };
+    util::Color color_highlight { 237/255.0f, 242/255.0f, 244/255.0f };
+    util::Color color_midtone { 141/255.0f, 153/255.0f, 174/255.0f };
+    util::Color color_shadow { 43/255.0f, 45/255.0f, 66/255.0f };
     
     bool init(SDL_Window *window, SDL_GLContext* gl)
     {

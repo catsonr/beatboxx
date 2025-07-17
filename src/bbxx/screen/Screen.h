@@ -100,4 +100,26 @@ public:
     virtual ~Screen() = default;
 }; // Screen
 
+// below is the Screen subclass header template
+/*
+#ifndef MYSCREEN_H
+#define MYSCREEN_H
+
+#include "Screen.h"
+
+struct MyScreen : Screen
+{
+    MyScreen(ScreenContext& ctx) :
+        Screen(ctx)
+    {}
+    
+    void draw() override
+    {
+        
+    }
+}; // MyScreen
+
+#endif // MYSCREEN_H
+*/
+
 #endif // SCREEN_H
