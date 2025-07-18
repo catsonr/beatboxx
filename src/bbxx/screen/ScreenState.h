@@ -12,12 +12,16 @@
 #include "Browse.h"
 #include "DebugGUI.h"
 
+#include "SliceTest.h"
+
 /*
     ScreenState is a manager class for all the Screens of the game
     the vector 'screens' hold the list of current Screens, which is both iterated and drawn in order
 
     ScreenState also handles any Commands that a Screen may generate, which are lambdas that BBXX will call
         Command definition is in Screen.h
+        
+    Screen knows nothing of ScreenState
 */
 class ScreenState
 {
@@ -62,6 +66,7 @@ public:
     {
         push<Background>();
         push<Browse>();
+        push<SliceTest>();
 
         push<DebugGUI>();
         
@@ -106,7 +111,7 @@ public:
     void draw()
     {
         for( auto& screen : screens )
-            screen->draw();
+            screen->draws();
     }
 }; // ScreenState
 

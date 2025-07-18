@@ -50,7 +50,7 @@ struct Track
         0.5 -> half speed
         2.0 -> double speed, etc.
     */
-    const float playbackspeed { 1.0f };
+    const float playbackspeed { 1.00f };
     /* whether or not the track is currently playing */
     bool playing { false };
     /* the length of the track, in PCM frames */

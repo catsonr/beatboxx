@@ -31,6 +31,17 @@ struct ScreenContext
     Polyline2DState& polyline2dstate;
 }; // ScreenContext
 
+struct ScreenDimensions
+{
+    bool fullscreen { true };
+    bool scissor { true };
+    bool centered { false };
+    int w_l { 0 };
+    int h_l { 0 };
+    float x_ndc { 0.0 };
+    float y_ndc { 0.0 };
+}; // ScreenDimensions
+
 #include <functional>
 class BBXX; // forward declare
 /*
@@ -57,17 +68,19 @@ struct Command
 
 /*
     a Screen represents a slice of the screen to render to
-    all Screens occupy the entirety of the window, and must only be opaque where desired
+    all Screens occupy the entirety of the window, unless given dimensions by passing in ScreenDimensions
 */
 class Screen
 {
 protected:
     ScreenContext& ctx;
+    ScreenDimensions dim;
 
 public:
     /* CONSTRUCTORS*/
-    explicit Screen(ScreenContext& ctx) :
-        ctx(ctx)
+    explicit Screen(ScreenContext& ctx, ScreenDimensions dimensions={}) :
+        ctx(ctx),
+        dim(dimensions)
     {}
     
     /* PUBLIC MEMBERS */
@@ -76,17 +89,61 @@ public:
     bool focused { false };
     /* wether or not focused is true, this Screen will handle events */
     bool focus_force { true };
-    
 
     /* PUBLIC METHODS */
 
+    /* draw() call to be overridden by subclass */
     virtual void draw() = 0;
+    /* what actually gets called by BBXX */
+    void draws()
+    {
+        const WindowState& ws = ctx.windowstate; 
+
+        int w = ws.w;
+        int h = ws.h;
+        int x = 0;
+        int y = 0;
+        float ds = ws.ds;
+        
+        if( dim.fullscreen )
+        {
+            glDisable(GL_SCISSOR_TEST);
+            glViewport(x, y, w, h);
+        }
+        else
+        {
+            w = int(dim.w_l * ds);
+            h = int(dim.h_l * ds);
+            
+            x = int( ws.w*0.5 + (dim.x_ndc * ws.w*0.5) );
+            y = int( ws.h*0.5 + (dim.y_ndc * ws.h*0.5) );
+            
+            if( dim.centered ) {
+                x -= int(w * 0.5);
+                y -= int(h * 0.5);
+            }
+            
+            glViewport(x, y, w, h);
+            
+            if( dim.scissor )
+            {
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(x, y, w, h);
+            }
+            else
+            {
+                glDisable(GL_SCISSOR_TEST);
+            }
+        }
+
+        draw();
+    }
     virtual bool init() { return true; }
     virtual Command iterate() { return {}; };
     //virtual void cleanup() {}
-    /* this is the actual handle_event() function to override */
+    /* handle_event() to be overridden by subclass */
     virtual Command handle_event(const SDL_Event* event) { return {}; } // should never be called by Screen child!
-    /* this is what is called by BBXX instead of the overridden handle_event() */
+    /* what actually gets called by BBXX */
     Command handles_event(const SDL_Event* event)
     {
         if( focused || focus_force )

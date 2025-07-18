@@ -28,6 +28,9 @@ struct WindowState
     // the width and height of the screen, in PHYSICAL pixels
     int w, h;
     
+    // the width and height of the screen, in LOGICAL pixels
+    int w_l, h_l;
+    
     // display scale 
     // will be 1.0 for most displays, but >1.0 for high-DPI screens, which must be accounted for
     float ds;
@@ -67,9 +70,8 @@ struct WindowState
     void refresh()
     {
         SDL_GetWindowSizeInPixels(window, &w, &h);
+        SDL_GetWindowSize(window, &w_l, &h_l);
         ds = SDL_GetWindowDisplayScale(window);
-        
-        //printf("[WindowState::refresh]\n\twidth: %i\n\theight: %i\n\tdisplay scale: %f\n", w, h, ds);
     }
     
     void handle_event(const SDL_Event *event)
@@ -114,13 +116,6 @@ struct WindowState
             {
                 printf("[WindowState::handle_event] window focus grab\n");
                 
-                /*
-                if( !fullscreen(true) )
-                    printf("[WindowState::handle_event] unable to enter fullscreen!\n");
-                else
-                    printf("[WindowState::handle_event] entered fullscreen\n");
-                */
-
                 focused = true;
 
                 SDL_HideCursor();
@@ -131,13 +126,6 @@ struct WindowState
             else if ( focused && event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE)
             {
                 printf("[WindowState::handle_event] window focus release\n");
-
-                /*
-                if( !fullscreen(false) )
-                    printf("[WindowState::handle_event] unable to enter fullscreen!\n");
-                else
-                    printf("[WindowState::handle_event] entered fullscreen\n");
-                */
 
                 focused = false;
 

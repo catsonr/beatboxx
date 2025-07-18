@@ -16,7 +16,6 @@
 #include "audio/Track.h"
 #include "audio/Sfx.h"
 
-
 struct AudioState
 {
     /* PUBLIC MEMBERS */
@@ -27,7 +26,7 @@ struct AudioState
     // sound effects
     std::vector<Sfx> sfxs { {"click.wav"}, {"note.wav"} };
 
-    float volume { 0.0f };
+    float volume { 1.0f };
     
     int periodsizeinframes { 256 };
     int periodcount { 3 };
