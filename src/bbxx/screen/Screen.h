@@ -15,6 +15,7 @@
 #include "../NanoVGState.h"
 #include "../ImguiState.h"
 #include "../Polyline2DState.h"
+
 /*
     ScreenContext contains all the BBXX state classes that a Screen might need
 */
@@ -31,10 +32,13 @@ struct ScreenContext
     Polyline2DState& polyline2dstate;
 }; // ScreenContext
 
+/*
+    ScreenDimensions defines where the Screen will be displayed
+*/
 struct ScreenDimensions
 {
     bool fullscreen { true };
-    bool scissor { true };
+    bool scissor { false };
     bool centered { false };
     int w_l { 0 };
     int h_l { 0 };
@@ -89,6 +93,8 @@ public:
     bool focused { false };
     /* wether or not focused is true, this Screen will handle events */
     bool focus_force { true };
+    /* a master screen will only be drawn if it's the last master in the ScreenState screens vector */
+    bool master { false };
 
     /* PUBLIC METHODS */
 

@@ -46,10 +46,6 @@ struct SliceTest : Screen
     
     void draw() override
     {
-        const util::Color& c = ctx.windowstate.color_highlight;
-        glClearColor(c.r, c.g, c.b, c.a);
-        glClear(GL_COLOR_BUFFER_BIT);
-        
         program.set_uniform("u_mModel", texture.model);
         program.set_uniform("u_mVP", identity);
         texture.bind();

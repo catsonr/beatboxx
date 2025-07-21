@@ -12,6 +12,7 @@
 #include "Browse.h"
 #include "DebugGUI.h"
 
+#include "Welcome.h"
 #include "SliceTest.h"
 
 /*
@@ -51,6 +52,35 @@ public:
     std::vector< std::unique_ptr<Screen> > screens;
     std::stack<Command> commands;
     
+    /*
+       creates a vector of all the screens to be used this frame
+       this vector does get regenerated every call, which is not the most efficient way of handling
+       master screens, but it is the simplest 
+    */
+    std::vector<Screen*> get_active_screens() const
+    {
+        std::vector<Screen*> active_screens;
+        
+        int last_master = -1;
+        // find last master
+        for( int i = screens.size() - 1; i >= 0; i-- )
+        {
+            if( screens[i]->master ) {
+                last_master = i;
+                break;
+            }
+        }
+        
+        // create vecor of active screens
+        for ( int i = 0; i < screens.size(); i++ )
+        {
+            if( !screens[i]->master || i == last_master )
+                active_screens.push_back(screens[i].get());
+        }
+        
+        return active_screens;
+    }
+    
     template<typename ScreenT>
     /* adds a new Screen (and init()'s it) */
     void push()
@@ -65,8 +95,8 @@ public:
     bool init()
     {
         push<Background>();
-        push<Browse>();
-        push<SliceTest>();
+
+        push<Welcome>();
 
         push<DebugGUI>();
         
@@ -75,7 +105,7 @@ public:
     
     void handle_event(const SDL_Event* event)
     {
-        for( auto& screen : screens )
+        for( Screen* screen : get_active_screens() )
         {
             if( screen->focused || screen->focus_force )
             {
@@ -104,13 +134,13 @@ public:
     
     void iterate()
     {
-        for( auto& screen : screens )
+        for( Screen* screen : get_active_screens() )
             screen->iterate();
     }
     
     void draw()
     {
-        for( auto& screen : screens )
+        for( Screen* screen : get_active_screens() )
             screen->draws();
     }
 }; // ScreenState

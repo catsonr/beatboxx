@@ -1,8 +1,7 @@
 #include "NanoVGState.h"
 
 /*
-   NanoVG requires some #define gl_implementation in some .cpp once and only once,
-   so i do it here, as well as (old) draw()
+   NanoVG requires some #define gl_implementation in some .cpp once and only once, so i do it here
 */
 #include <glad/glad.h>
 #ifdef __EMSCRIPTEN__
@@ -72,5 +71,6 @@ void NanoVGState::draw_begin()
 }
 void NanoVGState::draw_end()
 {
+    glViewport(0, 0, windowstate.w, windowstate.h); // TEMP! forces nanovg to fill entire window, needed because screen dimensions modify viewport size and nanovg doesn't expect it to change
     nvgEndFrame(vg);
 }

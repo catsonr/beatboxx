@@ -8,6 +8,8 @@ Welcome::Welcome(ScreenContext& ctx) :
     glstate(ctx.glstate),
     nanovgstate(ctx.nanovgstate)
 {
+    master = true;
+
     welcomeoptions = {
         {
             "browse tracks",
@@ -19,8 +21,8 @@ Welcome::Welcome(ScreenContext& ctx) :
         },
         {
             "options",
-            Command { [this](BBXX*) {
-                printf("options!\n");
+            Command { [this](BBXX* bbxx) {
+                bbxx->screenstate.push<SliceTest>();
 
                 return true;
             }}

@@ -18,7 +18,9 @@ struct Browse : Screen
         Screen(ctx),
         tracks(ctx.audiostate.tracks),
         engine(ctx.audiostate.engine)
-    {}
+    {
+        master = true;
+    }
     
     /* the index of the currently selected track */
     int selected { 0 };
