@@ -19,6 +19,7 @@
 #include "Polyline2DState.h"
 
 #include "Stb_imgState.h"
+#include "FontState.h"
 
 // bbxx screens
 #include "screen/ScreenState.h"
@@ -55,12 +56,13 @@ private:
     Polyline2DState polyline2dstate { glstate, windowstate };
     
     Stb_imgState stb_imgstate;
+    FontState fontstate;
 
     ImguiStateDrawArgs imguistatedrawargs { fpscounter, audiostate, polyline2dstate };
     ImguiState imguistate { imguistatedrawargs };
     
 public:
-    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate };
+    ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate, fontstate };
 
 
     /* PUBLIC MEMBERS */

@@ -16,6 +16,8 @@
 #include "../ImguiState.h"
 #include "../Polyline2DState.h"
 
+#include "../FontState.h"
+
 /*
     ScreenContext contains all the BBXX state classes that a Screen might need
 */
@@ -30,6 +32,8 @@ struct ScreenContext
     ImguiState& imguistate;
 
     Polyline2DState& polyline2dstate;
+    
+    FontState& fontstate;
 }; // ScreenContext
 
 /*

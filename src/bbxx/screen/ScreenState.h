@@ -14,6 +14,7 @@
 
 #include "Welcome.h"
 #include "SliceTest.h"
+#include "FontTest.h"
 
 /*
     ScreenState is a manager class for all the Screens of the game
@@ -36,7 +37,8 @@ public:
         GLState& glstate,
         NanoVGState& nanovgstate,
         ImguiState& imguistate,
-        Polyline2DState& polyline2dstate
+        Polyline2DState& polyline2dstate,
+        FontState& fontstate
     ) : 
         ctx { 
             windowstate,
@@ -46,6 +48,7 @@ public:
             nanovgstate,
             imguistate,
             polyline2dstate,
+            fontstate,
     }
     {}
 
@@ -96,7 +99,8 @@ public:
     {
         push<Background>();
 
-        push<Welcome>();
+        //push<Welcome>();
+        push<FontTest>();
 
         push<DebugGUI>();
         

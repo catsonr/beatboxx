@@ -82,6 +82,11 @@ SDL_AppResult BBXX::init()
         return SDL_APP_FAILURE;
     }
     
+    if( !fontstate.init() ) {
+        printf("[BBXX::init] failed to initialze font state!\n");
+        return SDL_APP_FAILURE;
+    }
+    
     if( !screenstate.init() ) {
         printf("[BBXX::init] failed to initialize screen state!\n");
         return SDL_APP_FAILURE;
