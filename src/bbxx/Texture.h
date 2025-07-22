@@ -16,6 +16,10 @@
 // stb_img
 #include <stb/stb_image.h>
 
+// freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 struct Texture
 {
     GLuint id { 0 };
@@ -134,15 +138,15 @@ struct Texture
         return true;
     }
     
-    bool init_from_font(unsigned char* data, int width, int height, int channels=1, bool pixelperfect=true)
+    bool init_from_font(FT_Bitmap& bitmap, int channels=1, bool pixelperfect=true)
     {
         if( loaded ) {
             printf("[Texture::init] texture already loaded! ( skipping call ... )\n");
             return true;
         }
         
-        w = width;
-        h = height;
+        w = bitmap.width;
+        h = bitmap.rows;
         this->channels = channels;
         
         GLenum format = (channels == 4 ? GL_RGBA
@@ -150,6 +154,8 @@ struct Texture
                          :                GL_RED);
         
         glGenTextures(1, &id);
+        
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glBindTexture(GL_TEXTURE_2D, id);
 
         if (pixelperfect) {
@@ -173,7 +179,7 @@ struct Texture
             0,
             format,
             GL_UNSIGNED_BYTE,
-            data
+            bitmap.buffer
         );
         if (!pixelperfect) glGenerateMipmap(GL_TEXTURE_2D);
 

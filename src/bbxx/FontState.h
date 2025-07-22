@@ -49,25 +49,24 @@ struct FontState
             printf("[FontState::init] failed to set charmap to unicode!\n");
             return false;
         }
-        
-        
-        //error = FT_Set_Char_Size(
-        //  face,    /* handle to face object         */
-        //  0,       /* char_width in 1/64 of points  */
-        // 16*64,   /* char_height in 1/64 of points */
-        //  300,     /* horizontal device resolution  */
-        //  300 );   /* vertical device resolution    */
-        error = FT_Set_Pixel_Sizes(
-            face,
-            0, // width (zero means use the same as the other value)
-            2<<10 // height (in pixels)
-        );
+
+        error = FT_Set_Char_Size(
+            face,    /* handle to face object         */
+            0,       /* char_width in 1/64 of points  */
+            16 * 64 * 1, /* char_height in 1/64 of points */
+            300,     /* horizontal device resolution  */
+            300);    /* vertical device resolution    */
+        //error = FT_Set_Pixel_Sizes(
+        //    face,
+        //    0, // width (zero means use the same as the other value)
+        //    16*4 // height (in pixels)
+        //);
         if( error != FT_Err_Ok ) {
             printf("[FontState::init] failed to set char size!\n");
             return false;
         }
         
-        FT_ULong charcode = (int)'A';
+        FT_ULong charcode = (int)'B';
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcode);
         if( glyph_index == 0 ) {
             printf("[FontState::init] could not find glyph's char index! (ignoring ...)\n");
@@ -89,9 +88,7 @@ struct FontState
             }
         }
         
-        auto& b = face->glyph->bitmap;
-        
-        if( !tempsingleglyphtexture.init_from_font(b.buffer, b.width, b.rows)) {
+        if( !tempsingleglyphtexture.init_from_font(face->glyph->bitmap)) {
             printf("[FontState::init] failed to init temp texture!\n");
             return false;
         }

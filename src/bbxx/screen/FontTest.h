@@ -29,7 +29,7 @@ struct FontTest : Screen
     void draw() override
     {
         program.set_uniform("u_mModel", fontstate.tempsingleglyphtexture.model);
-        program.set_uniform("u_mVP", identity);
+        program.set_uniform("u_mVP", ctx.glstate.m_VP);
         fontstate.tempsingleglyphtexture.bind();
         program.draw();
     }

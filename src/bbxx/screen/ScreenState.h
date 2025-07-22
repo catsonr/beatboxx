@@ -100,6 +100,7 @@ public:
         push<Background>();
 
         //push<Welcome>();
+        push<Browse>();
         push<FontTest>();
 
         push<DebugGUI>();
