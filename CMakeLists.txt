@@ -1,9 +1,3 @@
-if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE
-      "${CMAKE_SOURCE_DIR}/vendored/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      CACHE STRING "Vcpkg toolchain file")
-endif()
-
 cmake_minimum_required(VERSION 3.16)
 project(beatboxx)
 
@@ -13,26 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-
-# msdfgen and msdf-atlas-gen only included if on native build
-if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-  find_package(msdfgen CONFIG REQUIRED)
-  file(GLOB MSDF_ATLAS_GEN_SOURCES
-      "vendored/msdf-atlas-gen/msdf-atlas-gen/*.cpp"
-  )
-  add_library(msdf-atlas-gen STATIC ${MSDF_ATLAS_GEN_SOURCES})
-  target_include_directories(msdf-atlas-gen PUBLIC
-      ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen
-      ${CMAKE_CURRENT_SOURCE_DIR}/vendored/msdf-atlas-gen/artery-font-format
-  )
-  target_link_libraries(msdf-atlas-gen PUBLIC msdfgen::msdfgen freetype)
-else()
-  # miniaudio can use audio worklets (when compiled with emscripten), which require these flags to be set
-  add_compile_options(
-    -matomics
-    -mbulk-memory
-  )
-endif()
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
@@ -164,6 +138,19 @@ target_include_directories(beatboxx PRIVATE
   ${CMAKE_SOURCE_DIR}/stb
 )
 
+# freetype
+set(FREETYPE_ROOT "${CMAKE_SOURCE_DIR}/vendored/freetype")
+
+add_subdirectory(
+  ${FREETYPE_ROOT}
+  ${CMAKE_BINARY_DIR}/freetype-build
+  EXCLUDE_FROM_ALL
+)
+
+target_include_directories(beatboxx PRIVATE
+  ${FREETYPE_ROOT}/include
+)
+
 # link libraries
 target_link_libraries(beatboxx
   PRIVATE
@@ -176,16 +163,8 @@ target_link_libraries(beatboxx
     json
     nanovg
     Polyline2D
+    freetype
 )
-
-# msdfgen and msdf-atlas-gen only included if on native build
-if (NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-  target_link_libraries(beatboxx
-  PRIVATE
-    msdfgen::msdfgen
-    msdf-atlas-gen
-  )
-endif()
 
 target_include_directories(beatboxx PRIVATE
   ${CMAKE_SOURCE_DIR}/src

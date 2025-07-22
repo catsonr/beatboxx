@@ -10,12 +10,6 @@
 [submodule "vendored/lygia"]
 	path = vendored/lygia
 	url = https://github.com/patriciogonzalezvivo/lygia.git
-[submodule "vendored/vcpkg"]
-	path = vendored/vcpkg
-	url = https://github.com/microsoft/vcpkg.git
-[submodule "vendored/msdf-atlas-gen"]
-	path = vendored/msdf-atlas-gen
-	url = https://github.com/Chlumsky/msdf-atlas-gen
 [submodule "vendored/nanovg"]
 	path = vendored/nanovg
 	url = https://github.com/memononen/nanovg.git
@@ -25,3 +19,6 @@
 [submodule "vendored/Polyline2D"]
 	path = vendored/Polyline2D
 	url = https://github.com/CrushedPixel/Polyline2D
+[submodule "vendored/freetype"]
+	path = vendored/freetype
+	url = https://github.com/freetype/freetype
