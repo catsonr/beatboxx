@@ -15,6 +15,7 @@
 #include "Welcome.h"
 #include "SliceTest.h"
 #include "FontTest.h"
+#include "ShaderTest.h"
 
 /*
     ScreenState is a manager class for all the Screens of the game
@@ -101,7 +102,8 @@ public:
 
         //push<Welcome>();
         push<Browse>();
-        push<FontTest>();
+        //push<FontTest>();
+        push<ShaderTest>();
 
         push<DebugGUI>();
         
@@ -146,7 +148,10 @@ public:
     void draw()
     {
         for( Screen* screen : get_active_screens() )
+        {
             screen->draws();
+            ctx.imguistate.draw( screen->imgui_draw_call );
+        }
     }
 }; // ScreenState
 

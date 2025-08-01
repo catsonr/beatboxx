@@ -41,7 +41,10 @@ struct Texture
     /* if the section of the texture is centered */
     bool centered;
     
-    /* the vertices of the two triangles of the rendered quad */
+    /* 
+        the vertices of the two triangles of the rendered quad 
+        filled by constructor
+    */
     std::vector<float> quad;
 
     /* the model matrix used to transform the quad */

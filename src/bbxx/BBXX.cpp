@@ -101,7 +101,6 @@ SDL_AppResult BBXX::init()
 void BBXX::iterate()
 {
     fpscounter.iterate();
-    inputstate.iterate();
 
     // needs to be called for glstate to display anything
     glstate.iterate(fpscounter.seconds, fpscounter.d_seconds, &inputstate);
@@ -111,6 +110,8 @@ void BBXX::iterate()
     if( !screenstate.handle_commands(this) ) {
         printf("[BBXX::iterate] failed to handle screen state commands! ( ignoring ... ) \n");
     }
+    
+    inputstate.iterate();
 }
 
 /* does all drawing for beatboxx */
@@ -123,6 +124,7 @@ void BBXX::draw()
     screenstate.draw();
     
     nanovgstate.draw_end();
+    imguistate.draws();
     imguistate.draw_end();
     
     // present result (basically glstate.draw_end())

@@ -15,12 +15,12 @@ struct InputState
     */
     bool keys_previous[SDL_SCANCODE_COUNT] { false }; 
     /* the current mouse buttons state */
-    SDL_MouseButtonFlags mouse_buttons[6 + 1] { false }; // 0=nothing, 1=left, 2=middle, 3=right, 4=X1, 5=X2
+    bool mouse_buttons[6 + 1] { false }; // 0=nothing, 1=left, 2=middle, 3=right, 4=X1, 5=X2
     /*
         the mouse buttons that were down last frame
         (used to determine if mouse buttons buttons have just been pressed or released)
     */
-    SDL_MouseButtonFlags mouse_buttons_previous[6 + 1] { false };
+    bool mouse_buttons_previous[6 + 1] { false };
     unsigned mouse_x, mouse_y; // mouse position
    
     void iterate()

@@ -64,7 +64,6 @@ private:
 public:
     ScreenState screenstate { windowstate, inputstate, audiostate, glstate, nanovgstate, imguistate, polyline2dstate, fontstate };
 
-
     /* PUBLIC MEMBERS */
     SDL_Window* window { nullptr };
     SDL_Renderer* renderer { nullptr };
@@ -78,9 +77,9 @@ public:
     
     /* PUBLIC METHODS */
     SDL_AppResult init();
-    void iterate();
+    void iterate(); // called before draw
     void draw();
-    SDL_AppResult handle_event(const SDL_Event *event);
+    SDL_AppResult handle_event(const SDL_Event *event); // called on event
     void quit();
     void request_quit();
 }; // BBXX

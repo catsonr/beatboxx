@@ -1,6 +1,9 @@
 #ifndef FONTSTATE_H
 #define FONTSTATE_H
 
+#include <map>
+#include <memory>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -17,7 +20,7 @@ struct FontState
     
     bool loaded { false };
     
-    Texture tempsingleglyphtexture;
+    std::map<FT_ULong, std::unique_ptr<Texture>> glyphs;
 
     bool init()
     {
@@ -56,26 +59,36 @@ struct FontState
             16 * 64 * 1, /* char_height in 1/64 of points */
             300,     /* horizontal device resolution  */
             300);    /* vertical device resolution    */
-        //error = FT_Set_Pixel_Sizes(
-        //    face,
-        //    0, // width (zero means use the same as the other value)
-        //    16*4 // height (in pixels)
-        //);
         if( error != FT_Err_Ok ) {
             printf("[FontState::init] failed to set char size!\n");
             return false;
         }
         
-        FT_ULong charcode = (int)'B';
+        if( !texture_glyphs() ) {
+            printf("[FontState::init] failed to texture glyphs!\n");
+            return false;
+        }
+        
+        loaded = true;
+        
+        return true;
+    }
+    
+    /*
+       renders a single glyph of unicode code point 'charcode' 
+       the resulting glyph is stored in a bitmap at face->glyph->bitmap
+    */
+    bool render_glyph(FT_ULong charcode)
+    {
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcode);
         if( glyph_index == 0 ) {
-            printf("[FontState::init] could not find glyph's char index! (ignoring ...)\n");
+            printf("[FontState::render_glyph] could not find glyph's char index! (ignoring ...)\n");
             // TODO: handle missing glyph
         }
         
-        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+        FT_Error error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
         if( error != FT_Err_Ok ) {
-            printf("[FontState::init] failed to load glyph of charcode %ld!\n", charcode);
+            printf("[FontState::render_glyph] failed to load glyph of charcode %ld!\n", charcode);
             return false;
         }
         
@@ -83,18 +96,45 @@ struct FontState
         if( face->glyph->format != FT_GLYPH_FORMAT_BITMAP ) {
             error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
             if( error != FT_Err_Ok ) {
-                printf("[FontState::init] failed to render glyph of charcode %ld!\n", charcode);
+                printf("[FontState::render_glyph] failed to render glyph of charcode %ld!\n", charcode);
                 return false;
             }
         }
-        
-        if( !tempsingleglyphtexture.init_from_font(face->glyph->bitmap)) {
-            printf("[FontState::init] failed to init temp texture!\n");
-            return false;
+
+        return true;
+    }
+    
+    /*
+        renders all ASCII characters and saves them to textures in 'glyphs'
+    */
+    bool texture_glyphs()
+    {
+        float pen_x = 0.0f;
+        const float baseline = 0.0f;
+
+        for( uint16_t codepoint = 32; codepoint < 128; codepoint++)
+        {
+            render_glyph(codepoint);
+
+            std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+            if( !texture->init_from_font(face->glyph->bitmap) ) {
+                printf("[FontState::texture glyphs] failed to initialize texture!\n");
+                return false;
+            }
+
+            float x = pen_x + face->glyph->bitmap_left;
+            float y = baseline - face->glyph->bitmap_top;
+            float scale = 1.0/100.0f;
+            float size = 20;
+            texture->model = glm::scale(texture->model, glm::vec3(scale, scale, 1.0));
+            texture->model = glm::translate(texture->model, glm::vec3(x, y, 0.0f));
+            texture->model = glm::scale(texture->model, glm::vec3(size, size, 1.0));
+            
+            pen_x += (face->glyph->advance.x >> 6);
+            
+            glyphs.emplace(codepoint, std::move(texture));
         }
-        
-        loaded = true;
-        
+
         return true;
     }
     

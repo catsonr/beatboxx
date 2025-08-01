@@ -83,6 +83,7 @@ class Screen
 protected:
     ScreenContext& ctx;
     ScreenDimensions dim;
+    
 
 public:
     /* CONSTRUCTORS*/
@@ -99,6 +100,12 @@ public:
     bool focus_force { true };
     /* a master screen will only be drawn if it's the last master in the ScreenState screens vector */
     bool master { false };
+
+    /*
+        this lambda will be added to the ImguiState draw_calls queue every frame
+        (managed by ScreenState)
+    */
+    std::function<void()> imgui_draw_call = []{};
 
     /* PUBLIC METHODS */
 

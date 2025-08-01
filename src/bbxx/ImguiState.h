@@ -1,6 +1,9 @@
 #ifndef IMGUISTATE_H
 #define IMGUISTATE_H
 
+#include <functional>
+#include <queue>
+
 // imgui
 #include <imgui.h>
 #include <backends/imgui_impl_sdl3.h>
@@ -12,6 +15,7 @@
 // bbxx
 #include "FPSCounter.h"
 #include "WindowState.h"
+#include "AudioState.h"
 
 // bbxx::imgui
 #include "imgui/imguiFPSCounter.h"
@@ -37,6 +41,8 @@ struct ImguiState
 
     WindowState* windowstate;
     const ImguiStateDrawArgs& draw_args;
+    
+    std::queue<std::function<void()>> draw_calls;
     
     bool init(WindowState* windowstate)
     {
@@ -129,6 +135,23 @@ struct ImguiState
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
+    }
+    
+    void draw(const std::function<void()>& draw_call )
+    {
+        draw_calls.push(draw_call);
+    }
+    
+    void draws()
+    {
+        if( !show ) draw_calls = {}; // clear queue
+
+        while( !draw_calls.empty() )
+        {
+            const std::function<void()>& draw_call = draw_calls.front();
+            draw_call();
+            draw_calls.pop();
+        }
     }
 
     void draw_end()
